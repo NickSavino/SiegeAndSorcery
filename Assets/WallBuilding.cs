@@ -19,7 +19,9 @@ public class WallBuilding : MonoBehaviour
 
     private List<GameObject> _currentPosts;
     private List<GameObject> _currentPanels;
-    private bool _initialPlaced;
+
+    private bool _initialPostPlaced;
+
     private bool _placingPost;
     private bool _instedPost;
 
@@ -32,18 +34,18 @@ public class WallBuilding : MonoBehaviour
     {
         _currentPosts = new List<GameObject>();
         _currentPanels = new List<GameObject>();
-        _initialPlaced = false;
+        _placingPost = true;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (!_initialPlaced)
+        if (_placingPost)
         {
-            placeInitialPost();
+            placePost();
         }
-        if (_placingPanel)
+        else if (_placingPanel)
         {
             placePanel();
         }
@@ -71,60 +73,76 @@ public class WallBuilding : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit))
-            {   // _currentPosts[0] is initial post
+            {  
+
+                // reset panel position to post
                 Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
-                _currentPanels[0].transform.position = new Vector3(lastPostPos.x, _currentPanels[0].transform.position.y, lastPostPos.z);
+                _currentPanels[index].transform.position = new Vector3(lastPostPos.x, _currentPanels[index].transform.position.y, lastPostPos.z);
 
-
+                // get distance and rotation, set rotation
                 Vector3 distanceVector = hit.point - _currentPanels[index].transform.position;
                 distanceVector.y = 0;      // do not want to rotate up or down
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);
-
                 _currentPanels[index].transform.rotation = rotation;
+
+                // scale panel along Z-axis so it reaches mouse cursor
                 _currentPanels[index].transform.localScale = new Vector3(currentScale.x, currentScale.y, distanceVector.magnitude);
-                Vector3 translateVector = new Vector3(0, 0, distanceVector.magnitude) / 2;
+                
+
+                //TODO: If we make all models with pivots at the edge of a wall, then this will not be needed
+                Vector3 translateVector = new Vector3(0, 0, distanceVector.magnitude) / 2;  // need to translate along Z-axis (if pivot is at center)
                 _currentPanels[index].transform.Translate(translateVector);
 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0))     // automatically place post if chain has started
                 {
                     enabledMode(_currentPanels[index]);
                     _placingPanel = false;
                     _instedPanel = false;
                     _placingPost = true;
                     _instedPost = false;
+                    if (!_initialPostPlaced)
+                    {
+                        _initialPostPlaced = true;
+                    }
                 }
             }
         }
     }
 
-    void placeInitialPost()
+    void placePost()
     {
-        GameObject initialPost;
-        if (_currentPosts.Count  == 0)
+        GameObject post;
+        if (!_instedPost)
         {
-            initialPost = Instantiate(_postPrefab);
-            disabledMode(initialPost);
-            _currentPosts.Add(initialPost);
+            post = Instantiate(_postPrefab);
+            disabledMode(post);
+            _currentPosts.Add(post);
+            _instedPost = true;
         }
 
+        int index = _currentPosts.Count - 1;   // want to reference object that already exists in list
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit))
         {   // _currentPosts[0] is initial post
-            _currentPosts[0].transform.position = new Vector3(hit.point.x, _currentPosts[0].transform.position.y, hit.point.z);
+            _currentPosts[index].transform.position = new Vector3(hit.point.x, _currentPosts[index].transform.position.y, hit.point.z);
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || _initialPostPlaced)    // left click
         {
-            enabledMode(_currentPosts[0]);
-            _initialPlaced = true;
+            enabledMode(_currentPosts[index]);
             _placingPanel = true;
             _instedPanel = false;
+            _placingPost = false;
+            _instedPost = false;
+            if (!_initialPostPlaced)
+            {
+                _initialPostPlaced = true;
+            }
         }
     }
-
 
 
     void disabledMode(GameObject obj)
