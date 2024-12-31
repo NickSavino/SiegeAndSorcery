@@ -11,6 +11,8 @@ public class WallObject : MonoBehaviour
     private GameObject[] _posts;
     private GameObject[] _panels;
 
+    public const float MAX_PANEL_LENGTH = 10f; 
+
     [SerializeField]
     private int MAX_POSTS;
 
