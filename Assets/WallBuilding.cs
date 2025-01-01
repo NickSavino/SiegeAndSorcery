@@ -29,6 +29,8 @@ public class WallBuilding : MonoBehaviour
     private bool _placingPost;
     private bool _instedPost;
 
+    private bool _modeActive;
+
     private bool _placingPanel;
     private bool _instedPanel;
 
@@ -46,15 +48,20 @@ public class WallBuilding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_modeActive)
+        {
+            if (_placingPost)
+            {
+                placePost();
+            }
+            else if (_placingPanel)
+            {
+                placePanel();
+            }
+        }
+        Debug.Log(_modeActive);
+        toggleActive();
 
-        if (_placingPost)
-        {
-            placePost();
-        }
-        else if (_placingPanel)
-        {
-            placePanel();
-        }
     }
 
 
@@ -187,6 +194,19 @@ public class WallBuilding : MonoBehaviour
     {
         obj.GetComponent<MeshRenderer>().material = _opaqueMaterial;
         obj.GetComponent<Collider>().enabled = true;
+    }
+
+
+    void toggleActive()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {  
+            _modeActive = !_modeActive;
+        }
+        if (!_modeActive)
+        {
+            _initialPostPlaced = false;
+        }
     }
 
 }

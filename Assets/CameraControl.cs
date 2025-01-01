@@ -2,15 +2,29 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
+    [SerializeField]
+    private float CAM_MOVE_SPEED;
 
-    public float CAM_MOVE_SPEED;
-    public float CAM_ZOOM_SPEED;
+    [SerializeField]
+    private float CAM_ZOOM_SPEED;
 
-    public float CAM_MAX_FOV;
-    public float CAM_MIN_FOV;
+    [SerializeField]
+    private float CAM_MAX_FOV;
 
-    public GameObject camObject;
-    public Camera camera;
+    [SerializeField]
+    private float CAM_MIN_FOV;
+
+    [SerializeField]
+    private float ROTATION_SENSITIVITY;
+
+    [SerializeField]
+    private float TILT_ROTATION;
+
+    [SerializeField]
+    private GameObject camObject;
+
+    [SerializeField]
+    private Camera camera;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,38 +37,55 @@ public class CameraControl : MonoBehaviour
     {
         translateCamera();
         zoomCamera();
-
+        rotateCamera();
 
     }
 
 
     void translateCamera()
     {
+        float degrees;
+        if (camObject.transform.rotation.eulerAngles.y < 0)
+        {
+            degrees = 360 + camObject.transform.rotation.eulerAngles.y;
+        }
+        else
+        {
+            degrees = camObject.transform.rotation.eulerAngles.y;
+        }
+
+        float radians = degrees * (Mathf.PI / 180);
+        float piOverTwo = Mathf.PI / 2;
+        //radians += (Mathf.PI / 2);
+        
+        Vector3 forward = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
+        Vector3 right = new Vector3(Mathf.Sin(radians + piOverTwo), 0, Mathf.Cos(radians + piOverTwo));
+     
         if (Input.GetKey(KeyCode.UpArrow))
         {
             Vector3 temp = camObject.transform.position;
-            temp += (Vector3.forward * CAM_MOVE_SPEED);
+            temp += (forward * CAM_MOVE_SPEED);
             camObject.transform.position = temp;
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
         {
             Vector3 temp = camObject.transform.position;
-            temp += (Vector3.back * CAM_MOVE_SPEED);
+            temp += (forward * CAM_MOVE_SPEED * -1);
             camObject.transform.position = temp;
         }
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             Vector3 temp = camObject.transform.position;
-            temp += (Vector3.left * CAM_MOVE_SPEED);
+            temp += (right * CAM_MOVE_SPEED * -1);
             camObject.transform.position = temp;
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
             Vector3 temp = camObject.transform.position;
-            temp += (Vector3.right * CAM_MOVE_SPEED);
+            temp += (right * CAM_MOVE_SPEED);
             camObject.transform.position = temp;
         }
     }
@@ -87,4 +118,20 @@ public class CameraControl : MonoBehaviour
             }
         }
     }
+
+
+    void rotateCamera()
+    {
+        if (Input.GetMouseButton(2))    // middle click
+        {
+            float delta = Input.GetAxis("Mouse X") * ROTATION_SENSITIVITY;
+            camObject.transform.Rotate(new Vector3(-TILT_ROTATION, 0, 0));
+            camObject.transform.Rotate(new Vector3(0, delta, 0));
+            camObject.transform.Rotate(new Vector3(TILT_ROTATION, 0, 0));
+        }
+    }
+
+
+
 }
+

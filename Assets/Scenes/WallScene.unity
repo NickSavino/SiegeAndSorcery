@@ -148,10 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26f8ce919d9f3c3459b4cacd789ae20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CAM_MOVE_SPEED: 2
+  CAM_MOVE_SPEED: 1
   CAM_ZOOM_SPEED: 10
-  CAM_MAX_FOV: 170
+  CAM_MAX_FOV: 60
   CAM_MIN_FOV: 30
+  ROTATION_SENSITIVITY: 10
+  TILT_ROTATION: 40
   camObject: {fileID: 1888731458}
   camera: {fileID: 1888731461}
 --- !u!4 &180802981
