@@ -32,7 +32,7 @@ public class WallBuilding : MonoBehaviour
     private bool _placingPanel;
     private bool _instedPanel;
 
-    private Vector3 _lastPostPosition;
+    private Vector3 _nextPostPosition;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -83,7 +83,7 @@ public class WallBuilding : MonoBehaviour
                 
                 // reset panel position to post
                 Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
-                _currentPanels[index].transform.position = new Vector3(lastPostPos.x, _currentPanels[index].transform.position.y, lastPostPos.z);
+                _currentPanels[index].transform.position = new Vector3(lastPostPos.x, lastPostPos.y, lastPostPos.z);
 
                 GameObject hitObject = hit.collider.gameObject; // get the gameobject that the cursor is on
                 Vector3 distanceVector;
@@ -104,7 +104,8 @@ public class WallBuilding : MonoBehaviour
 
                 distanceVector.y = 0;      // do not want to rotate up or down
 
-                _lastPostPosition = _currentPanels[index].transform.position + distanceVector;
+                _nextPostPosition = _currentPanels[index].transform.position + distanceVector;
+                _nextPostPosition.y = hit.point.y;
 
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);
@@ -153,12 +154,12 @@ public class WallBuilding : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {   // _currentPosts[0] is initial post
-                _currentPosts[index].transform.position = new Vector3(hit.point.x, _currentPosts[index].transform.position.y, hit.point.z);
+                _currentPosts[index].transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
             }
         }
         else
         {
-            _currentPosts[index].transform.position = _lastPostPosition;
+            _currentPosts[index].transform.position = _nextPostPosition;
         }
 
         if (Input.GetMouseButtonDown(0) || _initialPostPlaced)    // left click
