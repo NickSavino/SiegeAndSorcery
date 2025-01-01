@@ -5,6 +5,10 @@ public class WallBuilding : MonoBehaviour
 {
 
 
+
+    [SerializeField]
+    private float MAX_WALL_LENGTH;
+
     [SerializeField]
     private Material _opaqueMaterial;
 
@@ -27,6 +31,8 @@ public class WallBuilding : MonoBehaviour
 
     private bool _placingPanel;
     private bool _instedPanel;
+
+    private Vector3 _lastPostPosition;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -74,14 +80,32 @@ public class WallBuilding : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {  
-
+                
                 // reset panel position to post
                 Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
                 _currentPanels[index].transform.position = new Vector3(lastPostPos.x, _currentPanels[index].transform.position.y, lastPostPos.z);
 
+                GameObject hitObject = hit.collider.gameObject; // get the gameobject that the cursor is on
+                Vector3 distanceVector;
+                if (hitObject.name.StartsWith(_postPrefab.name)) {      // if it is a post, snap the wall to it
+                    distanceVector = hitObject.transform.position - _currentPanels[index].transform.position;
+                }
+                else {
+                    distanceVector = hit.point - _currentPanels[index].transform.position;
+                }
+
+
+                if (distanceVector.magnitude > MAX_WALL_LENGTH)
+                {
+                    distanceVector = distanceVector.normalized * MAX_WALL_LENGTH;
+                }
                 // get distance and rotation, set rotation
-                Vector3 distanceVector = hit.point - _currentPanels[index].transform.position;
+       
+
                 distanceVector.y = 0;      // do not want to rotate up or down
+
+                _lastPostPosition = _currentPanels[index].transform.position + distanceVector;
+
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);
                 _currentPanels[index].transform.rotation = rotation;
@@ -123,11 +147,18 @@ public class WallBuilding : MonoBehaviour
 
         int index = _currentPosts.Count - 1;   // want to reference object that already exists in list
 
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {   // _currentPosts[0] is initial post
-            _currentPosts[index].transform.position = new Vector3(hit.point.x, _currentPosts[index].transform.position.y, hit.point.z);
+        if (!_initialPostPlaced)
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {   // _currentPosts[0] is initial post
+                _currentPosts[index].transform.position = new Vector3(hit.point.x, _currentPosts[index].transform.position.y, hit.point.z);
+            }
+        }
+        else
+        {
+            _currentPosts[index].transform.position = _lastPostPosition;
         }
 
         if (Input.GetMouseButtonDown(0) || _initialPostPlaced)    // left click

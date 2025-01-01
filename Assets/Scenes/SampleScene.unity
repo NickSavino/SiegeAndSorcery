@@ -600,7 +600,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &559597676
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1836,6 +1836,10 @@ PrefabInstance:
     - target: {fileID: 1772676457403784274, guid: eae558c3703aa594ca25854f2b330f2f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3744388042249383861, guid: eae558c3703aa594ca25854f2b330f2f, type: 3}
+      propertyPath: MAX_WALL_LENGTH
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8442815299904366726, guid: eae558c3703aa594ca25854f2b330f2f, type: 3}
       propertyPath: m_Name
