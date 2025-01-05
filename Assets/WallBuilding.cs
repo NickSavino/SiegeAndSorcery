@@ -59,7 +59,6 @@ public class WallBuilding : MonoBehaviour
                 placePanel();
             }
         }
-        Debug.Log(_modeActive);
         toggleActive();
 
     }
@@ -112,7 +111,7 @@ public class WallBuilding : MonoBehaviour
                 distanceVector.y = 0;      // do not want to rotate up or down
 
                 _nextPostPosition = _currentPanels[index].transform.position + distanceVector;
-                _nextPostPosition.y = hit.point.y;
+           //     _nextPostPosition.y = hit.point.y;
 
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);

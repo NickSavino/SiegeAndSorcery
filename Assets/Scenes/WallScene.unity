@@ -128,7 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 180802981}
-  - component: {fileID: 180802980}
+  - component: {fileID: 180802982}
   m_Layer: 0
   m_Name: PlayerObject
   m_TagString: Untagged
@@ -136,26 +136,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &180802980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 180802979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26f8ce919d9f3c3459b4cacd789ae20d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CAM_MOVE_SPEED: 1
-  CAM_ZOOM_SPEED: 10
-  CAM_MAX_FOV: 60
-  CAM_MIN_FOV: 30
-  ROTATION_SENSITIVITY: 10
-  TILT_ROTATION: 40
-  camObject: {fileID: 1888731458}
-  camera: {fileID: 1888731461}
 --- !u!4 &180802981
 Transform:
   m_ObjectHideFlags: 0
@@ -171,6 +151,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &180802982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180802979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7509aef2176d84a8142ce5c8872a09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TERRAIN: {fileID: 1624941314}
+  FOCUS_OFFSET: 20
+  CAM_MOVE_SPEED: 0.1
+  CAM_ZOOM_SPEED: 2
+  CAM_MAX_FOV: 60
+  CAM_MIN_FOV: 30
+  ROTATION_SENSITIVITY: 10
+  TILT_ROTATION: 40
+  camObject: {fileID: 1888731458}
+  camera: {fileID: 1888731461}
 --- !u!1 &1287941812
 GameObject:
   m_ObjectHideFlags: 0
