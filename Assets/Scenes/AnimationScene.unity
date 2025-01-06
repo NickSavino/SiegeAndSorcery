@@ -4820,6 +4820,7 @@ MonoBehaviour:
     opaqueMaterial: {fileID: 0}
     transMaterial: {fileID: 0}
     invalidMaterial: {fileID: 0}
+  ROTATION_SENSITIVITY: 100
 --- !u!4 &1844740214
 Transform:
   m_ObjectHideFlags: 0

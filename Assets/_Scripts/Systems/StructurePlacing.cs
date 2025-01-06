@@ -41,6 +41,9 @@ public class StructurePlacing : MonoBehaviour
     [SerializeField]
     private ModelMaterial _selectedStructure;
 
+    [SerializeField]
+    private float ROTATION_SENSITIVITY;
+
     private int _selectedIndex;
 
     private GameObject instedObj;
@@ -71,44 +74,53 @@ public class StructurePlacing : MonoBehaviour
     void Start()
     {
         _selectedStructure = _structures[0];
+        _selectedIndex = 0;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        showPlacement();
         selectTypeKeyClick();
         deselectAll();
-        showPlacement();
+        rotateStructure();
         confirmPlacement();
 
     }
 
     void selectTypeKeyClick()
     {
+        bool wasKeyClicked = false;
         foreach (KeyCode numer in numericKeys)
         {
             if (Input.GetKeyDown(numer))
             {
                 _selectedIndex = (int)numer - NUMERIC_OFFSET;
+                wasKeyClicked = true;
             }
         }
-        if (_selectedIndex >= _structures.Count)
+        if (wasKeyClicked)      // only do this if a numerical key was clicked
         {
-            _selectedIndex = -1;
-            _selectedStructure = null;
+            if (_selectedIndex >= _structures.Count)
+            {
+                _selectedIndex = -1;
+                _selectedStructure = null;
+            }
+            else
+            {
+                Destroy(instedObj); // disregard current thing we were trying to place
+                _insted = false;
+                _selectedStructure = _structures[_selectedIndex];
+            }
         }
-        else
-        {
-            Destroy(instedObj); // disregard current thing we were trying to place
-            _insted = false;
-            _selectedStructure = _structures[_selectedIndex];
-        }
+
     }
 
 
     void showPlacement()
     {
+        Debug.Log(_selectedStructure);
         if (_selectedStructure != null)     // only show placements if we have selected a type of structure to build
         {
 
@@ -120,19 +132,24 @@ public class StructurePlacing : MonoBehaviour
                 _insted = true;
             }
 
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {   // _currentPosts[0] is initial post
-                instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+            if (!Input.GetMouseButton(1))       // if not holding down right click
+            {
 
-                if (checkInvalid())
-                {
-                    invalidMode(instedObj);
-                }
-                else
-                {
-                    disabledMode(instedObj);
+
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit))
+                {   // _currentPosts[0] is initial post
+                    instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+
+                    if (checkInvalid())
+                    {
+                        invalidMode(instedObj);
+                    }
+                    else
+                    {
+                        disabledMode(instedObj);
+                    }
                 }
             }
         }
@@ -164,6 +181,8 @@ public class StructurePlacing : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            instedObj = null;       // do not target this gameobject anymore!
+            _insted = false;        
             _selectedStructure = null;
         }
     }
@@ -220,8 +239,6 @@ public class StructurePlacing : MonoBehaviour
     {
         foreach (Collider thisCollider in instedObj.GetComponentsInChildren<Collider>())
         {
-
-
             Collider[] hitColliders = Physics.OverlapBox(instedObj.transform.position, instedObj.transform.localScale);
             foreach (Collider thatCollider in hitColliders)
             {
@@ -233,5 +250,15 @@ public class StructurePlacing : MonoBehaviour
             }
         }
         return false;
+    }
+
+
+    void rotateStructure()
+    {
+        if (Input.GetMouseButton(1))    // right click
+        {
+            float delta = Input.GetAxis("Mouse X") * ROTATION_SENSITIVITY;
+            instedObj.transform.Rotate(new Vector3(0, delta, 0));
+        }
     }
 }
