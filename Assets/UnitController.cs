@@ -15,6 +15,9 @@ public class UnitController : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private bool spriteFlip;
 
+    [SerializeField]
+    private float MIN_ATTACK_DISTANCE;
+
     public Vector3 _destination;
 
     void Start()
@@ -34,9 +37,9 @@ public class UnitController : MonoBehaviour
         {
             _navMeshAgent.SetDestination(_destination);
         }
-
-        animateIfIdle();
+        Debug.Log(_navMeshAgent.velocity.magnitude);
         animateIfRunning();
+        animateIfAttacking();
         flipSprite();
     }
 
@@ -50,15 +53,29 @@ public class UnitController : MonoBehaviour
             _animator.SetBool("isRunning", true);
 
         }
-    }
-
-    void animateIfIdle()
-    {
-        if (_navMeshAgent.velocity.magnitude == 0)
+        else
         {
             _animator.SetBool("isRunning", false);
         }
     }
+
+    void animateIfAttacking()
+    {
+        Vector3 diff = transform.position - _destination;
+        diff.y = 0f;
+        if (diff.magnitude <= MIN_ATTACK_DISTANCE)
+        {
+            _animator.SetBool("isAttacking", true);
+
+        }
+        else
+        {
+            _animator.SetBool("isAttacking", false);
+        }
+    }
+
+
+
 
     void flipSprite()
     {
@@ -72,7 +89,7 @@ public class UnitController : MonoBehaviour
         float dotprod = Vector2.Dot(camVector, spriteVector);
         float denom = spriteVector.magnitude * camVector.magnitude;
         float theta = Mathf.Acos(dotprod / denom);
-        Debug.Log(theta);
+  
         if (theta > Mathf.PI / 2 && !_spriteRenderer.flipX)
         {
             _spriteRenderer.flipX = !_spriteRenderer.flipX;
