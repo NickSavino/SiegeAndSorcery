@@ -30,7 +30,7 @@ public class UnitSpawner : MonoBehaviour
 
             if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
             {
-                if (hit.collider != null && hit.collider.gameObject.name.Contains("SpawnPoint") && Vector3.Distance(hit.point, gameObject.transform.position) < 10)
+                if (hit.collider != null && hit.collider.gameObject.name.Contains("SpawnPoint"))
                 {
                     Vector3 spawnPoint = gameObject.transform.position;
                     spawnPoint.y = 1;

@@ -15,6 +15,12 @@ public class CameraControl : MonoBehaviour
     private float CAM_MIN_FOV;
 
     [SerializeField]
+    private float ORTHO_MAX_SIZE;
+
+    [SerializeField]
+    private float ORTHO_MIN_SIZE;
+
+    [SerializeField]
     private float ROTATION_SENSITIVITY;
 
     [SerializeField]
@@ -36,7 +42,8 @@ public class CameraControl : MonoBehaviour
     void Update()
     {
         translateCamera();
-        zoomCamera();
+        zoomCameraProjection();
+        zoomCameraOrtho();
         rotateCamera();
 
     }
@@ -92,8 +99,9 @@ public class CameraControl : MonoBehaviour
 
 
 
-    void zoomCamera()
+    void zoomCameraProjection()
     {
+
         Vector2 scrollDelta = Input.mouseScrollDelta;
         if (scrollDelta.y > 0 && camera.fieldOfView > CAM_MIN_FOV)
         {
@@ -115,6 +123,34 @@ public class CameraControl : MonoBehaviour
             else
             {
                 camera.fieldOfView += CAM_ZOOM_SPEED;
+            }
+        }
+    }
+
+    void zoomCameraOrtho()
+    {
+
+        Vector2 scrollDelta = Input.mouseScrollDelta;
+        if (scrollDelta.y > 0 && camera.orthographicSize > ORTHO_MIN_SIZE)
+        {
+            if (camera.orthographicSize - CAM_ZOOM_SPEED < ORTHO_MIN_SIZE)
+            {
+                camera.orthographicSize = ORTHO_MIN_SIZE;
+            }
+            else
+            {
+                camera.orthographicSize -= CAM_ZOOM_SPEED;
+            }
+        }
+        else if (scrollDelta.y < 0 && camera.orthographicSize < ORTHO_MAX_SIZE)
+        {
+            if (camera.orthographicSize - CAM_ZOOM_SPEED > ORTHO_MIN_SIZE)
+            {
+                camera.orthographicSize = ORTHO_MAX_SIZE;
+            }
+            else
+            {
+                camera.orthographicSize += CAM_ZOOM_SPEED;
             }
         }
     }
