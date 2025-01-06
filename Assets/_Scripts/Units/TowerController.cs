@@ -24,7 +24,7 @@ public class TowerController : MonoBehaviour
     
     void Start()
     {
-        _enemy = GameObject.Find("Player");
+    //    _enemy = GameObject.Find("Player");
         _towerTop = GameObject.Find("TowerTop");
         _towerCannon = GameObject.Find("TowerCannon");
         _lastTime = Time.time;
@@ -33,7 +33,15 @@ public class TowerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var enemyLocation = _enemy.transform.position;
+
+
+    }
+
+
+    /*
+     * PREVIOUS UPDATE FUNCTION
+     * 
+     *  var enemyLocation = _enemy.transform.position;
 
         Vector3 topRotation = (enemyLocation - _towerTop.transform.position);
 
@@ -54,9 +62,6 @@ public class TowerController : MonoBehaviour
             _lastTime = Time.time;
             
             Destroy(instantiatedBullet, bulletLifeTime);
+     */
 
-        }
-        
-      
-    }
 }

@@ -196,6 +196,13 @@ public class WallBuilding : MonoBehaviour
     }
 
 
+    
+
+
+
+
+
+
     void toggleActive()
     {
         if (Input.GetKeyDown(KeyCode.Space))
