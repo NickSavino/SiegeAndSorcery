@@ -1,11 +1,51 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Profiling;
+using UnityEngine.InputSystem.LowLevel;
 
 public class StructurePlacing : MonoBehaviour
 {
+    /*
+     * Constants
+     */
+
+    private int NUMERIC_OFFSET = 49;    // ALPHA1 is 49, for keyboard number click selection
+    private const int IGNORE_RAYCAST_LAYER = 2;         // Physics.IgnoreRaycastLayer is 4, but in GameObject this layer is 2...
+    private const int IGNORE_DEFAULT_LAYER = 0;         // Default = 0
+
+    private KeyCode[] numericKeys = {
+        KeyCode.Alpha1,
+        KeyCode.Alpha2,
+        KeyCode.Alpha3,
+        KeyCode.Alpha4,
+        KeyCode.Alpha5,
+        KeyCode.Alpha6,
+        KeyCode.Alpha7,
+        KeyCode.Alpha8,
+        KeyCode.Alpha9,
+    };
+
+
+    /*
+         * Serialized Fields
+   */
+    [SerializeField]
+    private List<ModelMaterial> _structures;
+
+    [SerializeField]
+    private ModelMaterial _selectedStructure;
+
+    [SerializeField]
+    private float ROTATION_SENSITIVITY;
+
+
+    /*
+     *   struct, GameObject with required mayerials
+     */
+
+
     [System.Serializable]
-    private class ModelMaterial
+    private class ModelMaterial      
     {
         public GameObject model;
         public Material opaqueMaterial;
@@ -34,39 +74,16 @@ public class StructurePlacing : MonoBehaviour
 
 
 
+    /*
+     * General fields
+     */
+    private int _selectedIndex;     // selected struct key number
+    private GameObject instedObj;   // currently instantiated game object / structed
+    private bool _insted;           // flag indicated if current structure has been instantiated
 
-    [SerializeField]
-    private List<ModelMaterial> _structures;
+    private bool _showedOnce;       // when placing a rotated item with right mouse button clicked,
+                                    // we need to make sure the next one is placed at cursor
 
-    [SerializeField]
-    private ModelMaterial _selectedStructure;
-
-    [SerializeField]
-    private float ROTATION_SENSITIVITY;
-
-    private int _selectedIndex;
-
-    private GameObject instedObj;
-
-    private KeyCode[] numericKeys = {
-        KeyCode.Alpha1,
-        KeyCode.Alpha2,
-        KeyCode.Alpha3,
-        KeyCode.Alpha4,
-        KeyCode.Alpha5,
-        KeyCode.Alpha6,
-        KeyCode.Alpha7,
-        KeyCode.Alpha8,
-        KeyCode.Alpha9,
-    };
-
-    private int NUMERIC_OFFSET = 49;    // ALPHA1 is 49
-
-    private bool _insted;
-
-    private const int IGNORE_RAYCAST_LAYER = 2;         // Physics.IgnoreRaycastLayer is 4, but in GameObject this layer is 2...
-
-    private const int IGNORE_DEFAULT_LAYER = 0;         // Default = 0
 
 
 
@@ -106,12 +123,14 @@ public class StructurePlacing : MonoBehaviour
             {
                 _selectedIndex = -1;
                 _selectedStructure = null;
+                _showedOnce = false;
             }
             else
             {
                 Destroy(instedObj); // disregard current thing we were trying to place
                 _insted = false;
                 _selectedStructure = _structures[_selectedIndex];
+                _showedOnce = false;
             }
         }
 
@@ -120,21 +139,17 @@ public class StructurePlacing : MonoBehaviour
 
     void showPlacement()
     {
-        Debug.Log(_selectedStructure);
         if (_selectedStructure != null)     // only show placements if we have selected a type of structure to build
         {
-
-
             if (!_insted)
             {
                 instedObj = Instantiate(_selectedStructure.model);
                 disabledMode(instedObj);
                 _insted = true;
             }
-
-            if (!Input.GetMouseButton(1))       // if not holding down right click
+            if (!isRotating() || !_showedOnce)       // if not holding down right click
             {
-
+                _showedOnce = true;
 
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -164,19 +179,25 @@ public class StructurePlacing : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
-            {   // _currentPosts[0] is initial post
+            {   
               if (Input.GetMouseButtonDown(0))
-                {
-                    instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+                {   if (!isRotating())
+                    {
+                        instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+                    }
                     enabledMode(instedObj);
                     instedObj = null;       // do not target this gameobject anymore!
                     _insted = false;        // instantiate a new one if we want, but keep this type selected
+                    _showedOnce = false;
                 }
             }
         }
     }
 
 
+    /*
+     * TODO: This doesn't work
+     */
     void deselectAll()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -184,6 +205,7 @@ public class StructurePlacing : MonoBehaviour
             instedObj = null;       // do not target this gameobject anymore!
             _insted = false;        
             _selectedStructure = null;
+            _showedOnce = false;
         }
     }
 
@@ -260,5 +282,10 @@ public class StructurePlacing : MonoBehaviour
             float delta = Input.GetAxis("Mouse X") * ROTATION_SENSITIVITY;
             instedObj.transform.Rotate(new Vector3(0, delta, 0));
         }
+    }
+
+    bool isRotating()
+    {
+        return Input.GetMouseButton(1);
     }
 }
