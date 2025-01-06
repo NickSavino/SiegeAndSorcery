@@ -24,7 +24,7 @@ public class UnitSpawner : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log(Input.mousePosition);
+ 
             Ray castPoint = _camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
