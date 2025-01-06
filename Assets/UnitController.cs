@@ -79,7 +79,7 @@ public class UnitController : MonoBehaviour
 
     void flipSprite()
     {
-
+        /*
         Vector3 spriteVector3 = _destination - transform.position;
         Vector2 spriteVector = new Vector2(spriteVector3.z, spriteVector3.x);
 
@@ -98,5 +98,23 @@ public class UnitController : MonoBehaviour
         {
             _spriteRenderer.flipX = !_spriteRenderer.flipX;
         }
+        */
+
+        Vector3 distance = _destination - Camera.main.transform.position;
+        Vector3 fromCamera = Camera.main.transform.forward;
+        float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
+
+        if (check < 0)
+        {
+            _spriteRenderer.flipX = true;
+        }
+        else
+        {
+            _spriteRenderer.flipX = false;
+        }
+
+
+
+
     }
 }
