@@ -13,6 +13,11 @@ public class UnitController : MonoBehaviour
     private Camera _camera;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+
+    [SerializeField]
+    private int _health = 100;
+
+    [SerializeField]
     private bool spriteFlip;
 
     [SerializeField]
@@ -40,6 +45,7 @@ public class UnitController : MonoBehaviour
         Debug.Log(_navMeshAgent.velocity.magnitude);
         animateIfRunning();
         animateIfAttacking();
+        animateDeath();
         flipSprite();
     }
 
@@ -71,6 +77,20 @@ public class UnitController : MonoBehaviour
         else
         {
             _animator.SetBool("isAttacking", false);
+        }
+    }
+
+    void animateDeath()
+    {
+        if (_health <= 0)
+        {
+            _animator.SetBool("isAttacking", false);
+            _animator.SetBool("isRunning", false);
+            _animator.SetBool("isDead", true);
+        }
+        else
+        {
+            _animator.SetBool("isDead", false);
         }
     }
 
@@ -112,11 +132,11 @@ public class UnitController : MonoBehaviour
 
         if (spriteCheck > check)       // object left of sprite
         {
-            _spriteRenderer.flipX = true;               // true = left
+            _spriteRenderer.flipX = spriteFlip == false ? true : false;               // true = left
         }
         else            // object right of sprite
         {
-            _spriteRenderer.flipX = false;
+            _spriteRenderer.flipX = spriteFlip == false ? false: true;
         }
 
 
