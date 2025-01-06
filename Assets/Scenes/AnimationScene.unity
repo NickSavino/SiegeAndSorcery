@@ -4811,6 +4811,10 @@ MonoBehaviour:
     opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
     transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
     invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
+  - model: {fileID: 1640908652775104, guid: cd87e5026d1695148aabe96121c526ef, type: 3}
+    opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+    transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+    invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
   _selectedStructure:
     model: {fileID: 0}
     opaqueMaterial: {fileID: 0}
