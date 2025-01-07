@@ -6,7 +6,7 @@ public class Billboard : MonoBehaviour
 
     void Start()
     {
-        GetComponent<Rigidbody>().freezeRotation = true;
+
     }
 
     void Update()
