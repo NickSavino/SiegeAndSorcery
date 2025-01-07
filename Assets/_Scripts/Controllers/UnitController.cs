@@ -34,9 +34,17 @@ public class UnitController : MonoBehaviour
     private float ATTACK_DAMAGE;
 
     [SerializeField]
+    private float ATTACK_FLASH_TIME;
+
+    [SerializeField]
     private int _team;
 
-    private float _currentTime; 
+    private Color DEFAULT_SPRITE_COLOR = Color.white;
+
+    private Color DAMAGE_SPRITE_COLOR = Color.red;
+
+    private float _currentTime;
+    private float _damageFlashTime;
 
     private Collider _unitCollider;
     public GameObject _destination;
@@ -53,6 +61,7 @@ public class UnitController : MonoBehaviour
 
         // transform.Find searches just for children of this game object, NOT the entire scene
         _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
+        _damageFlashTime = -1f;
   
     }
 
@@ -68,8 +77,13 @@ public class UnitController : MonoBehaviour
         animateIfAttacking();
         animateDeath();
         flipSprite();
-        GetNearestEnemyUnit();
-        AttackDestination();
+
+        if (!IsDead())
+        {
+            GetNearestEnemyUnit();
+            AttackDestination();
+        }
+        UpdateTakeDamageTime();
     }
 
 
@@ -91,6 +105,18 @@ public class UnitController : MonoBehaviour
     void animateIfAttacking()
     {
         if (ObjectIsUnit(_destination))
+            if (_destination.GetComponent<UnitController>().IsDead())
+        {
+            _animator.SetBool("isAttacking", false);
+        }
+        if (ObjectIsUnit(_destination) && !_destination.GetComponent<UnitController>().IsDead())
+
+        /*
+         *  Debugging, above lines ignore attack animations if attacking structure
+         * 
+         */
+
+
         {
 
 
@@ -171,7 +197,7 @@ public class UnitController : MonoBehaviour
                 if (otherUnit._team != this._team)   // unit belongs to different team!
                 {
                     float distance = (otherObject.transform.position - transform.position).magnitude;
-                    if ((distance < closestDistance || closest == null) && otherUnit._health > 0)
+                    if ((distance < closestDistance || closest == null) && !otherUnit.IsDead())
                     {
                         closest = otherObject;
                         closestDistance = distance;
@@ -190,6 +216,25 @@ public class UnitController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         _health -= damage;
+        _spriteRenderer.color = DAMAGE_SPRITE_COLOR;
+        _damageFlashTime = 0f;
+        if (_health <= 0f)
+        {
+            SetDead();
+        }
+    }
+
+    private void UpdateTakeDamageTime()
+    {
+        if (_damageFlashTime >= 0f)
+        {
+            _damageFlashTime += Time.deltaTime;
+            if (_damageFlashTime > ATTACK_FLASH_TIME)
+            {
+                _spriteRenderer.color = DEFAULT_SPRITE_COLOR;
+                _damageFlashTime = -1f;
+            }
+        }
     }
 
 
@@ -232,4 +277,15 @@ public class UnitController : MonoBehaviour
         return obj.GetComponent<UnitController>() != null;
     }
 
+    public bool IsDead()
+    {
+        return _health <= 0;
+    }
+
+
+    private void SetDead()
+    {
+        GetComponent<NavMeshAgent>().enabled = false;
+       // GetComponent<Collider>
+    }
 }

@@ -359,5 +359,6 @@ MonoBehaviour:
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
   ATTACK_DAMAGE: 10
+  ATTACK_FLASH_TIME: 0.5
   _team: 0
   _destination: {fileID: 0}
