@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class DevCam : MonoBehaviour
+public class DevCamController : MonoBehaviour
 {
 
     [SerializeField]

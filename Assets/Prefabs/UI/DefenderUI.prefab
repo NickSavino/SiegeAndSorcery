@@ -145,6 +145,9 @@ GameObject:
   - component: {fileID: 2797364291808920908}
   - component: {fileID: 16477941215083615}
   - component: {fileID: 2252969125364419002}
+  - component: {fileID: 7833656445012949188}
+  - component: {fileID: 5272631427031241430}
+  - component: {fileID: 3097535552378791185}
   m_Layer: 5
   m_Name: DefenderUI
   m_TagString: Untagged
@@ -249,7 +252,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 041e3c58584f92a44bd330aa7272544d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallBuilder: {fileID: 3744388042249383861, guid: eae558c3703aa594ca25854f2b330f2f, type: 3}
+  selectedStructure: 0
+--- !u!114 &7833656445012949188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089542910024977664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab4d074686ac8b40a074a875243c69b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _structures:
+  - structureName: 1
+    model: {fileID: 5348690435166546185, guid: 31d8090d7a967644dab4907a37dedb69, type: 3}
+    opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+    transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+    invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
+  _selectedStructure:
+    structureName: 0
+    model: {fileID: 0}
+    opaqueMaterial: {fileID: 0}
+    transMaterial: {fileID: 0}
+    invalidMaterial: {fileID: 0}
+  ROTATION_SENSITIVITY: 0
+--- !u!114 &5272631427031241430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089542910024977664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23241c09517cdac48848b4c444a5e8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_WALL_LENGTH: 0
+  _opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+  _transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+  _postPrefab: {fileID: 9063152398798373944, guid: f3b07ca681f1c65459cfc671af29c939, type: 3}
+  _panelPrefab: {fileID: 2624381331128162747, guid: b46d7136b0603d64c94a591d3a7063f5, type: 3}
+--- !u!114 &3097535552378791185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089542910024977664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23241c09517cdac48848b4c444a5e8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_WALL_LENGTH: 10
+  _opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+  _transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+  _postPrefab: {fileID: 9063152398798373944, guid: f3b07ca681f1c65459cfc671af29c939, type: 3}
+  _panelPrefab: {fileID: 2624381331128162747, guid: b46d7136b0603d64c94a591d3a7063f5, type: 3}
 --- !u!1 &4748178323527383886
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,9 +483,9 @@ RectTransform:
   m_Father: {fileID: 7647761828593130341}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -238, y: -150}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 120, y: 45}
+  m_SizeDelta: {x: 800, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6481804682901502887
 CanvasRenderer:
@@ -719,13 +781,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 2252969125364419002}
+        m_TargetAssemblyTypeName: DefenderUIController, Assembly-CSharp
+        m_MethodName: OnTowerButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
