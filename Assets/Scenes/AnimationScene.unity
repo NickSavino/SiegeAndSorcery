@@ -828,7 +828,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1069567032315564, guid: bdf8e7438a7816543998181bd3067573, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4835789832631930, guid: bdf8e7438a7816543998181bd3067573, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1813,6 +1813,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 23468884316666696, guid: bbb972e8372282f4093c9484693385fd, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1874,7 +1878,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1076262714343606, guid: 68cbfa1438162b243ac02fb9e3e30581, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4802134562677756, guid: 68cbfa1438162b243ac02fb9e3e30581, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3110,6 +3114,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 8.404898, y: 10.177113, z: 13.362827}
   m_Center: {x: 0.09244943, y: 3.8487768, z: -0.48990488}
+--- !u!1 &1260959883 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1974105250760466, guid: bbb972e8372282f4093c9484693385fd, type: 3}
+  m_PrefabInstance: {fileID: 829760732}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1278876779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4815,6 +4824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedUnit: {fileID: 5740364740621546305, guid: 62d626970b037cf44a0be44c9766bd8a, type: 3}
+  _destination: {fileID: 1260959883}
 --- !u!1 &1844740212
 GameObject:
   m_ObjectHideFlags: 0
@@ -5035,6 +5045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedUnit: {fileID: 5740364740621546305, guid: 72a2ffc4c9389a742b82cc5fd6a037cb, type: 3}
+  _destination: {fileID: 1260959883}
 --- !u!1001 &1971489997
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5524,7 +5535,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1076262714343606, guid: 68cbfa1438162b243ac02fb9e3e30581, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4802134562677756, guid: 68cbfa1438162b243ac02fb9e3e30581, type: 3}
       propertyPath: m_LocalPosition.x

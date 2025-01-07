@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 using UnityEditor.Animations;
+using NUnit.Framework.Interfaces;
 
 public class UnitController : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class UnitController : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
 
     [SerializeField]
-    private int _health = 100;
+    private float _health = 100f;
 
     [SerializeField]
     private bool spriteFlip;
@@ -27,8 +28,15 @@ public class UnitController : MonoBehaviour
     private float MIN_UNIT_ATTACK_DISTANCE;
 
     [SerializeField]
+    private float ATTACKS_PER_SECOND;
+
+    [SerializeField]
+    private float ATTACK_DAMAGE;
+
+    [SerializeField]
     private int _team;
 
+    private float _currentTime; 
 
     private Collider _unitCollider;
     public GameObject _destination;
@@ -60,7 +68,8 @@ public class UnitController : MonoBehaviour
         animateIfAttacking();
         animateDeath();
         flipSprite();
-        GetNearEnemyUnits();
+        GetNearestEnemyUnit();
+        AttackDestination();
     }
 
 
@@ -81,19 +90,24 @@ public class UnitController : MonoBehaviour
 
     void animateIfAttacking()
     {
-        Vector3 diff = transform.position - _destination.transform.position;
-
-        float distanceMetric = _destination.GetComponent<UnitController>() != null ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
-
-        diff.y = 0f;
-        if (diff.magnitude <= distanceMetric)
+        if (ObjectIsUnit(_destination))
         {
-            _animator.SetBool("isAttacking", true);
 
-        }
-        else
-        {
-            _animator.SetBool("isAttacking", false);
+
+            Vector3 diff = transform.position - _destination.transform.position;
+
+            float distanceMetric = _destination.GetComponent<UnitController>() != null ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+
+            diff.y = 0f;
+            if (diff.magnitude <= distanceMetric)
+            {
+                _animator.SetBool("isAttacking", true);
+
+            }
+            else
+            {
+                _animator.SetBool("isAttacking", false);
+            }
         }
     }
 
@@ -137,10 +151,13 @@ public class UnitController : MonoBehaviour
 
 
 
-    void GetNearEnemyUnits()
+    void GetNearestEnemyUnit()
     {
         int count = 0;
         Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
+
+        float closestDistance = 0f;
+        GameObject closest = null;
             
         foreach (Collider thatCollider in hitColliders)
         {
@@ -151,15 +168,68 @@ public class UnitController : MonoBehaviour
 
             if (otherUnit != null)          // colliding agent is unit
             {
- 
                 if (otherUnit._team != this._team)   // unit belongs to different team!
                 {
-                    ++count;
+                    float distance = (otherObject.transform.position - transform.position).magnitude;
+                    if ((distance < closestDistance || closest == null) && otherUnit._health > 0)
+                    {
+                        closest = otherObject;
+                        closestDistance = distance;
+                    }
                 }
             }
         }
-        Debug.Log(count);
+        if (closest != null)
+        {
+            _destination = closest;
+        }
         //return false;
+    }
+
+
+    public void TakeDamage(float damage)
+    {
+        _health -= damage;
+    }
+
+
+    private void AttackDestination()
+    {
+        float distanceVector = (_destination.transform.position - transform.position).magnitude; 
+        if (ObjectIsUnit(_destination))
+        {
+            if (distanceVector <= MIN_UNIT_ATTACK_DISTANCE)
+            {
+                AttackEnemyUnit();
+            }
+        }
+        else
+        {
+            if (distanceVector <= MIN_STRUCT_ATTACK_DISTANCE)
+            {
+                AttackEnemyStructure();
+            }
+        }
+    }
+
+    private void AttackEnemyUnit()
+    {
+        _currentTime += Time.deltaTime;
+        if (_currentTime >= ATTACKS_PER_SECOND)
+        {
+            _currentTime = 0;
+            _destination.GetComponent<UnitController>().TakeDamage(ATTACK_DAMAGE);
+        }
+    }
+
+    private void AttackEnemyStructure()
+    {
+
+    }
+
+    bool ObjectIsUnit(GameObject obj)
+    {
+        return obj.GetComponent<UnitController>() != null;
     }
 
 }

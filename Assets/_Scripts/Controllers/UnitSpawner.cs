@@ -11,12 +11,13 @@ public class UnitSpawner : MonoBehaviour
 
     private GameObject _towerPos;
 
+    [SerializeField]
+    GameObject _destination;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _camera = Camera.main;
 
-        _towerPos = GameObject.Find("Castle");
     }
 
     // Update is called once per frame
@@ -35,7 +36,7 @@ public class UnitSpawner : MonoBehaviour
                     Vector3 spawnPoint = gameObject.transform.position;
                     spawnPoint.y = 1;
                     GameObject unit = Instantiate(selectedUnit, spawnPoint, new Quaternion());
-                    unit.GetComponent<UnitController>()._destination = _towerPos;
+                    unit.GetComponent<UnitController>()._destination = _destination;
                 }
             }
 
