@@ -353,7 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b990d948dd5d4d94eb22d5e2cafa7265, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
+  <_health>k__BackingField: 100
   spriteFlip: 0
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
@@ -361,4 +361,3 @@ MonoBehaviour:
   ATTACK_DAMAGE: 10
   ATTACK_FLASH_TIME: 0.5
   _team: 0
-  _destination: {fileID: 0}

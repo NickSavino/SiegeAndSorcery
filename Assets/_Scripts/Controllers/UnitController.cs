@@ -7,17 +7,13 @@ using NUnit.Framework.Interfaces;
 
 public class UnitController : MonoBehaviour, Attackable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    /*
+     * Serialized Fields
+     */
 
-    private NavMeshAgent _navMeshAgent;
-    private Camera _camera;
-    private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
-    private UnitDamageEffect _damageEffect;
-
-    [SerializeField]
-    private float _health = 100f;
+    //[SerializeField]
+    [field: SerializeField]  public float _health { get; set; }     // interface property from Attackable
 
     [SerializeField]
     private bool spriteFlip;
@@ -40,21 +36,25 @@ public class UnitController : MonoBehaviour, Attackable
     [SerializeField]
     private int _team;
 
-    private Color DEFAULT_SPRITE_COLOR = Color.white;
 
-    private Color DAMAGE_SPRITE_COLOR = Color.red;
 
-    private float _currentTime;
-    private float _damageFlashTime;
+    /*
+     *  private fields
+     */
+    private NavMeshAgent _navMeshAgent;
+    private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private UnitDamageEffect _damageEffect;
+    private float _currentTime;     // time delta for attacks
+    private Collider _unitCollider; // will be this unit's unit collider child object
+    private GameObject _destination;    // destination / structure or unit to attack
 
-    private Collider _unitCollider;
-    public GameObject _destination;
+
 
     void Start()
     {
 
         _navMeshAgent = GetComponent<NavMeshAgent>();
-        _camera = Camera.main;
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _damageEffect = new UnitDamageEffect(_spriteRenderer);
@@ -63,7 +63,6 @@ public class UnitController : MonoBehaviour, Attackable
 
         // transform.Find searches just for children of this game object, NOT the entire scene
         _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
-        _damageFlashTime = -1f;
   
     }
 
@@ -106,19 +105,6 @@ public class UnitController : MonoBehaviour, Attackable
 
     void animateIfAttacking()
     {
-        if (ObjectIsUnit(_destination))
-            if (_destination.GetComponent<UnitController>().IsDead())
-        {
-            _animator.SetBool("isAttacking", false);
-        }
-        if (ObjectIsUnit(_destination) && !_destination.GetComponent<UnitController>().IsDead())
-
-        /*
-         *  Debugging, above lines ignore attack animations if attacking structure
-         * 
-         */
-
-
         {
 
 
@@ -141,7 +127,7 @@ public class UnitController : MonoBehaviour, Attackable
 
     void animateDeath()
     {
-        if (_health <= 0)
+        if (IsDead())
         {
             _animator.SetBool("isAttacking", false);
             _animator.SetBool("isRunning", false);
@@ -153,13 +139,14 @@ public class UnitController : MonoBehaviour, Attackable
         }
     }
 
-
+    public void SetDestination(GameObject destination)
+    {
+        this._destination = destination;
+    }
 
 
     void flipSprite()
     {
-     
-
         Vector3 distance = _destination.transform.position - Camera.main.transform.position;
         Vector3 fromCamera = Camera.main.transform.forward;
         float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
@@ -211,7 +198,6 @@ public class UnitController : MonoBehaviour, Attackable
         {
             _destination = closest;
         }
-        //return false;
     }
 
 
@@ -272,7 +258,7 @@ public class UnitController : MonoBehaviour, Attackable
     }
 
 
-    private void SetDead()
+    public void SetDead()
     {
         GetComponent<NavMeshAgent>().enabled = false;
        // GetComponent<Collider>

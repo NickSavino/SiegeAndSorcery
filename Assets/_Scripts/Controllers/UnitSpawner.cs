@@ -36,7 +36,7 @@ public class UnitSpawner : MonoBehaviour
                     Vector3 spawnPoint = gameObject.transform.position;
                     spawnPoint.y = 1;
                     GameObject unit = Instantiate(selectedUnit, spawnPoint, new Quaternion());
-                    unit.GetComponent<UnitController>()._destination = _destination;
+                    unit.GetComponent<UnitController>().SetDestination(_destination);
                 }
             }
 
