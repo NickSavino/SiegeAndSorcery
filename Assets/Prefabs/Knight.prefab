@@ -122,8 +122,8 @@ GameObject:
   - component: {fileID: 7610717232748354354}
   - component: {fileID: 2297630913297311530}
   - component: {fileID: 5218912757279473680}
-  - component: {fileID: 8176623013211465502}
   - component: {fileID: 283679523825053658}
+  - component: {fileID: 110364927673940154}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
@@ -272,20 +272,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1.1, z: 0.1}
   m_Center: {x: 0, y: 0.55, z: 0}
---- !u!114 &8176623013211465502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5740364740621546305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28d7e36274d76fd439449378eb429213, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MIN_ATTACK_DISTANCE: 12
-  _destination: {x: 0, y: 0, z: 0}
 --- !u!195 &283679523825053658
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -308,3 +294,19 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &110364927673940154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740364740621546305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b990d948dd5d4d94eb22d5e2cafa7265, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _health: 100
+  spriteFlip: 0
+  MIN_ATTACK_DISTANCE: 12
+  _destination: {x: 0, y: 0, z: 0}
