@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using UnityEditor.Animations;
 using NUnit.Framework.Interfaces;
 
-public class UnitController : MonoBehaviour
+public class UnitController : MonoBehaviour, Attackable
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -14,6 +14,7 @@ public class UnitController : MonoBehaviour
     private Camera _camera;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private UnitDamageEffect _damageEffect;
 
     [SerializeField]
     private float _health = 100f;
@@ -56,6 +57,7 @@ public class UnitController : MonoBehaviour
         _camera = Camera.main;
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _damageEffect = new UnitDamageEffect(_spriteRenderer);
 
         // use transform to find child, get game object of transform, then its collider
 
@@ -68,7 +70,7 @@ public class UnitController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_destination != null)
+        if (_destination != null && _navMeshAgent.enabled)
         {
             _navMeshAgent.SetDestination(_destination.transform.position);
         }
@@ -83,7 +85,7 @@ public class UnitController : MonoBehaviour
             GetNearestEnemyUnit();
             AttackDestination();
         }
-        UpdateTakeDamageTime();
+        _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
 
 
@@ -216,26 +218,13 @@ public class UnitController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         _health -= damage;
-        _spriteRenderer.color = DAMAGE_SPRITE_COLOR;
-        _damageFlashTime = 0f;
+        _damageEffect.StartDamageEffect();          // start damage effect
         if (_health <= 0f)
         {
             SetDead();
         }
     }
 
-    private void UpdateTakeDamageTime()
-    {
-        if (_damageFlashTime >= 0f)
-        {
-            _damageFlashTime += Time.deltaTime;
-            if (_damageFlashTime > ATTACK_FLASH_TIME)
-            {
-                _spriteRenderer.color = DEFAULT_SPRITE_COLOR;
-                _damageFlashTime = -1f;
-            }
-        }
-    }
 
 
     private void AttackDestination()
