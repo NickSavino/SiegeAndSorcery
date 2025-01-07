@@ -194,6 +194,7 @@ public class WallBuilding : MonoBehaviour
     }
 
 
+    
     public void toggleActive()
     {
         _modeActive = !_modeActive;

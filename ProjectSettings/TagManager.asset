@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Wall Post
+  - InvalidStruct
   layers:
   - Default
   - TransparentFX

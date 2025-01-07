@@ -99,26 +99,7 @@ public class UnitController : MonoBehaviour
 
     void flipSprite()
     {
-        /*
-        Vector3 spriteVector3 = _destination - transform.position;
-        Vector2 spriteVector = new Vector2(spriteVector3.z, spriteVector3.x);
-
-        Vector3 camVector3 = transform.position - _camera.transform.position;
-        Vector2 camVector = new Vector2(camVector3.z, camVector3.x);
-
-        float dotprod = Vector2.Dot(camVector, spriteVector);
-        float denom = spriteVector.magnitude * camVector.magnitude;
-        float theta = Mathf.Acos(dotprod / denom);
-  
-        if (theta > Mathf.PI / 2 && !_spriteRenderer.flipX)
-        {
-            _spriteRenderer.flipX = !_spriteRenderer.flipX;
-        }
-        else if (theta < Mathf.PI / 2 && _spriteRenderer.flipX)
-        {
-            _spriteRenderer.flipX = !_spriteRenderer.flipX;
-        }
-        */
+     
 
         Vector3 distance = _destination - Camera.main.transform.position;
         Vector3 fromCamera = Camera.main.transform.forward;
