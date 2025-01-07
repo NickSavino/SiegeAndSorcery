@@ -59,8 +59,6 @@ public class WallBuilding : MonoBehaviour
                 placePanel();
             }
         }
-        toggleActive();
-
     }
 
 
@@ -197,22 +195,23 @@ public class WallBuilding : MonoBehaviour
 
 
     
-
-
-
-
-
-
-    void toggleActive()
+    public void toggleActive()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {  
-            _modeActive = !_modeActive;
-        }
+        _modeActive = !_modeActive;
         if (!_modeActive)
         {
             _initialPostPlaced = false;
         }
     }
 
+
+    public void setBuildModeActive(bool isActive)
+    {
+        _modeActive = isActive;
+
+        if (!_modeActive)
+        {
+            _initialPostPlaced = false;
+        }
+    }
 }
