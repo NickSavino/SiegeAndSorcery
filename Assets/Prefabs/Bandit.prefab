@@ -345,10 +345,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <_health>k__BackingField: 1000
+  <_team>k__BackingField: 1
   spriteFlip: 1
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
   ATTACK_DAMAGE: 10
   ATTACK_FLASH_TIME: 0.5
-  _team: 1

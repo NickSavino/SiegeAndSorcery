@@ -15,6 +15,8 @@ public class UnitController : MonoBehaviour, Attackable
     //[SerializeField]
     [field: SerializeField]  public float _health { get; set; }     // interface property from Attackable
 
+    [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
+
     [SerializeField]
     private bool spriteFlip;
 
@@ -33,8 +35,7 @@ public class UnitController : MonoBehaviour, Attackable
     [SerializeField]
     private float ATTACK_FLASH_TIME;
 
-    [SerializeField]
-    private int _team;
+
 
 
 
@@ -82,7 +83,7 @@ public class UnitController : MonoBehaviour, Attackable
         if (!IsDead())
         {
             GetNearestEnemyUnit();
-            AttackDestination();
+            AttackTarget();
         }
         _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
@@ -197,6 +198,14 @@ public class UnitController : MonoBehaviour, Attackable
         if (closest != null)
         {
             _destination = closest;
+            if (ObjectIsUnit(_destination))            // have to set stopping stopping distance for navmesh agent
+            {
+                _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE;
+            }
+            else    // is structure
+            {
+                _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;
+            }
         }
     }
 
@@ -213,39 +222,34 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    private void AttackDestination()
+    private void AttackTarget()
     {
-        float distanceVector = (_destination.transform.position - transform.position).magnitude; 
+        float distanceVector = (_destination.transform.position - transform.position).magnitude;
+        float attackDistance;
+        Attackable scriptToAttack;
         if (ObjectIsUnit(_destination))
         {
-            if (distanceVector <= MIN_UNIT_ATTACK_DISTANCE)
-            {
-                AttackEnemyUnit();
-            }
+            attackDistance = MIN_UNIT_ATTACK_DISTANCE;
+            scriptToAttack = _destination.GetComponent<UnitController>();
         }
         else
         {
-            if (distanceVector <= MIN_STRUCT_ATTACK_DISTANCE)
+            attackDistance = MIN_STRUCT_ATTACK_DISTANCE;
+            scriptToAttack = _destination.GetComponent<StructureController>();
+        }
+
+        if (distanceVector <= attackDistance)
+        {
+            _currentTime += Time.deltaTime;
+            if (_currentTime >= ATTACKS_PER_SECOND)
             {
-                AttackEnemyStructure();
+                _currentTime = 0;
+                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
             }
         }
     }
 
-    private void AttackEnemyUnit()
-    {
-        _currentTime += Time.deltaTime;
-        if (_currentTime >= ATTACKS_PER_SECOND)
-        {
-            _currentTime = 0;
-            _destination.GetComponent<UnitController>().TakeDamage(ATTACK_DAMAGE);
-        }
-    }
 
-    private void AttackEnemyStructure()
-    {
-
-    }
 
     bool ObjectIsUnit(GameObject obj)
     {
