@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 23478027490034360}
   m_Layer: 0
   m_Name: rpgpp_lt_table_01
-  m_TagString: Untagged
+  m_TagString: InvalidStruct
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
