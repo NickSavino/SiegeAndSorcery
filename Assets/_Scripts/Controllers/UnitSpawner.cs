@@ -9,14 +9,14 @@ public class UnitSpawner : MonoBehaviour
 
     public GameObject selectedUnit;
 
-    private Vector3 _towerPos;
+    private GameObject _towerPos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _camera = Camera.main;
 
-        _towerPos = GameObject.Find("Castle").transform.position;
+        _towerPos = GameObject.Find("Castle");
     }
 
     // Update is called once per frame

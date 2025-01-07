@@ -21,9 +21,17 @@ public class UnitController : MonoBehaviour
     private bool spriteFlip;
 
     [SerializeField]
-    private float MIN_ATTACK_DISTANCE;
+    private float MIN_STRUCT_ATTACK_DISTANCE;
 
-    public Vector3 _destination;
+    [SerializeField]
+    private float MIN_UNIT_ATTACK_DISTANCE;
+
+    [SerializeField]
+    private int _team;
+
+
+    private Collider _unitCollider;
+    public GameObject _destination;
 
     void Start()
     {
@@ -32,6 +40,11 @@ public class UnitController : MonoBehaviour
         _camera = Camera.main;
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // use transform to find child, get game object of transform, then its collider
+
+        // transform.Find searches just for children of this game object, NOT the entire scene
+        _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
   
     }
 
@@ -40,13 +53,14 @@ public class UnitController : MonoBehaviour
     {
         if (_destination != null)
         {
-            _navMeshAgent.SetDestination(_destination);
+            _navMeshAgent.SetDestination(_destination.transform.position);
         }
-        Debug.Log(_navMeshAgent.velocity.magnitude);
+
         animateIfRunning();
         animateIfAttacking();
         animateDeath();
         flipSprite();
+        GetNearEnemyUnits();
     }
 
 
@@ -67,9 +81,12 @@ public class UnitController : MonoBehaviour
 
     void animateIfAttacking()
     {
-        Vector3 diff = transform.position - _destination;
+        Vector3 diff = transform.position - _destination.transform.position;
+
+        float distanceMetric = _destination.GetComponent<UnitController>() != null ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+
         diff.y = 0f;
-        if (diff.magnitude <= MIN_ATTACK_DISTANCE)
+        if (diff.magnitude <= distanceMetric)
         {
             _animator.SetBool("isAttacking", true);
 
@@ -101,15 +118,12 @@ public class UnitController : MonoBehaviour
     {
      
 
-        Vector3 distance = _destination - Camera.main.transform.position;
+        Vector3 distance = _destination.transform.position - Camera.main.transform.position;
         Vector3 fromCamera = Camera.main.transform.forward;
         float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
 
         Vector3 distanceToSprite = transform.position - Camera.main.transform.position;
         float spriteCheck = Vector3.SignedAngle(distanceToSprite, fromCamera, Vector3.up);
-        Debug.Log(check);
-        Debug.Log(spriteCheck);
-
 
         if (spriteCheck > check)       // object left of sprite
         {
@@ -119,9 +133,33 @@ public class UnitController : MonoBehaviour
         {
             _spriteRenderer.flipX = spriteFlip == false ? false: true;
         }
-
-
-
-
     }
+
+
+
+    void GetNearEnemyUnits()
+    {
+        int count = 0;
+        Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
+            
+        foreach (Collider thatCollider in hitColliders)
+        {
+            GameObject otherObject = thatCollider.gameObject;
+            UnitController otherUnit = otherObject.GetComponent<UnitController>();
+
+            // don't count self
+
+            if (otherUnit != null)          // colliding agent is unit
+            {
+ 
+                if (otherUnit._team != this._team)   // unit belongs to different team!
+                {
+                    ++count;
+                }
+            }
+        }
+        Debug.Log(count);
+        //return false;
+    }
+
 }
