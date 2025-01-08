@@ -15,8 +15,6 @@ public class MusicSystem : AudioSystemBase
     void Start()
     {
         _currentSource = titleMusicSource;
-        titleMusicSource.PlayDelayed(2f);
-        _titleMusicPlaying = true;
     }
 
     // Update is called once per frame

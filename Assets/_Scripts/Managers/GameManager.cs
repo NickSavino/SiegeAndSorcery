@@ -83,4 +83,6 @@ public class GameManager : MonoBehaviour
 
         currentTurnText.GetComponent<TMP_Text>().SetText(_currentTurn.ToString());
     }
+
+
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +10,9 @@ public class SceneLoadingController : MonoBehaviour
 
     public GameObject loadingScreen;
     public Image loadingBarFill;
+
+    [SerializeField]
+    public bool loadMainMenu;
 
     private void Awake()
     {
@@ -27,6 +31,15 @@ public class SceneLoadingController : MonoBehaviour
     void Start()
     {
         loadingScreen.SetActive(false);
+
+        if (SceneManager.GetSceneByName("BootStrapperScene").isLoaded)
+        {
+            SceneManager.UnloadSceneAsync("BootStrapperScene");
+            if (loadMainMenu)
+            {
+                LoadScene("MainMenuScene");
+            }
+        }
     }
 
     public void LoadScene(string sceneName)
@@ -47,7 +60,7 @@ public class SceneLoadingController : MonoBehaviour
         {
             float progressValue = Mathf.Clamp01(operation.progress / 0.9f);
 
-            displayedProgress = Mathf.MoveTowards(displayedProgress, progressValue, Time.unscaledDeltaTime / 2f);
+            displayedProgress = Mathf.MoveTowards(displayedProgress, progressValue, Time.unscaledDeltaTime / 3f);
 
             loadingBarFill.fillAmount = displayedProgress;
 
