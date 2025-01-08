@@ -6,6 +6,24 @@ public class StructureController : MonoBehaviour, Attackable
     [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
     StructureDamageEffect _damageEffect;     // using unit damage effect for right now
 
+
+    private StructureManager _structureManager;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        _damageEffect = new StructureDamageEffect(GetComponent<MeshRenderer>());
+        _structureManager = StructureManager.GetStructureManager();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        _damageEffect.UpdateTakeDamageTime();
+                // Structures,  by default, just take damage
+    }
+
+
     public bool IsDead()
     {
         return _health <= 0;
@@ -27,16 +45,5 @@ public class StructureController : MonoBehaviour, Attackable
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        _damageEffect = new StructureDamageEffect(GetComponent<MeshRenderer>());
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        _damageEffect.UpdateTakeDamageTime();
-                // Structures,  by default, just take damage
-    }
 }

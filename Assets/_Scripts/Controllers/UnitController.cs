@@ -48,6 +48,8 @@ public class UnitController : MonoBehaviour, Attackable
     private Collider _unitCollider; // will be this unit's unit collider child object
     private GameObject _destination;    // destination / structure or unit to attack
 
+    private StructureManager _structureManager
+
 
 
     void Start()
@@ -62,7 +64,10 @@ public class UnitController : MonoBehaviour, Attackable
 
         // transform.Find searches just for children of this game object, NOT the entire scene
         _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
-  
+
+        _structureManager = StructureManager.GetStructureManager();
+
+
     }
 
     // Update is called once per frame
@@ -166,11 +171,7 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    void GetNearestEnemyStructure()
-    {
-        List<StructureController> list = new List<StructureController>();
-      //  GameObject.all
-    }
+
 
 
     void GetNearestEnemyUnit()
