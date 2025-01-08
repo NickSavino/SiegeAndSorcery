@@ -9,7 +9,10 @@ using UnityEngine.UI;
 public class AudioSlider : MonoBehaviour
 {
 
-    public UnityAudioEvent volumeChangeEvent;
+    private const float MINIMUM_SLIDER_VALUE = -79.9999f;
+    private const float MAXIMUM_SLIDER_VALUE = 10f;
+
+    public UnityEvent<float> volumeChangeEvent;
 
     private Slider _slider;
 
@@ -17,6 +20,8 @@ public class AudioSlider : MonoBehaviour
     void Start()
     {
         _slider = GetComponent<Slider>();
+        _slider.maxValue = MAXIMUM_SLIDER_VALUE;
+        _slider.minValue = MINIMUM_SLIDER_VALUE;
 
         if ( _slider == null )
         {
@@ -25,7 +30,7 @@ public class AudioSlider : MonoBehaviour
 
         if (volumeChangeEvent == null)
         {
-            volumeChangeEvent = new UnityAudioEvent();
+            volumeChangeEvent = new UnityEvent<float>();
         }
 
         OnVolumeChange();
@@ -36,6 +41,3 @@ public class AudioSlider : MonoBehaviour
         volumeChangeEvent.Invoke(_slider.value);
     }
 }
-
-[System.Serializable]
-public class UnityAudioEvent : UnityEvent<float> { }
