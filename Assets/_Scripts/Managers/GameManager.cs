@@ -1,18 +1,18 @@
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+
+    private DefenderUIController _defenderUIcontroller;
 
     public GameObject turnTimerText;
     public GameObject currentTurnText;
     SimpleTimer _timer;
 
-    private enum AgentTurn { None, Defender, Attacker, Round };
+    private enum GameState { None, Defender, Attacker, Round, End };
 
-    private AgentTurn _currentTurn;
+    private GameState _currentTurn = GameState.None;
 
     [SerializeField]
     public int attackerTurnLengthSeconds = 5;
@@ -26,10 +26,11 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        TryGetComponent(out _defenderUIcontroller);
         Time.timeScale = 1;
         _timer = GetComponent<SimpleTimer>();
         _timer.SetTimerMode(TimerMode.CountDown);
-        BeginDefenderTurn();
+        AdvanceTurn();
     }
 
     // Update is called once per frame
@@ -44,21 +45,23 @@ public class GameManager : MonoBehaviour
 
     private void BeginDefenderTurn()
     {
-        _currentTurn = AgentTurn.Defender;
+        _defenderUIcontroller.EnableControls(true);
+        _currentTurn = GameState.Defender;
         _timer.SetTimerLength(defenderTurnLengthSeconds);
         _timer.BeginTimer();
     }
 
     private void BeginAttackerTurn()
     {
-        _currentTurn = AgentTurn.Attacker;
+        _defenderUIcontroller.EnableControls(false);
+        _currentTurn = GameState.Attacker;
         _timer.SetTimerLength(attackerTurnLengthSeconds);
         _timer.BeginTimer();
     }
 
     private void BeginRound()
     {
-        _currentTurn = AgentTurn.Round;
+        _currentTurn = GameState.Round;
         _timer.SetTimerLength(roundLengthseconds);
         _timer.BeginTimer();
     }
@@ -67,20 +70,22 @@ public class GameManager : MonoBehaviour
     {
         switch (_currentTurn)
         {
-            case AgentTurn.None:
+            case GameState.None:
                 BeginDefenderTurn();
                 break;
-            case AgentTurn.Defender:
+            case GameState.Defender:
                 BeginAttackerTurn();
                 break;
-            case AgentTurn.Attacker:
+            case GameState.Attacker:
                 BeginRound();
                 break;
-            case AgentTurn.Round:
+            case GameState.Round:
                 BeginDefenderTurn();
                 break;
         }
 
         currentTurnText.GetComponent<TMP_Text>().SetText(_currentTurn.ToString());
     }
+
+
 }

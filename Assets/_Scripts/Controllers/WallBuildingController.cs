@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.EventSystems;
 
-public class WallBuilding : MonoBehaviour
+public class WallBuildingController : MonoBehaviour
 {
 
 
@@ -48,28 +50,30 @@ public class WallBuilding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SetBuildModeActive(false);
+        }
         if (_modeActive)
         {
             if (_placingPost)
             {
-                placePost();
+                PlacePost();
             }
             else if (_placingPanel)
             {
-                placePanel();
+                PlacePanel();
             }
         }
     }
 
-
-
-    void placePanel()
+    void PlacePanel()
     {
         GameObject panel;
         if (!_instedPanel)
         {
             panel = Instantiate(_panelPrefab);
-            disabledMode(panel);
+            DisabledMode(panel);
             Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
             panel.transform.position = new Vector3(lastPostPos.x, panel.transform.position.y, lastPostPos.z);
             _currentPanels.Add(panel);
@@ -83,18 +87,20 @@ public class WallBuilding : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit))
-            {  
-                
+            {
+
                 // reset panel position to post
                 Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
                 _currentPanels[index].transform.position = new Vector3(lastPostPos.x, lastPostPos.y, lastPostPos.z);
 
                 GameObject hitObject = hit.collider.gameObject; // get the gameobject that the cursor is on
                 Vector3 distanceVector;
-                if (hitObject.name.StartsWith(_postPrefab.name)) {      // if it is a post, snap the wall to it
+                if (hitObject.name.StartsWith(_postPrefab.name))
+                {      // if it is a post, snap the wall to it
                     distanceVector = hitObject.transform.position - _currentPanels[index].transform.position;
                 }
-                else {
+                else
+                {
                     distanceVector = hit.point - _currentPanels[index].transform.position;
                 }
 
@@ -104,12 +110,12 @@ public class WallBuilding : MonoBehaviour
                     distanceVector = distanceVector.normalized * MAX_WALL_LENGTH;
                 }
                 // get distance and rotation, set rotation
-       
+
 
                 distanceVector.y = 0;      // do not want to rotate up or down
 
                 _nextPostPosition = _currentPanels[index].transform.position + distanceVector;
-           //     _nextPostPosition.y = hit.point.y;
+                //     _nextPostPosition.y = hit.point.y;
 
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);
@@ -117,15 +123,20 @@ public class WallBuilding : MonoBehaviour
 
                 // scale panel along Z-axis so it reaches mouse cursor
                 _currentPanels[index].transform.localScale = new Vector3(currentScale.x, currentScale.y, distanceVector.magnitude);
-                
+
 
                 //TODO: If we make all models with pivots at the edge of a wall, then this will not be needed
                 Vector3 translateVector = new Vector3(0, 0, distanceVector.magnitude) / 2;  // need to translate along Z-axis (if pivot is at center)
                 _currentPanels[index].transform.Translate(translateVector);
 
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    return;
+                }
+
                 if (Input.GetMouseButtonDown(0))     // automatically place post if chain has started
                 {
-                    enabledMode(_currentPanels[index]);
+                    EnabledMode(_currentPanels[index]);
                     _placingPanel = false;
                     _instedPanel = false;
                     _placingPost = true;
@@ -139,13 +150,13 @@ public class WallBuilding : MonoBehaviour
         }
     }
 
-    void placePost()
+    void PlacePost()
     {
         GameObject post;
         if (!_instedPost)
         {
             post = Instantiate(_postPrefab);
-            disabledMode(post);
+            DisabledMode(post);
             _currentPosts.Add(post);
             _instedPost = true;
         }
@@ -166,9 +177,14 @@ public class WallBuilding : MonoBehaviour
             _currentPosts[index].transform.position = _nextPostPosition;
         }
 
-        if (Input.GetMouseButtonDown(0) || _initialPostPlaced)    // left click
+        if (EventSystem.current.IsPointerOverGameObject())
         {
-            enabledMode(_currentPosts[index]);
+            return;
+        }
+
+        if ((Input.GetMouseButtonDown(0)))   // left click, check if over UI
+        {
+            EnabledMode(_currentPosts[index]);
             _placingPanel = true;
             _instedPanel = false;
             _placingPost = false;
@@ -180,38 +196,63 @@ public class WallBuilding : MonoBehaviour
         }
     }
 
-
-    void disabledMode(GameObject obj)
+    void DisabledMode(GameObject obj)
     {
         obj.GetComponent<MeshRenderer>().material = _transMaterial;
         obj.GetComponent<Collider>().enabled = false;
     }
 
-    void enabledMode(GameObject obj)
+    void EnabledMode(GameObject obj)
     {
         obj.GetComponent<MeshRenderer>().material = _opaqueMaterial;
         obj.GetComponent<Collider>().enabled = true;
     }
 
-
-    
-    public void toggleActive()
+    public void ToggleActive()
     {
         _modeActive = !_modeActive;
         if (!_modeActive)
         {
             _initialPostPlaced = false;
+            if (_instedPanel)
+            {
+                Destroy(_currentPanels.LastOrDefault());
+                _instedPanel = false;
+            }
+            else if (_instedPost)
+            {
+                Destroy(_currentPosts.LastOrDefault());
+                _instedPost = false;
+            }
         }
     }
 
-
-    public void setBuildModeActive(bool isActive)
+    public void SetBuildModeActive(bool isActive)
     {
         _modeActive = isActive;
 
         if (!_modeActive)
         {
             _initialPostPlaced = false;
+            if (_instedPanel)
+            {
+                Destroy(_currentPanels.LastOrDefault());
+                _instedPanel = false;
+            }
+            else if (_instedPost)
+            {
+                Destroy(_currentPosts.LastOrDefault());
+                _instedPost = false;
+            }
         }
+        else
+        {
+            _placingPost = true;
+        }
+    }
+
+    public bool IsBuildModeActive()
+    {
+        return _modeActive;
     }
 }

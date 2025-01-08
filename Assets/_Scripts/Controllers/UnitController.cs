@@ -38,7 +38,10 @@ public class UnitController : MonoBehaviour, Attackable
     private float ATTACK_FLASH_TIME;
 
 
-
+    public GameObject healthBar;
+    
+    private HealthBarController _healthBarController;
+    private float _maxHealth;
 
 
     /*
@@ -79,7 +82,9 @@ public class UnitController : MonoBehaviour, Attackable
 
         _destroyTimer = -1f;
 
+        _maxHealth = _health;
 
+        healthBar.TryGetComponent(out _healthBarController);
     }
 
     // Update is called once per frame
@@ -266,6 +271,7 @@ public class UnitController : MonoBehaviour, Attackable
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();          // start damage effect
+        _healthBarController?.SetHealth(_maxHealth, _health);
         if (_health <= 0f)
         {
             SetDead();

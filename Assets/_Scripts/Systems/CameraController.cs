@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CameraControl : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     [SerializeField]
     private float CAM_MOVE_SPEED;
@@ -30,26 +30,30 @@ public class CameraControl : MonoBehaviour
     private GameObject camObject;
 
     [SerializeField]
-    private Camera camera;
+    private new Camera camera;
+
+    private bool _shiftAcceleration;
+
+    private float _baseMoveSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        _baseMoveSpeed = CAM_MOVE_SPEED;
     }
 
     // Update is called once per frame
     void Update()
     {
-        translateCamera();
-        zoomCameraProjection();
-        zoomCameraOrtho();
-        rotateCamera();
-
+        TranslateCamera();
+        ZoomCameraProjection();
+        ZoomCameraOrtho();
+        RotateCamera();
+        ShiftAccelerateCamera();
     }
 
 
-    void translateCamera()
+    void TranslateCamera()
     {
         float degrees;
         if (camObject.transform.rotation.eulerAngles.y < 0)
@@ -68,28 +72,28 @@ public class CameraControl : MonoBehaviour
         Vector3 forward = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
         Vector3 right = new Vector3(Mathf.Sin(radians + piOverTwo), 0, Mathf.Cos(radians + piOverTwo));
      
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.W))
         {
             Vector3 temp = camObject.transform.position;
             temp += (forward * CAM_MOVE_SPEED);
             camObject.transform.position = temp;
         }
 
-        if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.S))
         {
             Vector3 temp = camObject.transform.position;
             temp += (forward * CAM_MOVE_SPEED * -1);
             camObject.transform.position = temp;
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.A))
         {
             Vector3 temp = camObject.transform.position;
             temp += (right * CAM_MOVE_SPEED * -1);
             camObject.transform.position = temp;
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.D))
         {
             Vector3 temp = camObject.transform.position;
             temp += (right * CAM_MOVE_SPEED);
@@ -99,7 +103,7 @@ public class CameraControl : MonoBehaviour
 
 
 
-    void zoomCameraProjection()
+    void ZoomCameraProjection()
     {
 
         Vector2 scrollDelta = Input.mouseScrollDelta;
@@ -127,7 +131,7 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    void zoomCameraOrtho()
+    void ZoomCameraOrtho()
     {
 
         Vector2 scrollDelta = Input.mouseScrollDelta;
@@ -156,7 +160,7 @@ public class CameraControl : MonoBehaviour
     }
 
 
-    void rotateCamera()
+    void RotateCamera()
     {
         if (Input.GetMouseButton(2))    // middle click
         {
@@ -167,7 +171,17 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-
+    void ShiftAccelerateCamera()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            CAM_MOVE_SPEED = _baseMoveSpeed * 5;
+        }
+        else
+        {
+            CAM_MOVE_SPEED = _baseMoveSpeed;
+        }
+    }
 
 }
 

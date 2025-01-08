@@ -18,6 +18,12 @@ public abstract class AudioSystemBase : MonoBehaviour
         _currentSource = source;
     }
 
+    public virtual void PlaySource(AudioSource source)
+    {
+        _currentSource = source;
+        source.Play();
+    }
+
     public virtual void PlayCurrentSource()
     {
         if (_currentSource != null)
