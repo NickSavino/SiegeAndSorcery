@@ -51,6 +51,8 @@ public class UnitController : MonoBehaviour, Attackable
     private UnitDamageEffect _damageEffect;
     private float _currentTime;     // time delta for attacks
     private Collider _unitCollider; // will be this unit's unit collider child object
+
+    [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
 
     private StructureManager _structureManager;
@@ -76,13 +78,18 @@ public class UnitController : MonoBehaviour, Attackable
 
         _structureManager = StructureManager.GetStructureManager();
 
+        _destroyTimer = -1f;
+
 
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (IsDead())
+        {
+            UpdateDestroyTimer();
+        }
         animateIfRunning();
         animateIfAttacking();
         animateDeath();
@@ -113,7 +120,7 @@ public class UnitController : MonoBehaviour, Attackable
 
     void animateIfRunning()
     {
-        if (_navMeshAgent.velocity.magnitude > 0)
+        if (_navMeshAgent.velocity.magnitude > 0 && !_animator.GetBool("isAttacking"))
         {
             _animator.SetBool("isRunning", true);
 
@@ -136,7 +143,6 @@ public class UnitController : MonoBehaviour, Attackable
             if (diff.magnitude <= distanceMetric)
             {
                 _animator.SetBool("isAttacking", true);
-
             }
             else
             {
@@ -218,7 +224,7 @@ public class UnitController : MonoBehaviour, Attackable
 
     void GetNearestEnemyUnit()
     {
-        if (!ObjectIsUnit(_destination))        // if _destination is null or structure
+        if (_destination != null)    
         {
             int count = 0;
             Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
@@ -328,7 +334,7 @@ public class UnitController : MonoBehaviour, Attackable
             _destroyTimer += Time.deltaTime;    // update timer
             if (_destroyTimer > DESTROY_TIME_LIMIT)
             {
-                Destroy(this);
+                Destroy(gameObject);
             }
         }
 

@@ -362,3 +362,4 @@ MonoBehaviour:
   ATTACKS_PER_SECOND: 1
   ATTACK_DAMAGE: 10
   ATTACK_FLASH_TIME: 0.5
+  _destination: {fileID: 0}
