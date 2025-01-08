@@ -10,9 +10,9 @@ public class GameManager : MonoBehaviour
     public GameObject currentTurnText;
     SimpleTimer _timer;
 
-    private enum AgentTurn { None, Defender, Attacker, Round };
+    private enum GameState { None, DefenderTurn, AttackerTurn, RoundState, End };
 
-    private AgentTurn _currentTurn = AgentTurn.None;
+    private GameState _currentTurn = GameState.None;
 
     [SerializeField]
     public int attackerTurnLengthSeconds = 5;
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     private void BeginDefenderTurn()
     {
         _defenderUIcontroller.EnableControls(true);
-        _currentTurn = AgentTurn.Defender;
+        _currentTurn = GameState.DefenderTurn;
         _timer.SetTimerLength(defenderTurnLengthSeconds);
         _timer.BeginTimer();
     }
@@ -54,14 +54,14 @@ public class GameManager : MonoBehaviour
     private void BeginAttackerTurn()
     {
         _defenderUIcontroller.EnableControls(false);
-        _currentTurn = AgentTurn.Attacker;
+        _currentTurn = GameState.AttackerTurn;
         _timer.SetTimerLength(attackerTurnLengthSeconds);
         _timer.BeginTimer();
     }
 
     private void BeginRound()
     {
-        _currentTurn = AgentTurn.Round;
+        _currentTurn = GameState.RoundState;
         _timer.SetTimerLength(roundLengthseconds);
         _timer.BeginTimer();
     }
@@ -70,16 +70,16 @@ public class GameManager : MonoBehaviour
     {
         switch (_currentTurn)
         {
-            case AgentTurn.None:
+            case GameState.None:
                 BeginDefenderTurn();
                 break;
-            case AgentTurn.Defender:
+            case GameState.DefenderTurn:
                 BeginAttackerTurn();
                 break;
-            case AgentTurn.Attacker:
+            case GameState.AttackerTurn:
                 BeginRound();
                 break;
-            case AgentTurn.Round:
+            case GameState.RoundState:
                 BeginDefenderTurn();
                 break;
         }
