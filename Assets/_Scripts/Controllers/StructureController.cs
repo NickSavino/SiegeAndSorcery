@@ -4,22 +4,36 @@ public class StructureController : MonoBehaviour, Attackable
 {
     [field: SerializeField] public float _health { get; set; }
     [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
+
+
+    public float _destroyTimer { get; set; }
+
+
     StructureDamageEffect _damageEffect;     // using unit damage effect for right now
 
 
     private StructureManager _structureManager;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _damageEffect = new StructureDamageEffect(GetComponent<MeshRenderer>());
         _structureManager = StructureManager.GetStructureManager();
+        _destroyTimer = 0f;
     }
 
     // Update is called once per frame
     void Update()
     {
         _damageEffect.UpdateTakeDamageTime();
+
+        if (IsDead())
+        {
+            UpdateDestroyTimer();
+        }
                 // Structures,  by default, just take damage
     }
 
@@ -30,20 +44,39 @@ public class StructureController : MonoBehaviour, Attackable
     }
 
     public void SetDead()
-    {
-        GetComponent<MeshRenderer>().enabled = false;
+    { 
         _structureManager.RemoveStructure(this);        // remove myself from the structure manager
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        gameObject.GetComponent<Collider>().enabled = false;
     }
 
-    public void TakeDamage(float damage)
+    public void UpdateDestroyTimer()
+    {
+        if (_destroyTimer < 0f) // start timer
+        {
+            _destroyTimer = 0f;
+        }
+        else
+        {
+            _destroyTimer += Time.deltaTime;    // update timer
+            if (_destroyTimer > DESTROY_TIME_LIMIT)
+            {
+                Destroy(this);
+            }
+        }
+
+    }
+
+    public bool TakeDamage(float damage)
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();
         if (IsDead())
         {
-            Debug.Log("Dead");
             SetDead();
+            return false;
         }
+        return true;
     }
 
 

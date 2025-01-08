@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2290775822152610110}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -161.5439, y: -129.87067, z: -100.6702}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -103,6 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <_health>k__BackingField: 1000
   <_team>k__BackingField: 0
+  <DESTROY_TIME_LIMIT>k__BackingField: 10
 --- !u!114 &42592398940341441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,7 +144,7 @@ Transform:
   m_GameObject: {fileID: 8965123029003673569}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.261, y: 0.796, z: 6.413}
+  m_LocalPosition: {x: -0.261, y: 0.796, z: 6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

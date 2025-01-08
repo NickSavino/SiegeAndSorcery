@@ -15,6 +15,11 @@ public class UnitController : MonoBehaviour, Attackable
 
     [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
 
+    [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
+
+
+    public float _destroyTimer { get; set; }
+
     [SerializeField]
     private bool spriteFlip;
 
@@ -56,8 +61,10 @@ public class UnitController : MonoBehaviour, Attackable
     {
 
         _navMeshAgent = GetComponent<NavMeshAgent>();
-        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;    // first destination will always be structure as per UnitSpawner
+        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
         _navMeshAgent.destination = _destination.transform.position;
+
+
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _damageEffect = new UnitDamageEffect(_spriteRenderer);
@@ -84,7 +91,10 @@ public class UnitController : MonoBehaviour, Attackable
         if (!IsDead())
         {
             GetNearestEnemyUnit();
-            AttackTarget();
+            if (_destination != null)
+            {
+                AttackTarget();
+            }
         }
         if (_destination == null)       // killed current target and no units nearby
         {
@@ -111,9 +121,8 @@ public class UnitController : MonoBehaviour, Attackable
 
     void animateIfAttacking()
     {
+        if (_destination != null)
         {
-
-
             Vector3 diff = transform.position - _destination.transform.position;
 
             float distanceMetric = _destination.GetComponent<UnitController>() != null ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
@@ -129,6 +138,14 @@ public class UnitController : MonoBehaviour, Attackable
                 _animator.SetBool("isAttacking", false);
             }
         }
+        else
+        {
+            _animator.SetBool("isAttacking", false);        // nothing to attack
+        }
+
+
+
+        
     }
 
     void animateDeath()
@@ -178,7 +195,7 @@ public class UnitController : MonoBehaviour, Attackable
         {
             _destination = _structureManager.FindNearestEnemyStructure(gameObject.transform.position, _team).gameObject;
             _navMeshAgent.destination = _destination.transform.position;
-            _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;
+            _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;
         }
     }
 
@@ -218,21 +235,23 @@ public class UnitController : MonoBehaviour, Attackable
             {
                 _destination = closest;
                 _navMeshAgent.destination = closest.transform.position;
-                _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE;
+                _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE / 2;
             }
 
         }
     }
 
 
-    public void TakeDamage(float damage)
+    public bool TakeDamage(float damage)
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();          // start damage effect
         if (_health <= 0f)
         {
             SetDead();
+            return false;
         }
+        return true;
     }
 
 
@@ -259,13 +278,12 @@ public class UnitController : MonoBehaviour, Attackable
             if (_currentTime >= ATTACKS_PER_SECOND)
             {
                 _currentTime = 0;
-                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+                bool attackStatus = scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+                if (!attackStatus)          // if target is dead
+                    _destination = null;
             }
 
-            if (scriptToAttack.IsDead())
-            {
-                _destination = null;
-            }
+     
         }
     }
 
@@ -283,7 +301,22 @@ public class UnitController : MonoBehaviour, Attackable
         return _health <= 0;
     }
 
+    public void UpdateDestroyTimer()
+    {
+        if (_destroyTimer < 0f) // start timer
+        {
+            _destroyTimer = 0f;
+        }
+        else
+        {
+            _destroyTimer += Time.deltaTime;    // update timer
+            if (_destroyTimer > DESTROY_TIME_LIMIT)
+            {
+                Destroy(this);
+            }
+        }
 
+    }
     public void SetDead()
     {
         GetComponent<NavMeshAgent>().enabled = false;

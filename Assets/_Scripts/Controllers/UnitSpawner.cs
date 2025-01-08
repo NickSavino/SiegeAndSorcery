@@ -22,7 +22,7 @@ public class UnitSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _spawnPoint = gameObject.GetComponentInChildren<Transform>().position;
+        _spawnPoint = transform.GetChild(0).transform.position;
         _currentTime = 0f;
     }
 
