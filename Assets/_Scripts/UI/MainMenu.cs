@@ -22,7 +22,7 @@ public class MenuMenu : MonoBehaviour
 
     public void OnPlayButtonPress()
     {
-        SceneManager.LoadScene("AnimationScene");
+        SceneManager.LoadScene("AudioScene");
     }
 
     public void OnQuitButtonPress()
