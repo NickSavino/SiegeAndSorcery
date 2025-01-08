@@ -48,7 +48,7 @@ public class UnitController : MonoBehaviour, Attackable
     private Collider _unitCollider; // will be this unit's unit collider child object
     private GameObject _destination;    // destination / structure or unit to attack
 
-    private StructureManager _structureManager
+    private StructureManager _structureManager;
 
 
 
@@ -56,6 +56,8 @@ public class UnitController : MonoBehaviour, Attackable
     {
 
         _navMeshAgent = GetComponent<NavMeshAgent>();
+        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;    // first destination will always be structure as per UnitSpawner
+        _navMeshAgent.destination = _destination.transform.position;
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _damageEffect = new UnitDamageEffect(_spriteRenderer);
@@ -73,10 +75,6 @@ public class UnitController : MonoBehaviour, Attackable
     // Update is called once per frame
     void Update()
     {
-        if (_destination != null && _navMeshAgent.enabled)
-        {
-            _navMeshAgent.SetDestination(_destination.transform.position);
-        }
 
         animateIfRunning();
         animateIfAttacking();
@@ -87,6 +85,10 @@ public class UnitController : MonoBehaviour, Attackable
         {
             GetNearestEnemyUnit();
             AttackTarget();
+        }
+        if (_destination == null)       // killed current target and no units nearby
+        {
+            GetNewStructureDestination();
         }
         _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
@@ -170,7 +172,15 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-
+    void GetNewStructureDestination()
+    {
+        if (_destination == null)   // if no units nearby and no structure selected
+        {
+            _destination = _structureManager.FindNearestEnemyStructure(gameObject.transform.position, _team).gameObject;
+            _navMeshAgent.destination = _destination.transform.position;
+            _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;
+        }
+    }
 
 
 
@@ -204,9 +214,10 @@ public class UnitController : MonoBehaviour, Attackable
                     }
                 }
             }
-            if (closest != null)
+            if (closest != null)        // found enemy unit
             {
                 _destination = closest;
+                _navMeshAgent.destination = closest.transform.position;
                 _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE;
             }
 
@@ -249,6 +260,11 @@ public class UnitController : MonoBehaviour, Attackable
             {
                 _currentTime = 0;
                 scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+            }
+
+            if (scriptToAttack.IsDead())
+            {
+                _destination = null;
             }
         }
     }

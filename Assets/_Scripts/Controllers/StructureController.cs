@@ -32,6 +32,7 @@ public class StructureController : MonoBehaviour, Attackable
     public void SetDead()
     {
         GetComponent<MeshRenderer>().enabled = false;
+        _structureManager.RemoveStructure(this);        // remove myself from the structure manager
     }
 
     public void TakeDamage(float damage)

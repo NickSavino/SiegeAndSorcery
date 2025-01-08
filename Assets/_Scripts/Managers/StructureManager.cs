@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class StructureManager : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class StructureManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(_activeStructures.Count);
+
     }
 
 
@@ -40,19 +41,21 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    public StructureController FindNearestStructure(Vector3 position)
+    public StructureController FindNearestEnemyStructure(Vector3 position, int team)
     {
         StructureController closest = null;
         float minDistance = 0f;
 
-        if (_activeStructures.Count == 0)       // no structures
+        List<StructureController> enemyStructures = _activeStructures.FindAll(x => x._team != team);
+
+        if (enemyStructures.Count == 0)
         {
-            return null;
+            return null;                    // no enemy structures 
         }
 
         // otherwise
 
-        foreach (StructureController structure in _activeStructures)
+        foreach (StructureController structure in enemyStructures)
         {
             float distance = (structure.gameObject.transform.position - position).magnitude;
             if (distance < minDistance || closest == null)
