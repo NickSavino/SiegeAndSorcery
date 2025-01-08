@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23228858995858358}
   - component: {fileID: -3381014841270993244}
   - component: {fileID: 2064241872195600652}
+  - component: {fileID: -1801162433092164936}
   m_Layer: 0
   m_Name: rpgpp_lt_building_03
   m_TagString: InvalidStruct
@@ -123,3 +124,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <_health>k__BackingField: 0
   <_team>k__BackingField: 0
+--- !u!208 &-1801162433092164936
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232766363669618}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 5.9680004, y: 5.3490005, z: 3.8710003}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -1.0840001, y: 4.8430004, z: 0.025}
+  m_TimeToStationary: 0.5
