@@ -9,7 +9,6 @@ public interface Attackable
 
     void TakeDamage(float damage);
 
-
     bool IsDead();
 
     void SetDead();

@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
-using UnityEditor.Animations;
-using NUnit.Framework.Interfaces;
+using System.Collections.Generic;
 
 public class UnitController : MonoBehaviour, Attackable
 {
@@ -167,45 +165,50 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
+
+    void GetNearestEnemyStructure()
+    {
+        List<StructureController> list = new List<StructureController>();
+      //  GameObject.all
+    }
+
+
     void GetNearestEnemyUnit()
     {
-        int count = 0;
-        Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
-
-        float closestDistance = 0f;
-        GameObject closest = null;
-            
-        foreach (Collider thatCollider in hitColliders)
+        if (!ObjectIsUnit(_destination))        // if _destination is null or structure
         {
-            GameObject otherObject = thatCollider.gameObject;
-            UnitController otherUnit = otherObject.GetComponent<UnitController>();
+            int count = 0;
+            Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
 
-            // don't count self
+            float closestDistance = 0f;
+            GameObject closest = null;
 
-            if (otherUnit != null)          // colliding agent is unit
+            foreach (Collider thatCollider in hitColliders)
             {
-                if (otherUnit._team != this._team)   // unit belongs to different team!
+                GameObject otherObject = thatCollider.gameObject;
+                UnitController otherUnit = otherObject.GetComponent<UnitController>();
+
+                // don't count self
+
+                if (otherUnit != null)          // colliding agent is unit
                 {
-                    float distance = (otherObject.transform.position - transform.position).magnitude;
-                    if ((distance < closestDistance || closest == null) && !otherUnit.IsDead())
+                    if (otherUnit._team != this._team)   // unit belongs to different team!
                     {
-                        closest = otherObject;
-                        closestDistance = distance;
+                        float distance = (otherObject.transform.position - transform.position).magnitude;
+                        if ((distance < closestDistance || closest == null) && !otherUnit.IsDead())
+                        {
+                            closest = otherObject;
+                            closestDistance = distance;
+                        }
                     }
                 }
             }
-        }
-        if (closest != null)
-        {
-            _destination = closest;
-            if (ObjectIsUnit(_destination))            // have to set stopping stopping distance for navmesh agent
+            if (closest != null)
             {
+                _destination = closest;
                 _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE;
             }
-            else    // is structure
-            {
-                _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE;
-            }
+
         }
     }
 
@@ -253,6 +256,8 @@ public class UnitController : MonoBehaviour, Attackable
 
     bool ObjectIsUnit(GameObject obj)
     {
+        if (obj == null)
+            return false;
         return obj.GetComponent<UnitController>() != null;
     }
 
