@@ -38,6 +38,8 @@ public class StructurePlacing : MonoBehaviour
     [SerializeField]
     private float ROTATION_SENSITIVITY;
 
+    private StructureManager _structureManager;
+
 
     /*
      *   struct, GameObject with required mayerials
@@ -92,6 +94,7 @@ public class StructurePlacing : MonoBehaviour
     {
         _selectedStructure = _structures[0];
         _selectedIndex = 0;
+        _structureManager = StructureManager.GetStructureManager();
 
     }
 
@@ -185,10 +188,12 @@ public class StructurePlacing : MonoBehaviour
                     {
                         instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
+                    _structureManager.AddStructure(instedObj.GetComponent<StructureController>());      // add structure controller to structure manager
                     enabledMode(instedObj);
                     instedObj = null;       // do not target this gameobject anymore!
                     _insted = false;        // instantiate a new one if we want, but keep this type selected
                     _showedOnce = false;
+
                 }
             }
         }
