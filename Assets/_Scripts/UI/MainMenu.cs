@@ -7,7 +7,6 @@ public class MenuMenu : MonoBehaviour
 {
     public GameObject optionsScreen;
     public GameObject menuScreen;
-
     private GameObject _currentScreen;
 
     private Stack<GameObject> _navigationStack;
@@ -22,7 +21,8 @@ public class MenuMenu : MonoBehaviour
 
     public void OnPlayButtonPress()
     {
-        SceneManager.LoadScene("AudioScene");
+        _currentScreen.SetActive(false);
+        SceneLoadingController.instance.LoadScene("AudioScene");
     }
 
     public void OnQuitButtonPress()
