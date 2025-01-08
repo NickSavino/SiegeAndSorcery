@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
 
     private void BeginRound()
     {
-        _currentTurn = GameState.RoundState;
+        _currentTurn = GameState.Round;
         _timer.SetTimerLength(roundLengthseconds);
         _timer.BeginTimer();
     }
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
             case GameState.Attacker:
                 BeginRound();
                 break;
-            case GameState.RoundState:
+            case GameState.Round:
                 BeginDefenderTurn();
                 break;
         }
