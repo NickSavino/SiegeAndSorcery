@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 216050495007218586}
   - component: {fileID: 8766397857630621223}
   - component: {fileID: 5320521040906417177}
+  - component: {fileID: 5846768119634987605}
+  - component: {fileID: 3224664589286124190}
+  - component: {fileID: 3055362903251017188}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -63,3 +66,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentTimerMode: 1
+--- !u!114 &5846768119634987605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7811690642807307859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 041e3c58584f92a44bd330aa7272544d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedStructure: 0
+--- !u!114 &3224664589286124190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7811690642807307859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23241c09517cdac48848b4c444a5e8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_WALL_LENGTH: 12
+  _opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+  _transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+  _postPrefab: {fileID: 9063152398798373944, guid: f3b07ca681f1c65459cfc671af29c939, type: 3}
+  _panelPrefab: {fileID: 2624381331128162747, guid: b46d7136b0603d64c94a591d3a7063f5, type: 3}
+--- !u!114 &3055362903251017188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7811690642807307859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab4d074686ac8b40a074a875243c69b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _structures:
+  - structureName: 1
+    model: {fileID: 5348690435166546185, guid: 31d8090d7a967644dab4907a37dedb69, type: 3}
+    opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
+    transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
+    invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
+  _selectedStructure:
+    structureName: 0
+    model: {fileID: 0}
+    opaqueMaterial: {fileID: 0}
+    transMaterial: {fileID: 0}
+    invalidMaterial: {fileID: 0}
+  ROTATION_SENSITIVITY: 100

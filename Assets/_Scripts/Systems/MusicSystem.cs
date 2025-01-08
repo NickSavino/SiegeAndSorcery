@@ -2,9 +2,7 @@ using UnityEngine;
 
 public class MusicSystem : AudioSystemBase
 {
-    private bool _titleMusicPlaying = false;
-
-    AudioSource titleMusicSource;
+    AudioSource musicSource;
 
     public override void ChangeVolume(float volume)
     {
@@ -14,7 +12,7 @@ public class MusicSystem : AudioSystemBase
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _currentSource = titleMusicSource;
+        _currentSource = musicSource;
     }
 
     // Update is called once per frame

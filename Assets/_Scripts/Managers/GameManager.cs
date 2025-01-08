@@ -1,10 +1,10 @@
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+
+    private DefenderUIController _defenderUIcontroller;
 
     public GameObject turnTimerText;
     public GameObject currentTurnText;
@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private enum AgentTurn { None, Defender, Attacker, Round };
 
-    private AgentTurn _currentTurn;
+    private AgentTurn _currentTurn = AgentTurn.None;
 
     [SerializeField]
     public int attackerTurnLengthSeconds = 5;
@@ -26,10 +26,11 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        TryGetComponent(out _defenderUIcontroller);
         Time.timeScale = 1;
         _timer = GetComponent<SimpleTimer>();
         _timer.SetTimerMode(TimerMode.CountDown);
-        BeginDefenderTurn();
+        AdvanceTurn();
     }
 
     // Update is called once per frame
@@ -44,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     private void BeginDefenderTurn()
     {
+        _defenderUIcontroller.EnableControls(true);
         _currentTurn = AgentTurn.Defender;
         _timer.SetTimerLength(defenderTurnLengthSeconds);
         _timer.BeginTimer();
@@ -51,6 +53,7 @@ public class GameManager : MonoBehaviour
 
     private void BeginAttackerTurn()
     {
+        _defenderUIcontroller.EnableControls(false);
         _currentTurn = AgentTurn.Attacker;
         _timer.SetTimerLength(attackerTurnLengthSeconds);
         _timer.BeginTimer();
