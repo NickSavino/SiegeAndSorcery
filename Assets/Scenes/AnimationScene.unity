@@ -522,6 +522,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UnitSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 6458633483533449899, guid: 42d5623fd0474874f85d447f1bbb5409, type: 3}
+      propertyPath: <DESTROY_TIME_LIMIT>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -853,7 +857,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 302343503120862215, guid: 42d5623fd0474874f85d447f1bbb5409, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.151
+      value: -9.151
       objectReference: {fileID: 0}
     - target: {fileID: 302343503120862215, guid: 42d5623fd0474874f85d447f1bbb5409, type: 3}
       propertyPath: m_LocalPosition.y
@@ -861,7 +865,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 302343503120862215, guid: 42d5623fd0474874f85d447f1bbb5409, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 71.72845
+      value: 43.728447
       objectReference: {fileID: 0}
     - target: {fileID: 302343503120862215, guid: 42d5623fd0474874f85d447f1bbb5409, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3029,7 +3033,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1874436457166614514, guid: 16ac8e225c658784b9a1232c9434a955, type: 3}
       propertyPath: <_health>k__BackingField
-      value: 200
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874436457166614514, guid: 16ac8e225c658784b9a1232c9434a955, type: 3}
+      propertyPath: <DESTROY_TIME_LIMIT>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4196614183420655434, guid: 16ac8e225c658784b9a1232c9434a955, type: 3}
       propertyPath: m_LocalPosition.x

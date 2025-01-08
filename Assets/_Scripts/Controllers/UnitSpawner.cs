@@ -18,18 +18,32 @@ public class UnitSpawner : MonoBehaviour
 
     private Vector3 _spawnPoint;
 
+    private StructureManager _structureManager;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _spawnPoint = transform.GetChild(0).transform.position;
         _currentTime = 0f;
+        _structureManager = StructureManager.GetStructureManager();
     }
 
     // Update is called once per frame
     void Update()
     {
-        AutoSpawn();
+        if (_destination != null)       // destination was destroyed, need to reset it
+        {
+            AutoSpawn();
+        }
+        else
+        {
+            int team = gameObject.GetComponent<StructureController>()._team;
+            StructureController newDestination = _structureManager.FindNearestEnemyStructure(transform.position, team);
+            if (newDestination != null) {
+                _destination = newDestination.gameObject;
+            }
+        }
     }
 
     private void AutoSpawn()

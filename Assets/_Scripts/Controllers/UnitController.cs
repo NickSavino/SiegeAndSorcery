@@ -86,7 +86,12 @@ public class UnitController : MonoBehaviour, Attackable
         animateIfRunning();
         animateIfAttacking();
         animateDeath();
-        flipSprite();
+        flipSprite();       // requires destination
+
+
+        animateIfRunning();
+        animateIfAttacking();
+        animateDeath();
 
         if (!IsDead())
         {
@@ -170,20 +175,25 @@ public class UnitController : MonoBehaviour, Attackable
 
     void flipSprite()
     {
-        Vector3 distance = _destination.transform.position - Camera.main.transform.position;
-        Vector3 fromCamera = Camera.main.transform.forward;
-        float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
-
-        Vector3 distanceToSprite = transform.position - Camera.main.transform.position;
-        float spriteCheck = Vector3.SignedAngle(distanceToSprite, fromCamera, Vector3.up);
-
-        if (spriteCheck > check)       // object left of sprite
+        if (_destination != null)
         {
-            _spriteRenderer.flipX = spriteFlip == false ? true : false;               // true = left
-        }
-        else            // object right of sprite
-        {
-            _spriteRenderer.flipX = spriteFlip == false ? false: true;
+
+
+            Vector3 distance = _destination.transform.position - Camera.main.transform.position;
+            Vector3 fromCamera = Camera.main.transform.forward;
+            float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
+
+            Vector3 distanceToSprite = transform.position - Camera.main.transform.position;
+            float spriteCheck = Vector3.SignedAngle(distanceToSprite, fromCamera, Vector3.up);
+
+            if (spriteCheck > check)       // object left of sprite
+            {
+                _spriteRenderer.flipX = spriteFlip == false ? true : false;               // true = left
+            }
+            else            // object right of sprite
+            {
+                _spriteRenderer.flipX = spriteFlip == false ? false : true;
+            }
         }
     }
 
@@ -193,9 +203,14 @@ public class UnitController : MonoBehaviour, Attackable
     {
         if (_destination == null)   // if no units nearby and no structure selected
         {
-            _destination = _structureManager.FindNearestEnemyStructure(gameObject.transform.position, _team).gameObject;
-            _navMeshAgent.destination = _destination.transform.position;
-            _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;
+            
+            StructureController newDestination = _structureManager.FindNearestEnemyStructure(gameObject.transform.position, _team);
+            if (newDestination != null)
+            {
+                _destination = newDestination.gameObject;
+                _navMeshAgent.destination = _destination.transform.position;
+                _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;
+            }
         }
     }
 
@@ -242,16 +257,14 @@ public class UnitController : MonoBehaviour, Attackable
     }
 
 
-    public bool TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();          // start damage effect
         if (_health <= 0f)
         {
             SetDead();
-            return false;
         }
-        return true;
     }
 
 
@@ -278,9 +291,12 @@ public class UnitController : MonoBehaviour, Attackable
             if (_currentTime >= ATTACKS_PER_SECOND)
             {
                 _currentTime = 0;
-                bool attackStatus = scriptToAttack.TakeDamage(ATTACK_DAMAGE);
-                if (!attackStatus)          // if target is dead
+                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+
+                if (scriptToAttack.IsDead())
+                {
                     _destination = null;
+                }
             }
 
      

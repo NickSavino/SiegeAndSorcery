@@ -22,7 +22,7 @@ public class StructureController : MonoBehaviour, Attackable
     {
         _damageEffect = new StructureDamageEffect(GetComponent<MeshRenderer>());
         _structureManager = StructureManager.GetStructureManager();
-        _destroyTimer = 0f;
+        _destroyTimer = -1f;
     }
 
     // Update is called once per frame
@@ -61,22 +61,20 @@ public class StructureController : MonoBehaviour, Attackable
             _destroyTimer += Time.deltaTime;    // update timer
             if (_destroyTimer > DESTROY_TIME_LIMIT)
             {
-                Destroy(this);
+                Destroy(gameObject);
             }
         }
 
     }
 
-    public bool TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();
         if (IsDead())
         {
             SetDead();
-            return false;
         }
-        return true;
     }
 
 

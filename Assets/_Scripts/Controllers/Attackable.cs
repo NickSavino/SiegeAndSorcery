@@ -10,7 +10,7 @@ public interface Attackable
     float _destroyTimer { get; set; }
 
 
-    bool TakeDamage(float damage);      // true if dead after taking damage, false otherwise
+    void TakeDamage(float damage);      // true if dead after taking damage, false otherwise
 
     bool IsDead();
 
