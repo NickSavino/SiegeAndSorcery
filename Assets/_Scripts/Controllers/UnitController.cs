@@ -84,8 +84,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         _maxHealth = _health;
         _healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
-        _healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
-        //_healthBarFill.fillAmount = 1f;
+        //_healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
+        _healthBarFill.fillAmount = 1f;
     }
 
     // Update is called once per frame
@@ -118,7 +118,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             GetNewStructureDestination();
         }
         _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
-        Debug.Log(_healthBarFill.fillAmount);
     }
 
 
@@ -354,12 +353,13 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public void UpdateHealthBar(float newHealth)
     {
-       // if (newHealth <= 0f && _healthBar.activeSelf)
-       // {
-       //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
-       // }
-      //  else if (newHealth > 0f) {
+        // if (newHealth <= 0f && _healthBar.activeSelf)
+        // {
+        //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
+        // }
+        //  else if (newHealth > 0f) {
         _healthBarFill.fillAmount = newHealth / _maxHealth;
+        Debug.Log(_healthBarFill.fillAmount);
        // }
     }
 

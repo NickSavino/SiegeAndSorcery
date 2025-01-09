@@ -198,7 +198,7 @@ Transform:
   m_Children:
   - {fileID: 5826076212670420456}
   - {fileID: 4934033285297300752}
-  - {fileID: 3157582982306877357}
+  - {fileID: 1136243804805376227}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9098905399767800946
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b990d948dd5d4d94eb22d5e2cafa7265, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <_health>k__BackingField: 200
+  <_health>k__BackingField: 100
   <_team>k__BackingField: 1
   <DESTROY_TIME_LIMIT>k__BackingField: 10
   <ATTACK_DAMAGE>k__BackingField: 10
@@ -358,7 +358,7 @@ MonoBehaviour:
   ATTACK_FLASH_TIME: 0.5
   <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
---- !u!1001 &1925474958010294153
+--- !u!1001 &4516523302386989255
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -459,8 +459,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
---- !u!224 &3157582982306877357 stripped
+--- !u!224 &1136243804805376227 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3560471246240305188, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
-  m_PrefabInstance: {fileID: 1925474958010294153}
+  m_PrefabInstance: {fileID: 4516523302386989255}
   m_PrefabAsset: {fileID: 0}
