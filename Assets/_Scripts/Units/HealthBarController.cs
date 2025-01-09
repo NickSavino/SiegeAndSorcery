@@ -13,11 +13,13 @@ public class HealthBarController : MonoBehaviour
 
     public void SetHealth(float maxHealth, float currentHealth)
     {
-        healthBarFill.fillAmount = currentHealth / maxHealth;
 
-        if (currentHealth <= 0)
-        {
-            Destroy(gameObject);
-        }
+
+            healthBarFill.fillAmount = currentHealth / maxHealth;
+
+            if (currentHealth <= 0)
+            {
+                Destroy(gameObject);
+            }
     }
 }

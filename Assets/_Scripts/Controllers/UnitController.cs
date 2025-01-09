@@ -16,6 +16,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
 
+    [field: SerializeField] public float ATTACK_DAMAGE { get; set; }     // interface property from Attackable
 
     public float _destroyTimer { get; set; }
 
@@ -30,9 +31,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [SerializeField]
     private float ATTACKS_PER_SECOND;
-
-    [SerializeField]
-    private float ATTACK_DAMAGE;
 
     [SerializeField]
     private float ATTACK_FLASH_TIME;

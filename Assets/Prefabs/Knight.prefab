@@ -357,13 +357,14 @@ MonoBehaviour:
   <_health>k__BackingField: 100
   <_team>k__BackingField: 0
   <DESTROY_TIME_LIMIT>k__BackingField: 10
+  <ATTACK_DAMAGE>k__BackingField: 0
   spriteFlip: 0
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
-  ATTACK_DAMAGE: 10
   ATTACK_FLASH_TIME: 0.5
   healthBar: {fileID: 5770429114182925247}
+  <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
 --- !u!1001 &8823864060242239906
 PrefabInstance:

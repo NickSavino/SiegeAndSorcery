@@ -23,6 +23,8 @@ public interface Attacker
 {
 
     Collider _unitCollider { get; set; }
+
+    float ATTACK_DAMAGE { get; set; }
     public void AttackTarget();
     public void GetNearestEnemyUnit();
 }
@@ -32,9 +34,14 @@ public interface Attacker
 
 public interface Projectile
 {
+
+    GameObject _target { get; set; }
+    Vector3 _directionVector { get; set; }
+
+    float VELOCITY { get; set; }
     public void Travel();
     public void Pause();
     public void IsColliding();
-    public void GetHeight();
+
 
 }

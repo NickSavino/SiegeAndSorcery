@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.029999925, y: 0.21300001, z: 0.03000021}
-  m_LocalScale: {x: 14, y: 0.8, z: 14}
+  m_LocalScale: {x: 14, y: 14, z: 14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5156383065200121252}
@@ -348,13 +348,14 @@ MonoBehaviour:
   <_health>k__BackingField: 200
   <_team>k__BackingField: 1
   <DESTROY_TIME_LIMIT>k__BackingField: 10
+  <ATTACK_DAMAGE>k__BackingField: 10
   spriteFlip: 1
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
-  ATTACK_DAMAGE: 10
   ATTACK_FLASH_TIME: 0.5
   healthBar: {fileID: 3519754894808434068}
+  <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
 --- !u!1001 &1925474958010294153
 PrefabInstance:

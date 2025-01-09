@@ -22,7 +22,7 @@ public class StructureController : MonoBehaviour, Attackable
     void Start()
     {
         MeshRenderer[] childMeshes = GetComponentsInChildren<MeshRenderer>();
-        Debug.Log(childMeshes.Length);
+
         if (TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
         {
             _damageEffect = new StructureDamageEffect(mesh, childMeshes);

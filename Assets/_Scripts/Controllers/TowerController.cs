@@ -10,25 +10,31 @@ public class TowerController : MonoBehaviour, Attacker
 
     private GameObject _towerTop;
     private GameObject _towerCannon;
+    private GameObject _bulletSpawnPoint;
 
     [SerializeField]
     private int X_ROTATION_MAX = 16;
 
-    [SerializeField] private int BULLET_COOLDOWN = 2;
+    [SerializeField] private float BULLET_COOLDOWN = 0.5f;
 
 
     private float _currentTime;
 
 
     [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
+    [field: SerializeField] public float ATTACK_DAMAGE { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     [SerializeField]
-    GameObject _target;
+    private GameObject _target;
+
+    [SerializeField]
+    GameObject BULLET_PREFAB;
 
     void Start()
     {
         _towerTop = transform.Find("TowerTop").gameObject;
         _towerCannon = _towerTop.transform.Find("TowerCannon").gameObject;
+        _bulletSpawnPoint = _towerTop.transform.Find("BulletSpawnPoint").gameObject;
         _currentTime = 0f;
 
         _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
@@ -37,10 +43,14 @@ public class TowerController : MonoBehaviour, Attacker
     // Update is called once per frame
     void Update()
     {
+
         GetNearestEnemyUnit();
         RotateTowardEnemy();
+        TryShooting();
 
     }
+
+
 
 
     void RotateTowardEnemy()
@@ -60,19 +70,29 @@ public class TowerController : MonoBehaviour, Attacker
 
     void TryShooting()
     {
-        _currentTime += Time.deltaTime;
-
-        if (_currentTime >= BULLET_COOLDOWN)
+        if (_target != null)
         {
-            //   var bullet = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            // bullet.AddComponent<Rigidbody>();
-            // bullet.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-
-            // var instantiatedBullet = GameObject.Instantiate(bullet, _towerCannon.transform.position, _towerCannon.transform.rotation);
-
-            //  instantiatedBullet.GetComponent<Rigidbody>().AddForce((_enemy.transform.position - _towerCannon.transform.position).normalized * bulletImpulse, ForceMode.Impulse);
-            //  _lastTime = Time.time;
-
+            _currentTime += Time.deltaTime;
+            if (_currentTime >= BULLET_COOLDOWN)
+            {
+                _currentTime = 0f;
+                GameObject bullet = Instantiate(BULLET_PREFAB);
+                bullet.transform.position = _bulletSpawnPoint.transform.position;
+                Vector3 directionVector = (_target.transform.position - bullet.transform.position).normalized;
+                if (bullet.TryGetComponent<BulletController>(out BulletController bulletController))
+                {
+                    bulletController._directionVector = directionVector;
+                    bulletController._target = _target;
+                    bulletController.SetTowerController(this);
+                }
+            }
+        }
+        else
+        {
+            if (_currentTime != 0f)
+            {
+                _currentTime = 0f;          // reset current time if no current target
+            }
         }
     }
 
@@ -117,7 +137,10 @@ public class TowerController : MonoBehaviour, Attacker
     }
 
 
-
+    public void ClearTarget()
+    {
+        _target = null;
+    }
 
  
 
