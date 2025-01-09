@@ -8,11 +8,8 @@ public class TowerController : MonoBehaviour, Attacker
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    private GameObject _enemy;
-    private Vector3 _towerPos;
     private GameObject _towerTop;
     private GameObject _towerCannon;
-    private StructureDamageEffect _damageEffect;
 
     [SerializeField]
     private int X_ROTATION_MAX = 16;
@@ -25,15 +22,16 @@ public class TowerController : MonoBehaviour, Attacker
 
     [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
 
-
+    [SerializeField]
     GameObject _target;
 
     void Start()
     {
-    //    _enemy = GameObject.Find("Player");
         _towerTop = transform.Find("TowerTop").gameObject;
-        _towerCannon = transform.Find("TowerCannon").gameObject;
+        _towerCannon = _towerTop.transform.Find("TowerCannon").gameObject;
         _currentTime = 0f;
+
+        _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
     }
 
     // Update is called once per frame
@@ -49,7 +47,7 @@ public class TowerController : MonoBehaviour, Attacker
     {
         if (_target != null)
         {
-            var enemyLocation = _enemy.transform.position;
+            var enemyLocation = _target.transform.position;
             Vector3 topRotation = (enemyLocation - _towerTop.transform.position);
 
 
@@ -80,7 +78,7 @@ public class TowerController : MonoBehaviour, Attacker
 
     public void GetNearestEnemyUnit()
     {
-        if (_target != null)
+        if (_target == null)        // need to be finding new target
         {
             if (TryGetComponent<StructureController>(out StructureController controller))
             {
@@ -115,7 +113,6 @@ public class TowerController : MonoBehaviour, Attacker
                     _target = closest;
                 }
             }
-
         }
     }
 
@@ -125,7 +122,7 @@ public class TowerController : MonoBehaviour, Attacker
  
 
 
-    public void AttackTarget(MonoBehaviour scriptToAttack, float attackDistance)
+    public void AttackTarget()
     {
         throw new NotImplementedException();
     }

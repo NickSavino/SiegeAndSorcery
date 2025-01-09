@@ -23,7 +23,7 @@ public interface Attacker
 {
 
     Collider _unitCollider { get; set; }
-    public void AttackTarget(MonoBehaviour scriptToAttack, float attackDistance);
+    public void AttackTarget();
     public void GetNearestEnemyUnit();
 }
 

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
-public class UnitController : MonoBehaviour, Attackable
+public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
     /*
@@ -52,7 +52,7 @@ public class UnitController : MonoBehaviour, Attackable
     private SpriteRenderer _spriteRenderer;
     private UnitDamageEffect _damageEffect;
     private float _currentTime;     // time delta for attacks
-    private Collider _unitCollider; // will be this unit's unit collider child object
+    [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
 
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
@@ -226,7 +226,7 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    void GetNearestEnemyUnit()
+    public void GetNearestEnemyUnit()
     {
         if (_destination != null)    
         {
@@ -280,7 +280,7 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    private void AttackTarget()
+    public void AttackTarget()
     {
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
         float attackDistance;
