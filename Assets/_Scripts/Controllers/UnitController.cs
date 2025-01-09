@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using System.Collections.Generic;
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
@@ -17,6 +18,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
 
     [field: SerializeField] public float ATTACK_DAMAGE { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public Image _healthBarFill { get; set; }     // interface property from Attackable
 
     public float _destroyTimer { get; set; }
 
@@ -38,7 +41,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public GameObject healthBar;
     
-    private HealthBarController _healthBarController;
+  
     private float _maxHealth;
 
 
@@ -82,7 +85,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         _maxHealth = _health;
 
-        healthBar.TryGetComponent(out _healthBarController);
     }
 
     // Update is called once per frame
@@ -269,7 +271,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();          // start damage effect
-        _healthBarController?.SetHealth(_maxHealth, _health);
+        UpdateHealthBar(_health);
         if (_health <= 0f)
         {
             SetDead();
@@ -346,6 +348,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         GetComponent<NavMeshAgent>().enabled = false;
        // GetComponent<Collider>
+    }
+
+    public void UpdateHealthBar(float newHealth)
+    {
+        _healthBarFill.fillAmount = newHealth / _maxHealth;
     }
 
 }

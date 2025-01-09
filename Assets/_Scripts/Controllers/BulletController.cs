@@ -66,7 +66,7 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
         if (_target.TryGetComponent<UnitController>(out UnitController targetScript))
         {
             targetScript.TakeDamage(ATTACK_DAMAGE);
-            Destroy(gameObject);
+            DestroyImmediate(gameObject);
         }
     }
 
@@ -99,7 +99,8 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
         }
         if (_distanceTravelled >= MAX_TRAVEL_DISTANCE)
         {
-            Destroy(gameObject);
+
+            DestroyImmediate(gameObject);
         }
         else
         {

@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StructureController : MonoBehaviour, Attackable
 {
@@ -7,10 +8,11 @@ public class StructureController : MonoBehaviour, Attackable
     [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
 
     [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
-
+    [field: SerializeField] public Image _healthBarFill { get; set; }
 
     public float _destroyTimer { get; set; }
 
+    private float _maxHealth;           // need to set this in scriptable object
 
     StructureDamageEffect _damageEffect;     // using unit damage effect for right now
 
@@ -33,6 +35,7 @@ public class StructureController : MonoBehaviour, Attackable
         }
         _structureManager = StructureManager.GetStructureManager();
         _destroyTimer = -1f;
+        _maxHealth = _health;
     }
 
     // Update is called once per frame
@@ -87,5 +90,8 @@ public class StructureController : MonoBehaviour, Attackable
         }
     }
 
-
+    public void UpdateHealthBar(float newHealth)
+    {
+        _healthBarFill.fillAmount = newHealth / _maxHealth;
+    }
 }

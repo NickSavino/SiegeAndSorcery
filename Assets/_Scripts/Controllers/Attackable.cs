@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public interface Attackable
 {
+
+    Image _healthBarFill { get; set; }
     float _health { get; set; }
     int _team { get; set; }
 
@@ -17,6 +20,9 @@ public interface Attackable
     void SetDead();
 
     void UpdateDestroyTimer();
+
+
+    void UpdateHealthBar(float health);
 }
 
 public interface Attacker
