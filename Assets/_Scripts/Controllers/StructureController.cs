@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class StructureController : MonoBehaviour, Attackable
@@ -20,7 +21,16 @@ public class StructureController : MonoBehaviour, Attackable
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _damageEffect = new StructureDamageEffect(GetComponent<MeshRenderer>());
+        MeshRenderer[] childMeshes = GetComponentsInChildren<MeshRenderer>();
+        Debug.Log(childMeshes.Length);
+        if (TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
+        {
+            _damageEffect = new StructureDamageEffect(mesh, childMeshes);
+        }
+        else
+        {
+            _damageEffect = new StructureDamageEffect(null, childMeshes);
+        }
         _structureManager = StructureManager.GetStructureManager();
         _destroyTimer = -1f;
     }

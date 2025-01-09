@@ -21,5 +21,20 @@ public interface Attackable
 
 public interface Attacker
 {
+
+    Collider _unitCollider { get; set; }
     public void AttackTarget(MonoBehaviour scriptToAttack, float attackDistance);
+    public void GetNearestEnemyUnit();
+}
+
+
+
+
+public interface Projectile
+{
+    public void Travel();
+    public void Pause();
+    public void IsColliding();
+    public void GetHeight();
+
 }
