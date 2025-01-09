@@ -64,7 +64,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     void Start()
     {
-
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
         _navMeshAgent.destination = _destination.transform.position;
@@ -84,9 +83,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         _destroyTimer = -1f;
 
         _maxHealth = _health;
-        _healthBarFill.fillAmount = 1f;
-       // _healthBar.transform.Find("HealthBar").Find("Background").Find("Fill").TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
-
+        _healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
+        _healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
+        //_healthBarFill.fillAmount = 1f;
     }
 
     // Update is called once per frame
@@ -119,6 +118,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             GetNewStructureDestination();
         }
         _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
+        Debug.Log(_healthBarFill.fillAmount);
     }
 
 
