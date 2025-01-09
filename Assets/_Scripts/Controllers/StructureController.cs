@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +9,9 @@ public class StructureController : MonoBehaviour, Attackable
     [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
 
     [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
-    [field: SerializeField] public Image _healthBarFill { get; set; }
 
     public float _destroyTimer { get; set; }
+    [field: SerializeField] public GameObject _healthBar { get; set; }
 
     private float _maxHealth;           // need to set this in scriptable object
 
@@ -92,6 +93,7 @@ public class StructureController : MonoBehaviour, Attackable
 
     public void UpdateHealthBar(float newHealth)
     {
-        _healthBarFill.fillAmount = newHealth / _maxHealth;
+        //_healthBarFill.fillAmount = newHealth / _maxHealth;
+        throw new NotImplementedException();
     }
 }

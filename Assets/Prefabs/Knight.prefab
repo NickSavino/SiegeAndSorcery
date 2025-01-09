@@ -358,12 +358,13 @@ MonoBehaviour:
   <_team>k__BackingField: 0
   <DESTROY_TIME_LIMIT>k__BackingField: 10
   <ATTACK_DAMAGE>k__BackingField: 0
+  <_healthBar>k__BackingField: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
+  _healthBarFill: {fileID: 0}
   spriteFlip: 0
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
   ATTACK_FLASH_TIME: 0.5
-  healthBar: {fileID: 5770429114182925247}
   <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
 --- !u!1001 &8823864060242239906
@@ -489,10 +490,5 @@ MonoBehaviour:
 --- !u!224 &5412759572948873606 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3560471246240305188, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
-  m_PrefabInstance: {fileID: 8823864060242239906}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5770429114182925247 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
   m_PrefabInstance: {fileID: 8823864060242239906}
   m_PrefabAsset: {fileID: 0}

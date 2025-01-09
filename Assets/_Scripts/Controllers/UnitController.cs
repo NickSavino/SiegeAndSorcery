@@ -19,7 +19,10 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [field: SerializeField] public float ATTACK_DAMAGE { get; set; }     // interface property from Attackable
 
-    [field: SerializeField] public Image _healthBarFill { get; set; }     // interface property from Attackable
+    [field: SerializeField] public GameObject _healthBar { get; set; }     // interface property from Attackable
+
+    [SerializeField]
+    private Image _healthBarFill;
 
     public float _destroyTimer { get; set; }
 
@@ -37,9 +40,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [SerializeField]
     private float ATTACK_FLASH_TIME;
-
-
-    public GameObject healthBar;
     
   
     private float _maxHealth;
@@ -84,6 +84,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         _destroyTimer = -1f;
 
         _maxHealth = _health;
+        _healthBarFill.fillAmount = 1f;
+       // _healthBar.transform.Find("HealthBar").Find("Background").Find("Fill").TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
 
     }
 
@@ -352,7 +354,13 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public void UpdateHealthBar(float newHealth)
     {
+       // if (newHealth <= 0f && _healthBar.activeSelf)
+       // {
+       //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
+       // }
+      //  else if (newHealth > 0f) {
         _healthBarFill.fillAmount = newHealth / _maxHealth;
+       // }
     }
 
 }

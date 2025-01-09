@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public interface Attackable
 {
 
-    Image _healthBarFill { get; set; }
+    GameObject _healthBar { get; set; }
     float _health { get; set; }
     int _team { get; set; }
 
