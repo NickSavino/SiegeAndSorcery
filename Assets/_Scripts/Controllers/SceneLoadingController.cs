@@ -66,27 +66,29 @@ public class SceneLoadingController : MonoBehaviour
         // Close scene
         fade.SetActive(true);
         FadeOut();
-        yield return new WaitForSeconds(GetAnimationDuration("FadeOut", 1));
+        yield return new WaitForSeconds(GetAnimationDuration("FadeOut"));
 
         // Transition to loading screen
         loadingScreen.SetActive(true);
         FadeIn();
-        yield return new WaitForSeconds(GetAnimationDuration("FadeIn", 1));
+        yield return new WaitForSeconds(GetAnimationDuration("FadeIn"));
 
         // Run scene loader
         yield return StartCoroutine(LoadSceneAsync(sceneName));
 
         // Fade out loading screen
         FadeOut();
-        yield return new WaitForSeconds(GetAnimationDuration("FadeOut", 1));
+        yield return new WaitForSeconds(GetAnimationDuration("FadeOut"));
 
         loadingScreen.SetActive(false);
 
         // Fade in new scene
         FadeIn();
-        yield return new WaitForSeconds(GetAnimationDuration("FadeIn", 1));
+        yield return new WaitForSeconds(GetAnimationDuration("FadeIn"));
 
         fade.SetActive(false);
+
+        yield return null;
     }
 
     IEnumerator LoadSceneAsync(string sceneName)

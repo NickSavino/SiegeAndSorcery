@@ -31,7 +31,8 @@ public class GameMenu : MonoBehaviour
 
     public void OnMainMenuButtonClick()
     {
-        SceneManager.LoadScene("MainMenuScene");
+        Time.timeScale = 1;
+        SceneLoadingController.instance.LoadScene("MainMenuScene");
     }
 
     public void OnOptionsButtonClick()

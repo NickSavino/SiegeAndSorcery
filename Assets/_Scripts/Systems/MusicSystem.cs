@@ -28,8 +28,6 @@ public class MusicSystem : AudioSystemBase
     void Start()
     {
         _currentSource = musicSource;
-
-        PlayCurrentSource();
     }
 
     // Update is called once per frame
