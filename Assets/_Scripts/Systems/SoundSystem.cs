@@ -5,6 +5,8 @@ using UnityEngine;
 public class SoundSystem : AudioSystemBase
 {
 
+    public static SoundSystem instance;
+
     [System.Serializable]
     public class SoundEffects
     {
@@ -14,7 +16,19 @@ public class SoundSystem : AudioSystemBase
 
     public List<SoundEffects> soundEfects;
 
-    private Dictionary<string, AudioSource> _soundEffectsDictionary;
+    private static Dictionary<string, AudioSource> _soundEffectsDictionary;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

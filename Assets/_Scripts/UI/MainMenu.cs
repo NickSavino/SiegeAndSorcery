@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuMenu : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
     public GameObject optionsScreen;
     public GameObject menuScreen;
     private GameObject _currentScreen;
 
-    private Stack<GameObject> _navigationStack;
+    private static Stack<GameObject> _navigationStack;
 
     public void Start()
     {
@@ -22,7 +22,7 @@ public class MenuMenu : MonoBehaviour
     public void OnPlayButtonPress()
     {
         _currentScreen.SetActive(false);
-        SceneLoadingController.instance.LoadScene("AnimationScene");
+        SceneLoadingController.instance.LoadScene("GameLogicScene");
     }
 
     public void OnQuitButtonPress()
