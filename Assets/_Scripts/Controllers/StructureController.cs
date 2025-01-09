@@ -96,4 +96,9 @@ public class StructureController : MonoBehaviour, Attackable
         //_healthBarFill.fillAmount = newHealth / _maxHealth;
         throw new NotImplementedException();
     }
+
+    public void SetAlive()
+    {
+        throw new NotImplementedException();
+    }
 }

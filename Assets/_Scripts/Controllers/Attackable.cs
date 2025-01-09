@@ -19,6 +19,8 @@ public interface Attackable
 
     void SetDead();
 
+    void SetAlive();
+
     void UpdateDestroyTimer();
 
 

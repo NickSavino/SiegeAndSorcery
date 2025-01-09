@@ -83,7 +83,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         _destroyTimer = -1f;
 
         _maxHealth = _health;
-        _healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
+        //_healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
         //_healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
         _healthBarFill.fillAmount = 1f;
     }
@@ -347,8 +347,15 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     }
     public void SetDead()
     {
+        _healthBar.SetActive(false);
         GetComponent<NavMeshAgent>().enabled = false;
        // GetComponent<Collider>
+    }
+
+    public void SetAlive()
+    {
+        _healthBar.SetActive(true);
+        GetComponent<NavMeshAgent>().enabled = false;
     }
 
     public void UpdateHealthBar(float newHealth)

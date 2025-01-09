@@ -358,8 +358,8 @@ MonoBehaviour:
   <_team>k__BackingField: 0
   <DESTROY_TIME_LIMIT>k__BackingField: 10
   <ATTACK_DAMAGE>k__BackingField: 0
-  <_healthBar>k__BackingField: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
-  _healthBarFill: {fileID: 0}
+  <_healthBar>k__BackingField: {fileID: 1418470541263568698}
+  _healthBarFill: {fileID: 90014827067221363}
   spriteFlip: 0
   MIN_STRUCT_ATTACK_DISTANCE: 12
   MIN_UNIT_ATTACK_DISTANCE: 2
@@ -378,6 +378,10 @@ PrefabInstance:
     - target: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
       propertyPath: m_Name
       value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3560471246240305188, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
       propertyPath: m_Pivot.x
@@ -468,8 +472,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
+--- !u!114 &90014827067221363 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4102955574426075220, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
+  m_PrefabInstance: {fileID: 4165667311346001191}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &623249243948807427 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3560471246240305188, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
+  m_PrefabInstance: {fileID: 4165667311346001191}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1418470541263568698 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3053448417773804061, guid: f9a6a55817525b7438dbb4d3e44507a9, type: 3}
   m_PrefabInstance: {fileID: 4165667311346001191}
   m_PrefabAsset: {fileID: 0}
