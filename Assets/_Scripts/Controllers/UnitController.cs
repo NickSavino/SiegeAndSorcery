@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using System.Collections.Generic;
-public class UnitController : MonoBehaviour, Attackable
+public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
     /*
@@ -16,6 +17,12 @@ public class UnitController : MonoBehaviour, Attackable
 
     [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
 
+    [field: SerializeField] public float ATTACK_DAMAGE { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public GameObject _healthBar { get; set; }     // interface property from Attackable
+
+    [SerializeField]
+    private Image _healthBarFill;
 
     public float _destroyTimer { get; set; }
 
@@ -32,15 +39,9 @@ public class UnitController : MonoBehaviour, Attackable
     private float ATTACKS_PER_SECOND;
 
     [SerializeField]
-    private float ATTACK_DAMAGE;
-
-    [SerializeField]
     private float ATTACK_FLASH_TIME;
-
-
-    public GameObject healthBar;
     
-    private HealthBarController _healthBarController;
+  
     private float _maxHealth;
 
 
@@ -52,7 +53,7 @@ public class UnitController : MonoBehaviour, Attackable
     private SpriteRenderer _spriteRenderer;
     private UnitDamageEffect _damageEffect;
     private float _currentTime;     // time delta for attacks
-    private Collider _unitCollider; // will be this unit's unit collider child object
+    [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
 
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
@@ -63,7 +64,6 @@ public class UnitController : MonoBehaviour, Attackable
 
     void Start()
     {
-
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
         _navMeshAgent.destination = _destination.transform.position;
@@ -83,8 +83,9 @@ public class UnitController : MonoBehaviour, Attackable
         _destroyTimer = -1f;
 
         _maxHealth = _health;
-
-        healthBar.TryGetComponent(out _healthBarController);
+        //_healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
+        //_healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
+        _healthBarFill.fillAmount = 1f;
     }
 
     // Update is called once per frame
@@ -226,7 +227,7 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    void GetNearestEnemyUnit()
+    public void GetNearestEnemyUnit()
     {
         if (_destination != null)    
         {
@@ -271,7 +272,7 @@ public class UnitController : MonoBehaviour, Attackable
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();          // start damage effect
-        _healthBarController?.SetHealth(_maxHealth, _health);
+        UpdateHealthBar(_health);
         if (_health <= 0f)
         {
             SetDead();
@@ -280,7 +281,7 @@ public class UnitController : MonoBehaviour, Attackable
 
 
 
-    private void AttackTarget()
+    public void AttackTarget()
     {
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
         float attackDistance;
@@ -346,7 +347,27 @@ public class UnitController : MonoBehaviour, Attackable
     }
     public void SetDead()
     {
+        _healthBar.SetActive(false);
         GetComponent<NavMeshAgent>().enabled = false;
        // GetComponent<Collider>
     }
+
+    public void SetAlive()
+    {
+        _healthBar.SetActive(true);
+        GetComponent<NavMeshAgent>().enabled = false;
+    }
+
+    public void UpdateHealthBar(float newHealth)
+    {
+        // if (newHealth <= 0f && _healthBar.activeSelf)
+        // {
+        //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
+        // }
+        //  else if (newHealth > 0f) {
+        _healthBarFill.fillAmount = newHealth / _maxHealth;
+        Debug.Log(_healthBarFill.fillAmount);
+       // }
+    }
+
 }
