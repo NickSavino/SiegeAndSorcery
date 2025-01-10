@@ -21,7 +21,7 @@ public class TowerController : MonoBehaviour, Attacker
     private float _currentTime;
 
 
-    [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
+    [field: SerializeField] public SphereCollider _unitCollider { get; set; }     // interface property from Attackable
     [field: SerializeField] public float ATTACK_DAMAGE { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     [SerializeField]
@@ -30,6 +30,8 @@ public class TowerController : MonoBehaviour, Attacker
     [SerializeField]
     GameObject BULLET_PREFAB;
 
+    public bool isPlaced { get; set; }    // don't let it shoot until its placed!
+
     void Start()
     {
         _towerTop = transform.Find("TowerTop").gameObject;
@@ -37,16 +39,21 @@ public class TowerController : MonoBehaviour, Attacker
         _bulletSpawnPoint = _towerTop.transform.Find("BulletSpawnPoint").gameObject;
         _currentTime = 0f;
 
-        _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
+        SphereCollider temp;
+        transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<SphereCollider>(out temp);
+        _unitCollider = temp;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        GetNearestEnemyUnit();
-        RotateTowardEnemy();
-        TryShooting();
+        if (isPlaced)
+        {
+            Debug.Log("WOPRKING");
+            GetNearestEnemyUnit();
+            RotateTowardEnemy();
+            TryShooting();
+        }
 
     }
 
@@ -103,7 +110,7 @@ public class TowerController : MonoBehaviour, Attacker
             if (TryGetComponent<StructureController>(out StructureController controller))
             {
 
-                Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
+                Collider[] hitColliders = Physics.OverlapSphere(_unitCollider.transform.position, _unitCollider.radius);
 
                 float closestDistance = 0f;
                 GameObject closest = null;
@@ -111,11 +118,10 @@ public class TowerController : MonoBehaviour, Attacker
                 foreach (Collider thatCollider in hitColliders)
                 {
                     GameObject otherObject = thatCollider.gameObject;
-                    UnitController otherUnit = otherObject.GetComponent<UnitController>();
 
                     // don't count self
 
-                    if (otherUnit != null)          // colliding agent is unit
+                    if (otherObject.TryGetComponent<UnitController>(out UnitController otherUnit))          // colliding agent is unit
                     {
                         if (otherUnit._team != controller._team)   // unit belongs to different team!
                         {

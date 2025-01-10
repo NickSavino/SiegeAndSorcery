@@ -53,7 +53,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     private SpriteRenderer _spriteRenderer;
     private UnitDamageEffect _damageEffect;
     private float _currentTime;     // time delta for attacks
-    [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
+    [field: SerializeField] public SphereCollider _unitCollider { get; set; }     // interface property from Attackable
 
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
@@ -64,27 +64,27 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     void Start()
     {
-        _navMeshAgent = GetComponent<NavMeshAgent>();
+        TryGetComponent<NavMeshAgent>(out _navMeshAgent);
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
         _navMeshAgent.destination = _destination.transform.position;
 
 
-        _animator = GetComponent<Animator>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        TryGetComponent<Animator>(out _animator);
+        TryGetComponent<SpriteRenderer>(out _spriteRenderer);
         _damageEffect = new UnitDamageEffect(_spriteRenderer);
 
         // use transform to find child, get game object of transform, then its collider
 
         // transform.Find searches just for children of this game object, NOT the entire scene
-        _unitCollider = transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.GetComponent<Collider>();
+        SphereCollider temp;
+        transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<SphereCollider>(out temp);
+        _unitCollider = temp;
 
         _structureManager = StructureManager.GetStructureManager();
 
         _destroyTimer = -1f;
 
         _maxHealth = _health;
-        //_healthBar.transform.Find("Background").Find("Fill").gameObject.TryGetComponent<Image>(out _healthBarFill);   // need to understand how Nick got Image so cleanly, need to do that
-        //_healthBarFill = transform.Find("Background").Find("Fill").gameObject.GetComponent<Image>();
         _healthBarFill.fillAmount = 1f;
     }
 
@@ -100,6 +100,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         animateDeath();
         flipSprite();       // requires destination
 
+
+        if (_health == _maxHealth && _healthBar.activeSelf)     // should be handled in update healthbar
+            _healthBar.SetActive(false);
 
         animateIfRunning();
         animateIfAttacking();
@@ -142,7 +145,15 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         {
             Vector3 diff = transform.position - _destination.transform.position;
 
-            float distanceMetric = _destination.GetComponent<UnitController>() != null ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+            float distanceMetric;
+            if (ObjectIsUnit(_destination))
+            {
+                distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
+            }
+            else
+            {
+                distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
+            }
 
             diff.y = 0f;
             if (diff.magnitude <= distanceMetric)
@@ -231,8 +242,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         if (_destination != null)    
         {
-            int count = 0;
-            Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
+
+            Collider[] hitColliders = Physics.OverlapSphere(_unitCollider.transform.position, _unitCollider.radius);
 
             float closestDistance = 0f;
             GameObject closest = null;
@@ -240,11 +251,10 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             foreach (Collider thatCollider in hitColliders)
             {
                 GameObject otherObject = thatCollider.gameObject;
-                UnitController otherUnit = otherObject.GetComponent<UnitController>();
 
                 // don't count self
 
-                if (otherUnit != null)          // colliding agent is unit
+                if (otherObject.TryGetComponent<UnitController>(out UnitController otherUnit))          // colliding agent is unit
                 {
                     if (otherUnit._team != this._team)   // unit belongs to different team!
                     {
@@ -284,19 +294,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void AttackTarget()
     {
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
-        float attackDistance;
-        Attackable scriptToAttack;
-        if (ObjectIsUnit(_destination))
-        {
-            attackDistance = MIN_UNIT_ATTACK_DISTANCE;
-            scriptToAttack = _destination.GetComponent<UnitController>();
-        }
-        else
-        {
-            attackDistance = MIN_STRUCT_ATTACK_DISTANCE;
-            scriptToAttack = _destination.GetComponent<StructureController>();
-        }
 
+        Attackable scriptToAttack;
+        _destination.TryGetComponent<Attackable>(out scriptToAttack);
+
+        float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
         if (distanceVector <= attackDistance)
         {
             _currentTime += Time.deltaTime;
@@ -321,7 +323,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         if (obj == null)
             return false;
-        return obj.GetComponent<UnitController>() != null;
+        UnitController temp;
+        return obj.TryGetComponent<UnitController>(out temp);
     }
 
     public bool IsDead()
@@ -348,14 +351,17 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void SetDead()
     {
         _healthBar.SetActive(false);
-        GetComponent<NavMeshAgent>().enabled = false;
-       // GetComponent<Collider>
+        
+        if (TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
+        {
+            agent.enabled = false;
+        }
+
     }
 
     public void SetAlive()
     {
-        _healthBar.SetActive(true);
-        GetComponent<NavMeshAgent>().enabled = false;
+        throw new NotImplementedException();
     }
 
     public void UpdateHealthBar(float newHealth)
@@ -365,9 +371,12 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
         // }
         //  else if (newHealth > 0f) {
+        if (!_healthBar.activeSelf)
+            _healthBar.SetActive(true);
+
+        
         _healthBarFill.fillAmount = newHealth / _maxHealth;
-        Debug.Log(_healthBarFill.fillAmount);
-       // }
+
     }
 
 }

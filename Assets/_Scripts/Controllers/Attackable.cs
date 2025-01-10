@@ -30,7 +30,7 @@ public interface Attackable
 public interface Attacker
 {
 
-    Collider _unitCollider { get; set; }
+    SphereCollider _unitCollider { get; set; }
 
     float ATTACK_DAMAGE { get; set; }
     public void AttackTarget();
