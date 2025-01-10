@@ -89,6 +89,7 @@ public class StructurePlacementController : MonoBehaviour
     void Update()
     {
         ShowPlacement();
+        SelectTypeKeyClick();
         DeselectAll();
         RotateStructure();
         ConfirmPlacement();
@@ -246,7 +247,12 @@ public class StructurePlacementController : MonoBehaviour
         foreach (Collider childCollider in obj.GetComponentsInChildren<Collider>())
         {
             childCollider.gameObject.layer = obj.layer = IGNORE_DEFAULT_LAYER;
-            ;
+        }
+
+        // need to get Tower's unitfinder onto raycast ignore layer
+        if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out Collider unitCollider))
+        {
+            unitCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
         }
     }
 

@@ -145,3 +145,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <_health>k__BackingField: 0
   <_team>k__BackingField: 0
+  <DESTROY_TIME_LIMIT>k__BackingField: 0
+  <_healthBar>k__BackingField: {fileID: 0}

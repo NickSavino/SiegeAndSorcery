@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3474235041459578122}
   - component: {fileID: 4379462668702587232}
   - component: {fileID: 2046985649016353749}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BulletPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,4 +126,3 @@ MonoBehaviour:
   <ATTACK_DAMAGE>k__BackingField: 50
   <VELOCITY>k__BackingField: 100
   <_directionVector>k__BackingField: {x: 0, y: 0, z: 0}
-  _controller: {fileID: 0}
