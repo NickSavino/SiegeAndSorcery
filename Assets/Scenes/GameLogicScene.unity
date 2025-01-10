@@ -1776,6 +1776,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4325045352334917930, guid: c266fb18c89c40f40bf53e057d3711a3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1931198726688427924, guid: 5767bea6bc21b714994fda4c9ce2bb93, type: 3}
+    - target: {fileID: 4325045352334917930, guid: c266fb18c89c40f40bf53e057d3711a3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: OnBackButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 4325045352334917930, guid: c266fb18c89c40f40bf53e057d3711a3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SoundSystem, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5421880682476074419, guid: c266fb18c89c40f40bf53e057d3711a3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
