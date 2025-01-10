@@ -4,7 +4,7 @@ using UnityEngine;
 public class BulletController : MonoBehaviour, Attacker, Projectile
 {
 
-    [field: SerializeField] public Collider _unitCollider { get; set; }
+    [field: SerializeField] public SphereCollider _unitCollider { get; set; }
     [field: SerializeField] public GameObject _target { get; set; }
 
     
@@ -25,6 +25,9 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
     void Start()
     {
         _directionVector = _directionVector.normalized;
+        SphereCollider temp;
+        TryGetComponent<SphereCollider>(out temp);
+        _unitCollider = temp;
     }
 
     // Update is called once per frame
@@ -84,7 +87,7 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
          */
 
 
-        Collider[] hitColliders = Physics.OverlapBox(transform.position ,transform.localScale);     // sphere / mesh collider
+        Collider[] hitColliders = Physics.OverlapSphere(_unitCollider.transform.position ,_unitCollider.radius );     // sphere / mesh collider
 
 
         float distance = Time.deltaTime * VELOCITY;

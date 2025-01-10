@@ -53,7 +53,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     private SpriteRenderer _spriteRenderer;
     private UnitDamageEffect _damageEffect;
     private float _currentTime;     // time delta for attacks
-    [field: SerializeField] public Collider _unitCollider { get; set; }     // interface property from Attackable
+    [field: SerializeField] public SphereCollider _unitCollider { get; set; }     // interface property from Attackable
 
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
@@ -76,8 +76,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         // use transform to find child, get game object of transform, then its collider
 
         // transform.Find searches just for children of this game object, NOT the entire scene
-        Collider temp;
-        transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out temp);
+        SphereCollider temp;
+        transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<SphereCollider>(out temp);
         _unitCollider = temp;
 
         _structureManager = StructureManager.GetStructureManager();
@@ -243,7 +243,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         if (_destination != null)    
         {
 
-            Collider[] hitColliders = Physics.OverlapBox(_unitCollider.transform.position, _unitCollider.transform.localScale);
+            Collider[] hitColliders = Physics.OverlapSphere(_unitCollider.transform.position, _unitCollider.radius);
 
             float closestDistance = 0f;
             GameObject closest = null;
@@ -294,19 +294,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void AttackTarget()
     {
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
-        float attackDistance;
+
         Attackable scriptToAttack;
         _destination.TryGetComponent<Attackable>(out scriptToAttack);
 
-        if (scriptToAttack is UnitController)       // is a unit?
-        {
-            attackDistance = MIN_UNIT_ATTACK_DISTANCE;
-        }
-        else
-        {
-            attackDistance = MIN_STRUCT_ATTACK_DISTANCE;    // otherwise is a structure
-        }
-
+        float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
         if (distanceVector <= attackDistance)
         {
             _currentTime += Time.deltaTime;

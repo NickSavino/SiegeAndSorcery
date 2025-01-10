@@ -204,8 +204,13 @@ public class StructurePlacementController : MonoBehaviour
                         instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
                     SetEnabledMode(instedObj);
+                    if (instedObj.TryGetComponent<TowerController>(out TowerController tower))
+                    {
+                        tower.isPlaced = true;
+                    }
                     instedObj = null;       // do not target this gameobject anymore!
                     _showedOnce = false;
+           
                 }
             }
         }

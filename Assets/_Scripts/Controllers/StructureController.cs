@@ -67,8 +67,14 @@ public class StructureController : MonoBehaviour, Attackable
     public void SetDead()
     { 
         _structureManager.RemoveStructure(this);        // remove myself from the structure manager
-        gameObject.GetComponent<MeshRenderer>().enabled = false;
-        gameObject.GetComponent<Collider>().enabled = false;
+        if (TryGetComponent<MeshRenderer>(out MeshRenderer rend))
+        {
+            rend.enabled = false;
+        }
+        if (TryGetComponent<Collider>(out Collider coll))
+        {
+            coll.enabled = false;
+        }
     }
 
     public void UpdateDestroyTimer()
