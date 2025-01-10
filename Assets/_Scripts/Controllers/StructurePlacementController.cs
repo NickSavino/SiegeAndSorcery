@@ -38,6 +38,8 @@ public class StructurePlacementController : MonoBehaviour
     [SerializeField]
     private float ROTATION_SENSITIVITY;
 
+    private StructureManager _structureManager;
+
     /*
      *   struct, GameObject with required mayerials
      */
@@ -83,12 +85,15 @@ public class StructurePlacementController : MonoBehaviour
         _selectedIndex = 0;
 
         _structuresDictionary = _structures.ToDictionary(x => x.structureName, x => x);
+
+        _structureManager = StructureManager.GetStructureManager();
     }
 
     // Update is called once per frame
     void Update()
     {
         ShowPlacement();
+        SelectTypeKeyClick();
         DeselectAll();
         RotateStructure();
         ConfirmPlacement();
@@ -199,8 +204,13 @@ public class StructurePlacementController : MonoBehaviour
                         instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
                     SetEnabledMode(instedObj);
+                    if (instedObj.TryGetComponent<TowerController>(out TowerController tower))
+                    {
+                        tower.isPlaced = true;
+                    }
                     instedObj = null;       // do not target this gameobject anymore!
                     _showedOnce = false;
+           
                 }
             }
         }
@@ -246,7 +256,17 @@ public class StructurePlacementController : MonoBehaviour
         foreach (Collider childCollider in obj.GetComponentsInChildren<Collider>())
         {
             childCollider.gameObject.layer = obj.layer = IGNORE_DEFAULT_LAYER;
-            ;
+        }
+
+        // need to get Tower's unitfinder onto raycast ignore layer
+        if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out Collider unitCollider))
+        {
+            unitCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
+        }
+
+        if (instedObj.TryGetComponent<StructureController>(out StructureController structureController))
+        {
+            _structureManager.AddStructure(structureController);    // let structure manager know a new structure exists!
         }
     }
 
