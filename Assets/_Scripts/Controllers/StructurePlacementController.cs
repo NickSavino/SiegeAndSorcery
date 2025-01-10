@@ -38,6 +38,8 @@ public class StructurePlacementController : MonoBehaviour
     [SerializeField]
     private float ROTATION_SENSITIVITY;
 
+    private StructureManager _structureManager;
+
     /*
      *   struct, GameObject with required mayerials
      */
@@ -83,6 +85,8 @@ public class StructurePlacementController : MonoBehaviour
         _selectedIndex = 0;
 
         _structuresDictionary = _structures.ToDictionary(x => x.structureName, x => x);
+
+        _structureManager = StructureManager.GetStructureManager();
     }
 
     // Update is called once per frame
@@ -253,6 +257,11 @@ public class StructurePlacementController : MonoBehaviour
         if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out Collider unitCollider))
         {
             unitCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
+        }
+
+        if (instedObj.TryGetComponent<StructureController>(out StructureController structureController))
+        {
+            _structureManager.AddStructure(structureController);    // let structure manager know a new structure exists!
         }
     }
 

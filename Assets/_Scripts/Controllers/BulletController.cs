@@ -90,17 +90,20 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
         float distance = Time.deltaTime * VELOCITY;
         _distanceTravelled += distance;
 
-        if (_target.TryGetComponent<Collider>(out Collider hitbox))
-        {
-            if (hitColliders.Contains(hitbox))
+        if (_target != null)
+        {  // if target has not been destroyed
+            if (_target.TryGetComponent<Collider>(out Collider hitbox))
             {
-                AttackTarget();
+                if (hitColliders.Contains(hitbox))
+                {
+                    AttackTarget();
+                }
             }
         }
         if (_distanceTravelled >= MAX_TRAVEL_DISTANCE)
         {
 
-            DestroyImmediate(gameObject);
+            Destroy(gameObject);
         }
         else
         {

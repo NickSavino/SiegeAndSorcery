@@ -30,6 +30,8 @@ public class TowerController : MonoBehaviour, Attacker
     [SerializeField]
     GameObject BULLET_PREFAB;
 
+    private bool isPlaced;      // don't let it shoot until its placed!
+
     void Start()
     {
         _towerTop = transform.Find("TowerTop").gameObject;
@@ -43,10 +45,12 @@ public class TowerController : MonoBehaviour, Attacker
     // Update is called once per frame
     void Update()
     {
-
-        GetNearestEnemyUnit();
-        RotateTowardEnemy();
-        TryShooting();
+        if (isPlaced)
+        {
+            GetNearestEnemyUnit();
+            RotateTowardEnemy();
+            TryShooting();
+        }
 
     }
 

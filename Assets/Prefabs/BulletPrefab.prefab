@@ -123,6 +123,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <_unitCollider>k__BackingField: {fileID: 0}
   <_target>k__BackingField: {fileID: 0}
-  <ATTACK_DAMAGE>k__BackingField: 50
+  <ATTACK_DAMAGE>k__BackingField: 0
   <VELOCITY>k__BackingField: 100
   <_directionVector>k__BackingField: {x: 0, y: 0, z: 0}
