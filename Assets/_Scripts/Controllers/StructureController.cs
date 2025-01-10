@@ -13,6 +13,9 @@ public class StructureController : MonoBehaviour, Attackable
     public float _destroyTimer { get; set; }
     [field: SerializeField] public GameObject _healthBar { get; set; }
 
+    [SerializeField]
+    private Image _healthBarFill;
+
     private float _maxHealth;           // need to set this in scriptable object
 
     StructureDamageEffect _damageEffect;     // using unit damage effect for right now
@@ -37,12 +40,16 @@ public class StructureController : MonoBehaviour, Attackable
         _structureManager = StructureManager.GetStructureManager();
         _destroyTimer = -1f;
         _maxHealth = _health;
+        _healthBarFill.fillAmount = 1f;
     }
 
     // Update is called once per frame
     void Update()
     {
         _damageEffect.UpdateTakeDamageTime();
+
+        if (_health == _maxHealth && _healthBar.activeSelf)     // should be handled in update healthbar
+            _healthBar.SetActive(false);
 
         if (IsDead())
         {
@@ -85,6 +92,7 @@ public class StructureController : MonoBehaviour, Attackable
     {
         _health -= damage;
         _damageEffect.StartDamageEffect();
+        UpdateHealthBar(_health);
         if (IsDead())
         {
             SetDead();
@@ -93,8 +101,13 @@ public class StructureController : MonoBehaviour, Attackable
 
     public void UpdateHealthBar(float newHealth)
     {
-        //_healthBarFill.fillAmount = newHealth / _maxHealth;
-        throw new NotImplementedException();
+
+        if (!_healthBar.activeSelf)
+            _healthBar.SetActive(true);
+
+
+        _healthBarFill.fillAmount = newHealth / _maxHealth;
+
     }
 
     public void SetAlive()

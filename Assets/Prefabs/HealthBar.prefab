@@ -13,13 +13,14 @@ GameObject:
   - component: {fileID: 5166919107819555119}
   - component: {fileID: 8466538537012951151}
   - component: {fileID: 8373352681941547646}
+  - component: {fileID: 1964265575673965053}
   m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3560471246240305188
 RectTransform:
   m_ObjectHideFlags: 0
@@ -85,7 +86,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &8466538537012951151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +112,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3053448417773804061}
   m_CullTransparentMesh: 1
+--- !u!114 &1964265575673965053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3053448417773804061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a9a6e7e77497a447830a08c6a8c2bca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7977785998609149831
 GameObject:
   m_ObjectHideFlags: 0

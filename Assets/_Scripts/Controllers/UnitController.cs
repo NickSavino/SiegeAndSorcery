@@ -373,8 +373,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         
         _healthBarFill.fillAmount = newHealth / _maxHealth;
-        Debug.Log(_healthBarFill.fillAmount);
-       // }
+
     }
 
 }
