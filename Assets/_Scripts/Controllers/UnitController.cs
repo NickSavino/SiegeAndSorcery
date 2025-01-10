@@ -101,6 +101,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         flipSprite();       // requires destination
 
 
+        if (_health == _maxHealth && _healthBar.activeSelf)     // should be handled in update healthbar
+            _healthBar.SetActive(false);
+
         animateIfRunning();
         animateIfAttacking();
         animateDeath();
@@ -365,6 +368,10 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
         // }
         //  else if (newHealth > 0f) {
+        if (!_healthBar.activeSelf)
+            _healthBar.SetActive(true);
+
+        
         _healthBarFill.fillAmount = newHealth / _maxHealth;
         Debug.Log(_healthBarFill.fillAmount);
        // }
