@@ -9,10 +9,12 @@ public class DefenderUIController : MonoBehaviour
 
     public StructureName selectedStructure = StructureName.None;
 
+    private bool _controlsEnabled = false;
+
     public void Start()
     {
-        _structurePlacementController = GetComponent<StructurePlacementController>();
-        _wallBuilder = GetComponent<WallBuildingController>();
+        TryGetComponent(out _structurePlacementController);
+        TryGetComponent(out _wallBuilder);
     }
 
     public void OnWallButtonClick()
@@ -22,16 +24,34 @@ public class DefenderUIController : MonoBehaviour
             selectedStructure = _structurePlacementController.SetType(StructureName.None);
         }
 
-        _wallBuilder.SetBuildModeActive(!_wallBuilder.IsBuildModeActive());
+        if (_controlsEnabled)
+        {
+            _wallBuilder.SetBuildModeActive(!_wallBuilder.IsBuildModeActive());
+        }
+
     }
 
     public void OnTowerButtonClick()
     {
-        if (_wallBuilder.IsBuildModeActive())
+        if (_wallBuilder.IsBuildModeActive() && _controlsEnabled)
         {
             _wallBuilder.SetBuildModeActive(false);
         }
 
-        selectedStructure = _structurePlacementController.SetType(selectedStructure == StructureName.BaseTower ? StructureName.None : StructureName.BaseTower);
+        if (_controlsEnabled)
+        {
+            selectedStructure = _structurePlacementController.SetType(selectedStructure == StructureName.BaseTower ? StructureName.None : StructureName.BaseTower);
+        }
+    }
+
+    public void EnableControls(bool enable)
+    {
+        if (enable == false)
+        {
+            _structurePlacementController.DeselectAll(true);
+            _wallBuilder.SetBuildModeActive(false);
+        }
+
+        _controlsEnabled = enable;
     }
 }

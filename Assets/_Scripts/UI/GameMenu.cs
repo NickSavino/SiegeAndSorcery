@@ -31,7 +31,8 @@ public class GameMenu : MonoBehaviour
 
     public void OnMainMenuButtonClick()
     {
-        SceneManager.LoadScene("MainMenu");
+        Time.timeScale = 1;
+        SceneLoadingController.instance.LoadScene("MainMenuScene");
     }
 
     public void OnOptionsButtonClick()
@@ -55,5 +56,4 @@ public class GameMenu : MonoBehaviour
         pauseMenu.enabled = false;
         Time.timeScale = 1;
     }
-
 }

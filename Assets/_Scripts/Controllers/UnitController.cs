@@ -1,52 +1,131 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
-using UnityEditor.Animations;
-
-public class UnitController : MonoBehaviour
+using UnityEngine.UI;
+using System.Collections.Generic;
+public class UnitController : MonoBehaviour, Attackable, Attacker
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    /*
+     * Serialized Fields
+     */
 
-    private NavMeshAgent _navMeshAgent;
-    private Camera _camera;
-    private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
+    //[SerializeField]
+    [field: SerializeField]  public float _health { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public int _team { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public float DESTROY_TIME_LIMIT { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public float ATTACK_DAMAGE { get; set; }     // interface property from Attackable
+
+    [field: SerializeField] public GameObject _healthBar { get; set; }     // interface property from Attackable
 
     [SerializeField]
-    private int _health = 100;
+    private Image _healthBarFill;
+
+    public float _destroyTimer { get; set; }
 
     [SerializeField]
     private bool spriteFlip;
 
     [SerializeField]
-    private float MIN_ATTACK_DISTANCE;
+    private float MIN_STRUCT_ATTACK_DISTANCE;
 
-    public Vector3 _destination;
+    [SerializeField]
+    private float MIN_UNIT_ATTACK_DISTANCE;
+
+    [SerializeField]
+    private float ATTACKS_PER_SECOND;
+
+    [SerializeField]
+    private float ATTACK_FLASH_TIME;
+    
+  
+    private float _maxHealth;
+
+    private SoundCycler _soundCycler; //Used to select random audio clip for sword clashes
+    public AudioClip _deathSound;
+    private AudioSource _audioSource; //Audio source component on unit prefab
+    /*
+     *  private fields
+     */
+    private NavMeshAgent _navMeshAgent;
+    private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private UnitDamageEffect _damageEffect;
+    private float _currentTime;     // time delta for attacks
+    [field: SerializeField] public SphereCollider _unitCollider { get; set; }     // interface property from Attackable
+
+    [SerializeField]
+    private GameObject _destination;    // destination / structure or unit to attack
+
+    private StructureManager _structureManager;
+
+
 
     void Start()
     {
+        TryGetComponent<NavMeshAgent>(out _navMeshAgent);
+        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
+        _navMeshAgent.destination = _destination.transform.position;
 
-        _navMeshAgent = GetComponent<NavMeshAgent>();
-        _camera = Camera.main;
-        _animator = GetComponent<Animator>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-  
+
+        TryGetComponent<Animator>(out _animator);
+        TryGetComponent<SpriteRenderer>(out _spriteRenderer);
+        _damageEffect = new UnitDamageEffect(_spriteRenderer);
+
+        TryGetComponent(out _soundCycler);
+        TryGetComponent(out _audioSource);
+
+        // use transform to find child, get game object of transform, then its collider
+
+        // transform.Find searches just for children of this game object, NOT the entire scene
+        SphereCollider temp;
+        transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<SphereCollider>(out temp);
+        _unitCollider = temp;
+
+        _structureManager = StructureManager.GetStructureManager();
+
+        _destroyTimer = -1f;
+
+        _maxHealth = _health;
+        _healthBarFill.fillAmount = 1f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_destination != null)
+        if (IsDead())
         {
-            _navMeshAgent.SetDestination(_destination);
+            UpdateDestroyTimer();
         }
-        Debug.Log(_navMeshAgent.velocity.magnitude);
         animateIfRunning();
         animateIfAttacking();
         animateDeath();
-        flipSprite();
+        flipSprite();       // requires destination
+
+
+        if (_health == _maxHealth && _healthBar.activeSelf)     // should be handled in update healthbar
+            _healthBar.SetActive(false);
+
+        animateIfRunning();
+        animateIfAttacking();
+        animateDeath();
+
+        if (!IsDead())
+        {
+            GetNearestEnemyUnit();
+            if (_destination != null)
+            {
+                AttackTarget();
+            }
+        }
+        if (_destination == null)       // killed current target and no units nearby
+        {
+            GetNewStructureDestination();
+        }
+        _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
 
 
@@ -54,7 +133,7 @@ public class UnitController : MonoBehaviour
 
     void animateIfRunning()
     {
-        if (_navMeshAgent.velocity.magnitude > 0)
+        if (_navMeshAgent.velocity.magnitude > 0 && !_animator.GetBool("isAttacking"))
         {
             _animator.SetBool("isRunning", true);
 
@@ -67,22 +146,43 @@ public class UnitController : MonoBehaviour
 
     void animateIfAttacking()
     {
-        Vector3 diff = transform.position - _destination;
-        diff.y = 0f;
-        if (diff.magnitude <= MIN_ATTACK_DISTANCE)
+        if (_destination != null)
         {
-            _animator.SetBool("isAttacking", true);
+            Vector3 diff = transform.position - _destination.transform.position;
 
+            float distanceMetric;
+            if (ObjectIsUnit(_destination))
+            {
+                distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
+            }
+            else
+            {
+                distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
+            }
+
+            diff.y = 0f;
+            if (diff.magnitude <= distanceMetric)
+            {
+                _animator.SetBool("isAttacking", true);
+            }
+            else
+            {
+                _animator.SetBool("isAttacking", false);
+            }
         }
         else
         {
-            _animator.SetBool("isAttacking", false);
+            _animator.SetBool("isAttacking", false);        // nothing to attack
         }
+
+
+
+        
     }
 
     void animateDeath()
     {
-        if (_health <= 0)
+        if (IsDead())
         {
             _animator.SetBool("isAttacking", false);
             _animator.SetBool("isRunning", false);
@@ -94,34 +194,204 @@ public class UnitController : MonoBehaviour
         }
     }
 
-
+    public void SetDestination(GameObject destination)
+    {
+        this._destination = destination;
+    }
 
 
     void flipSprite()
     {
+        if (_destination != null)
+        {
+
+
+            Vector3 distance = _destination.transform.position - Camera.main.transform.position;
+            Vector3 fromCamera = Camera.main.transform.forward;
+            float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
+
+            Vector3 distanceToSprite = transform.position - Camera.main.transform.position;
+            float spriteCheck = Vector3.SignedAngle(distanceToSprite, fromCamera, Vector3.up);
+
+            if (spriteCheck > check)       // object left of sprite
+            {
+                _spriteRenderer.flipX = spriteFlip == false ? true : false;               // true = left
+            }
+            else            // object right of sprite
+            {
+                _spriteRenderer.flipX = spriteFlip == false ? false : true;
+            }
+        }
+    }
+
+
+
+    void GetNewStructureDestination()
+    {
+        if (_destination == null)   // if no units nearby and no structure selected
+        {
+            
+            StructureController newDestination = _structureManager.FindNearestEnemyStructure(gameObject.transform.position, _team);
+            if (newDestination != null)
+            {
+                _destination = newDestination.gameObject;
+                _navMeshAgent.destination = _destination.transform.position;
+                _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;
+            }
+        }
+    }
+
+
+
+    public void GetNearestEnemyUnit()
+    {
+        if (_destination != null)    
+        {
+
+            Collider[] hitColliders = Physics.OverlapSphere(_unitCollider.transform.position, _unitCollider.radius);
+
+            float closestDistance = 0f;
+            GameObject closest = null;
+
+            foreach (Collider thatCollider in hitColliders)
+            {
+                GameObject otherObject = thatCollider.gameObject;
+
+                // don't count self
+
+                if (otherObject.TryGetComponent<UnitController>(out UnitController otherUnit))          // colliding agent is unit
+                {
+                    if (otherUnit._team != this._team)   // unit belongs to different team!
+                    {
+                        float distance = (otherObject.transform.position - transform.position).magnitude;
+                        if ((distance < closestDistance || closest == null) && !otherUnit.IsDead())
+                        {
+                            closest = otherObject;
+                            closestDistance = distance;
+                        }
+                    }
+                }
+            }
+            if (closest != null)        // found enemy unit
+            {
+                _destination = closest;
+                _navMeshAgent.destination = closest.transform.position;
+                _navMeshAgent.stoppingDistance = MIN_UNIT_ATTACK_DISTANCE / 2;
+            }
+
+        }
+    }
+
+
+    public void TakeDamage(float damage)
+    {
+        _health -= damage;
+        _damageEffect.StartDamageEffect();          // start damage effect
+        UpdateHealthBar(_health);
+        if (_health <= 0f)
+        {
+            SetDead();
+        }
+    }
+
+
+
+    public void AttackTarget()
+    {
+        float distanceVector = (_destination.transform.position - transform.position).magnitude;
+
+        Attackable scriptToAttack;
+        _destination.TryGetComponent<Attackable>(out scriptToAttack);
+
+        float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+        if (distanceVector <= attackDistance)
+        {
+            _currentTime += Time.deltaTime;
+            if (_currentTime >= ATTACKS_PER_SECOND)
+            {
+                _currentTime = 0;
+                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+
+                if (_soundCycler != null)
+                {
+                    _audioSource.clip = _soundCycler.SelectRandomSound();
+                    SoundSystem.instance.PlaySound(_audioSource);
+                }
+                
+                if (scriptToAttack.IsDead())
+                {
+                    _destination = null;
+
+                }
+            }
+
      
-
-        Vector3 distance = _destination - Camera.main.transform.position;
-        Vector3 fromCamera = Camera.main.transform.forward;
-        float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
-
-        Vector3 distanceToSprite = transform.position - Camera.main.transform.position;
-        float spriteCheck = Vector3.SignedAngle(distanceToSprite, fromCamera, Vector3.up);
-        Debug.Log(check);
-        Debug.Log(spriteCheck);
-
-
-        if (spriteCheck > check)       // object left of sprite
-        {
-            _spriteRenderer.flipX = spriteFlip == false ? true : false;               // true = left
         }
-        else            // object right of sprite
+    }
+
+
+
+    bool ObjectIsUnit(GameObject obj)
+    {
+        if (obj == null)
+            return false;
+        UnitController temp;
+        return obj.TryGetComponent<UnitController>(out temp);
+    }
+
+    public bool IsDead()
+    {
+        return _health <= 0;
+    }
+
+    public void UpdateDestroyTimer()
+    {
+        if (_destroyTimer < 0f) // start timer
         {
-            _spriteRenderer.flipX = spriteFlip == false ? false: true;
+            _destroyTimer = 0f;
         }
-
-
-
+        else
+        {
+            _destroyTimer += Time.deltaTime;    // update timer
+            if (_destroyTimer > DESTROY_TIME_LIMIT)
+            {
+                Destroy(gameObject);
+            }
+        }
 
     }
+    public void SetDead()
+    {
+        _healthBar.SetActive(false);
+
+        _audioSource.clip = _deathSound;
+        SoundSystem.instance.PlaySound(_audioSource);
+
+        if (TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
+        {
+            agent.enabled = false;
+        }
+
+    }
+
+    public void SetAlive()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateHealthBar(float newHealth)
+    {
+        // if (newHealth <= 0f && _healthBar.activeSelf)
+        // {
+        //     _healthBar.SetActive(false); // just disable, will be destroyed with unit after
+        // }
+        //  else if (newHealth > 0f) {
+        if (!_healthBar.activeSelf)
+            _healthBar.SetActive(true);
+
+        
+        _healthBarFill.fillAmount = newHealth / _maxHealth;
+
+    }
+
 }

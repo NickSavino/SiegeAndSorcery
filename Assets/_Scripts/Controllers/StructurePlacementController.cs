@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.Profiling;
-using UnityEngine.InputSystem.LowLevel;
+using System.Linq;
+using UnityEngine.EventSystems;
 using System.Linq;
 using UnityEngine.EventSystems;
 
@@ -40,11 +40,12 @@ public class StructurePlacementController : MonoBehaviour
     [SerializeField]
     private float ROTATION_SENSITIVITY;
 
+    private StructureManager _structureManager;
     /*
      *   struct, GameObject with required mayerials
      */
     [System.Serializable]
-    private class ModelMaterial      
+    private class ModelMaterial
     {
         public StructureName structureName;
         public GameObject model;
@@ -74,7 +75,6 @@ public class StructurePlacementController : MonoBehaviour
      */
     private int _selectedIndex;     // selected struct key number
     private GameObject instedObj;   // currently instantiated game object / structed
-    private bool _insted;           // flag indicated if current structure has been instantiated
 
     private bool _showedOnce;       // when placing a rotated item with right mouse button clicked,
                                     // we need to make sure the next one is placed at cursor
@@ -86,12 +86,15 @@ public class StructurePlacementController : MonoBehaviour
         _selectedIndex = 0;
 
         _structuresDictionary = _structures.ToDictionary(x => x.structureName, x => x);
+
+        _structureManager = StructureManager.GetStructureManager();
     }
 
     // Update is called once per frame
     void Update()
     {
         ShowPlacement();
+        SelectTypeKeyClick();
         DeselectAll();
         RotateStructure();
         ConfirmPlacement();
@@ -119,7 +122,6 @@ public class StructurePlacementController : MonoBehaviour
             else
             {
                 Destroy(instedObj); // disregard current thing we were trying to place
-                _insted = false;
                 _selectedStructure = _structures[_selectedIndex];
                 _showedOnce = false;
             }
@@ -129,16 +131,22 @@ public class StructurePlacementController : MonoBehaviour
 
     public StructureName SetType(StructureName structureName)
     {
-        Destroy(instedObj);
+        if (_structuresDictionary == null)
+        {
+            _structuresDictionary = _structures.ToDictionary(x => x.structureName, x => x);
+        }
+        if (instedObj != null)
+        {
+            Destroy(instedObj);
+        }
         if (!_structuresDictionary.ContainsKey(structureName) || structureName == StructureName.None)
         {
             _selectedIndex = -1;
             _selectedStructure = null;
             _showedOnce = false;
             return StructureName.None;
-        } 
-        
-        _insted = false;
+        }
+
         _selectedStructure = _structuresDictionary[structureName];
         _showedOnce = false;
         return structureName;
@@ -148,11 +156,10 @@ public class StructurePlacementController : MonoBehaviour
     {
         if (_selectedStructure?.model != null)     // only show placements if we have selected a type of structure to build
         {
-            if (!_insted)
+            if (instedObj == null)
             {
                 instedObj = Instantiate(_selectedStructure.model);
                 SetDisabledMode(instedObj);
-                _insted = true;
             }
             if (!IsRotating() || !_showedOnce)       // if not holding down right click
             {
@@ -180,7 +187,7 @@ public class StructurePlacementController : MonoBehaviour
 
     void ConfirmPlacement()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || instedObj == null)
         {
             return;
         }
@@ -190,27 +197,31 @@ public class StructurePlacementController : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
-            {   
-              if (Input.GetMouseButtonDown(0) )
-                {   if (!IsRotating())
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (!IsRotating())
                     {
                         instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
                     SetEnabledMode(instedObj);
+                    if (instedObj.TryGetComponent<TowerController>(out TowerController tower))
+                    {
+                        tower.isPlaced = true;
+                    }
                     instedObj = null;       // do not target this gameobject anymore!
-                    _insted = false;        // instantiate a new one if we want, but keep this type selected
                     _showedOnce = false;
+           
                 }
             }
         }
     }
 
-    void DeselectAll()
+    public void DeselectAll(bool? deselect = false)
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || (deselect.HasValue && deselect.Value == true))
         {
             Destroy(instedObj);
-            _insted = false;        
             _selectedStructure = null;
             _showedOnce = false;
         }
@@ -246,7 +257,17 @@ public class StructurePlacementController : MonoBehaviour
         foreach (Collider childCollider in obj.GetComponentsInChildren<Collider>())
         {
             childCollider.gameObject.layer = obj.layer = IGNORE_DEFAULT_LAYER;
-            ;
+        }
+
+        // need to get Tower's unitfinder onto raycast ignore layer
+        if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out Collider unitCollider))
+        {
+            unitCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
+        }
+
+        if (instedObj.TryGetComponent<StructureController>(out StructureController structureController))
+        {
+            _structureManager.AddStructure(structureController);    // let structure manager know a new structure exists!
         }
     }
 
@@ -260,6 +281,11 @@ public class StructurePlacementController : MonoBehaviour
 
     bool CheckInvalidPlacement()
     {
+        if (instedObj == null)
+        {
+            return false;
+        }
+
         foreach (Collider thisCollider in instedObj.GetComponentsInChildren<Collider>())
         {
             Collider[] hitColliders = Physics.OverlapBox(instedObj.transform.position, instedObj.transform.localScale);
@@ -278,7 +304,7 @@ public class StructurePlacementController : MonoBehaviour
 
     void RotateStructure()
     {
-        if (Input.GetMouseButton(1))    // right click
+        if (Input.GetMouseButton(1) && instedObj != null)    // right click
         {
             float delta = Input.GetAxis("Mouse X") * ROTATION_SENSITIVITY;
             instedObj.transform.Rotate(new Vector3(0, delta, 0));

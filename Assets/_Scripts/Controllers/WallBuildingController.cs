@@ -87,18 +87,20 @@ public class WallBuildingController : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit))
-            {  
-                
+            {
+
                 // reset panel position to post
                 Vector3 lastPostPos = _currentPosts[_currentPosts.Count - 1].transform.position;
                 _currentPanels[index].transform.position = new Vector3(lastPostPos.x, lastPostPos.y, lastPostPos.z);
 
                 GameObject hitObject = hit.collider.gameObject; // get the gameobject that the cursor is on
                 Vector3 distanceVector;
-                if (hitObject.name.StartsWith(_postPrefab.name)) {      // if it is a post, snap the wall to it
+                if (hitObject.name.StartsWith(_postPrefab.name))
+                {      // if it is a post, snap the wall to it
                     distanceVector = hitObject.transform.position - _currentPanels[index].transform.position;
                 }
-                else {
+                else
+                {
                     distanceVector = hit.point - _currentPanels[index].transform.position;
                 }
 
@@ -108,12 +110,12 @@ public class WallBuildingController : MonoBehaviour
                     distanceVector = distanceVector.normalized * MAX_WALL_LENGTH;
                 }
                 // get distance and rotation, set rotation
-       
+
 
                 distanceVector.y = 0;      // do not want to rotate up or down
 
                 _nextPostPosition = _currentPanels[index].transform.position + distanceVector;
-           //     _nextPostPosition.y = hit.point.y;
+                //     _nextPostPosition.y = hit.point.y;
 
                 Vector3 currentScale = _currentPanels[index].transform.localScale;
                 Quaternion rotation = Quaternion.LookRotation(distanceVector, Vector3.up);
@@ -121,7 +123,7 @@ public class WallBuildingController : MonoBehaviour
 
                 // scale panel along Z-axis so it reaches mouse cursor
                 _currentPanels[index].transform.localScale = new Vector3(currentScale.x, currentScale.y, distanceVector.magnitude);
-                
+
 
                 //TODO: If we make all models with pivots at the edge of a wall, then this will not be needed
                 Vector3 translateVector = new Vector3(0, 0, distanceVector.magnitude) / 2;  // need to translate along Z-axis (if pivot is at center)
@@ -243,6 +245,16 @@ public class WallBuildingController : MonoBehaviour
                 _instedPost = false;
             }
         } else
+        {
+            _placingPost = true;
+        }
+    }
+
+    public bool IsBuildModeActive()
+    {
+        return _modeActive;
+        }
+        else
         {
             _placingPost = true;
         }

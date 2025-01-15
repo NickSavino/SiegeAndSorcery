@@ -120,7 +120,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2252969125364419002}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DefenderUIController, Assembly-CSharp
         m_MethodName: OnWallButtonClick
         m_Mode: 1
@@ -144,7 +144,6 @@ GameObject:
   - component: {fileID: 3397672202655421876}
   - component: {fileID: 2797364291808920908}
   - component: {fileID: 16477941215083615}
-  - component: {fileID: 2252969125364419002}
   - component: {fileID: 7833656445012949188}
   - component: {fileID: 5272631427031241430}
   - component: {fileID: 3097535552378791185}
@@ -240,18 +239,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 55
---- !u!114 &2252969125364419002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4089542910024977664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 041e3c58584f92a44bd330aa7272544d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   selectedStructure: 0
 --- !u!114 &7833656445012949188
 MonoBehaviour:
