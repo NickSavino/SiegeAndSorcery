@@ -9,8 +9,10 @@
 <div align="center">
   <a href="https://github.com/NickSavino/SiegeAndSorcery">
   </a>
+  
+![MainMenuTitleText](https://github.com/user-attachments/assets/e079d14b-9a5d-48df-9462-0bddaf73315d)
 
-  <h3 align="center">Siege & Sorcery :european_castle: :crystal_ball: </h3>
+
 
   <p align="center">
     A product database management application! Track items by trending sales volumes, shipments from suppliers, customer transactions, and more!
