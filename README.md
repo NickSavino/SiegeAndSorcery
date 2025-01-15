@@ -11,7 +11,8 @@
   </a>
   
 
-![MainMenuTitleText](https://github.com/user-attachments/assets/8451ba9a-ef8c-416f-abc7-0281a5f1976f)
+![MainMenuTitleTextSmall](https://github.com/user-attachments/assets/e008663d-3373-4314-9dc5-15e62a5d5aa0)
+
 
 
 
