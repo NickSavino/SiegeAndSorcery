@@ -21,7 +21,7 @@ public class GameMenu : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F10))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             pauseMenu.enabled = !pauseMenu.enabled;
             _currentScreen = pauseMenu.enabled ? pauseMenu : null;
