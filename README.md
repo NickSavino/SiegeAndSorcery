@@ -37,7 +37,6 @@ A dark fantasy tower defense game where magic and might collide in a kingdom on 
 
 ## About The Project
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 This game is a passion project that is currently in the early alpha stage! **Siege & Sorcery** will involve assymetric multiplayer
 gameplay where a defender must defend against hordes of invading forces!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
