@@ -30,6 +30,7 @@ A dark fantasy tower defense game where magic and might collide in a kingdom on 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Repel the Onslaught!
+![Combat GIF](https://github.com/user-attachments/assets/71d0239b-b131-460e-8a3a-fca959d2bfb0)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
