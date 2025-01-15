@@ -62,6 +62,8 @@ Nicola Savino -- Programmer -- https://github.com/NickSavino
 
 Sean Tan -- Programmer -- https://github.com/seantan88
 
+Kirby Garcia -- Visual Designer -- https://github.com/Circinus10
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
