@@ -46,3 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mixer: {fileID: 24100000, guid: 5f3c5c9407014e54c81aef221d4242ed, type: 2}
   group: {fileID: -8454534284406837553, guid: 5f3c5c9407014e54c81aef221d4242ed, type: 2}
+  musicSource: {fileID: 0}
+  playOnStartup: 0
