@@ -58,7 +58,9 @@ There will be frequent updates to this repository as development continues. Stay
 
 Desmond O'Brien -- Programmer -- https://github.com/desobob11
 
-Nivola Savino -- Programmer -- https://github.com/NickSavino
+Nicola Savino -- Programmer -- https://github.com/NickSavino
+
+Sean Tan -- Programmer -- https://github.com/seantan88
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
