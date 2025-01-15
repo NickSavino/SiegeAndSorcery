@@ -7,10 +7,10 @@
 
 <br />
 <div align="center">
-  <a href="https://github.com/desobob11/SDLDoom">
+  <a href="https://github.com/NickSavino/SiegeAndSorcery">
   </a>
 
-  <h3 align="center">Retail Renaissance :heavy_dollar_sign: :chart_with_upwards_trend: </h3>
+  <h3 align="center">Siege & Sorcery :european_castle: :crystal_ball: </h3>
 
   <p align="center">
     A product database management application! Track items by trending sales volumes, shipments from suppliers, customer transactions, and more!
