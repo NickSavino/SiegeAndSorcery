@@ -16,7 +16,7 @@
 
 
   <p align="center">
-    A product database management application! Track items by trending sales volumes, shipments from suppliers, customer transactions, and more!
+A dark fantasy tower defense game where magic and might collide in a world on the brink of destruction. As the last line of defense against an unstoppable army of monstrous invaders, you must strategically place enchanted towers and wield powerful spells to fend off waves of nightmarish creatures. Harness elemental forces, summon mystical guardians, and upgrade your defenses to survive relentless sieges. With each victory, uncover ancient secrets and forbidden sorceries that might be the key to saving the realm—or plunging it further into darkness. Will you stand strong, or fall to the siege?
   </p>
 </div>
 
