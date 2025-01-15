@@ -10,7 +10,8 @@
   <a href="https://github.com/NickSavino/SiegeAndSorcery">
   </a>
   
-![MainMenuTitleText](https://github.com/user-attachments/assets/e079d14b-9a5d-48df-9462-0bddaf73315d)
+
+![MainMenuTitleText](https://github.com/user-attachments/assets/8451ba9a-ef8c-416f-abc7-0281a5f1976f)
 
 
 
