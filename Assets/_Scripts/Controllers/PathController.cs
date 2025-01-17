@@ -24,11 +24,10 @@ public class PathController : MonoBehaviour
         _activePoints = new List<Vector3>();
         _tempPoints = new List<Vector3>();
 
-        _anchor = gameObject.transform.position;
-        _tempPath.positionCount = 2;    // always start with 2 point
-        _tempPath.SetPosition(0, _anchor);
-        _tempPath.SetPosition(1, _anchor);
+        _anchor = transform.root.Find(STRUCTS_NAMES.SPAWN_POINT).transform.position;    // spawn points position is _anchor
+        _tempPath.positionCount = 0;    // temp path should start with nothing
 
+        _activePath.positionCount = 0;  // full path as well should start with nothing
         _isActive = false;
     }
 
@@ -36,10 +35,7 @@ public class PathController : MonoBehaviour
     void Update()
     {
         AddTempPoint();
-        if (_isActive)
-        {
-            Debug.Log(_tempPoints[1]);
-        }
+
     }
 
 
@@ -56,8 +52,8 @@ public class PathController : MonoBehaviour
                 Vector3 nextPoint = hit.point;
                 nextPoint.y = _anchor.y;
 
-                _tempPoints[_tempPoints.Count - 1] = nextPoint;
-                _tempPath.SetPosition(_tempPoints.Count - 1, nextPoint);
+                _tempPoints[_tempPoints.Count - 1] = nextPoint;     
+                _tempPath.SetPosition(_tempPoints.Count, nextPoint); // tempPoints is always one point behind
 
                 if (_isActive && Input.GetMouseButtonDown(0))
                 {
@@ -92,7 +88,7 @@ public class PathController : MonoBehaviour
     {
         _isActive = false;
         _tempPoints.Clear();
-        _tempPath.positionCount = 2;
+        _tempPath.positionCount = 0;        // clear it
     }
 
 

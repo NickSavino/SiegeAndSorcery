@@ -7,6 +7,8 @@ public class STRUCTS_NAMES
     public static string STRUCTURE_MANAGER { get { return new STRUCTS_NAMES("StructureManager").Value; } }
 
     public static string UNIT_PATH { get { return new STRUCTS_NAMES("UnitPath").Value; } }
+
+    public static string SPAWN_POINT { get { return new STRUCTS_NAMES("SpawnPoint").Value; } }
     public static string ACTIVE_PATH { get { return new STRUCTS_NAMES("ActivePath").Value; } }
     public static string TEMP_PATH { get { return new STRUCTS_NAMES("TempPath").Value; } }
     public override string ToString()

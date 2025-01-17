@@ -93,7 +93,7 @@ public class UnitSpawner : MonoBehaviour
         if (!_pathController._isActive)
         {
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
             {
 
 
@@ -108,8 +108,8 @@ public class UnitSpawner : MonoBehaviour
                 {
                     if (hit.collider == myCollider)
                     {
-                        _pathController._isActive = true;
-                        _pathController.Deactivate();
+    
+                        _pathController.Activate();
                         MeshRenderer renderer;
                         TryGetComponent<MeshRenderer>(out renderer);
                         renderer.material.color = Color.cyan;   // just debugging ugly highlighting for now when selected
@@ -125,7 +125,7 @@ public class UnitSpawner : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                 _pathController.Activate();
+                 _pathController.Deactivate();
                 MeshRenderer renderer;
                 TryGetComponent<MeshRenderer>(out renderer);
                 renderer.material.color = Color.white;   // just debugging ugly highlighting for now when selected
