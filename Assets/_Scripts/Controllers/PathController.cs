@@ -10,7 +10,7 @@ public class PathController : MonoBehaviour
     private Vector3 _anchor;
     private LineRenderer _activePath;
     private LineRenderer _tempPath;
-    private List<Vector3> _activePoints;
+    private Vector3[] _activePoints;
     private List<Vector3> _tempPoints;
 
     [field: SerializeField] public bool _isActive { get; set; }
@@ -21,7 +21,7 @@ public class PathController : MonoBehaviour
     {
         transform.Find(STRUCTS_NAMES.ACTIVE_PATH).TryGetComponent<LineRenderer>(out _activePath);
         transform.Find(STRUCTS_NAMES.TEMP_PATH).TryGetComponent<LineRenderer>(out _tempPath);
-        _activePoints = new List<Vector3>();
+        _activePoints = new Vector3[0];
         _tempPoints = new List<Vector3>();
 
         _anchor = transform.root.Find(STRUCTS_NAMES.SPAWN_POINT).transform.position;    // spawn points position is _anchor
@@ -35,6 +35,7 @@ public class PathController : MonoBehaviour
     void Update()
     {
         AddTempPoint();
+        SavePath();
 
     }
 
@@ -65,8 +66,11 @@ public class PathController : MonoBehaviour
     }
 
 
+
+
     public void Activate()
     {
+        ShowActive();
         _isActive = true;
         _tempPoints.Add(_anchor);
         _tempPath.positionCount = 2;
@@ -83,9 +87,24 @@ public class PathController : MonoBehaviour
         }
     }
 
+    public void SavePath()
+    {
+        if (_isActive && Input.GetKeyDown(KeyCode.Space))
+        {
+            _activePath.positionCount = _tempPath.positionCount - 1;
+            for (int i = 0; i < _tempPath.positionCount - 1; ++i)
+            {
+                _activePath.SetPosition(i, _tempPath.GetPosition(i));
+            }
+            _activePoints = new Vector3[_activePath.positionCount];
+            _activePath.GetPositions(_activePoints);
+        }
+    }
+
 
     public void Deactivate()
     {
+        HideActive();
         _isActive = false;
         _tempPoints.Clear();
         _tempPath.positionCount = 0;        // clear it
@@ -93,5 +112,19 @@ public class PathController : MonoBehaviour
 
 
 
-    
+    private void HideActive()
+    {
+        _activePath.positionCount = 0;
+    }
+
+    private void ShowActive()
+    {
+        _activePath.positionCount = _activePoints.Length;
+        for (int i = 0; i < _activePoints.Length; ++i)
+        {
+            _activePath.SetPosition(i, _activePoints[i]);
+        }
+    }
+
+
 }
