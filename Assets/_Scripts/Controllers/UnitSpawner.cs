@@ -110,8 +110,8 @@ public class UnitSpawner : MonoBehaviour
                     {
     
                         _pathController.Activate();
-                        MeshRenderer renderer;
-                        TryGetComponent<MeshRenderer>(out renderer);
+
+                        TryGetComponent<MeshRenderer>(out MeshRenderer renderer);
                         renderer.material.color = Color.cyan;   // just debugging ugly highlighting for now when selected
                     }
                 }
