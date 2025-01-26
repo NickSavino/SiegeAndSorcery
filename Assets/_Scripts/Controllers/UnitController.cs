@@ -40,6 +40,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [SerializeField]
     private float ATTACK_FLASH_TIME;
+
+
+
+    private Vector3[] _unitPath;    // get's from UnitSpawner
+    private int _unitPathIndex;
     
   
     private float _maxHealth;
@@ -65,8 +70,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     void Start()
     {
         TryGetComponent<NavMeshAgent>(out _navMeshAgent);
-        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
-        _navMeshAgent.destination = _destination.transform.position;
+        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // good enough stopping distance
+        _navMeshAgent.destination = _unitPath[0];       // start at first destination
+        _unitPathIndex = 0;     // start at first point on path
 
 
         TryGetComponent<Animator>(out _animator);
@@ -110,7 +116,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         if (!IsDead())
         {
-            GetNearestEnemyUnit();
+            UpdatePathDestination();
+        //    GetNearestEnemyUnit();
             if (_destination != null)
             {
                 AttackTarget();
@@ -118,7 +125,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         }
         if (_destination == null)       // killed current target and no units nearby
         {
-            GetNewStructureDestination();
+       //     GetNewStructureDestination();
         }
         _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
@@ -188,20 +195,25 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             _animator.SetBool("isDead", false);
         }
     }
-
+        
+    // TODO: Maybe deprecated?
     public void SetDestination(GameObject destination)
     {
         this._destination = destination;
     }
 
+    public void SetPath(Vector3[] path) {
+        this._unitPath = path;
+    }
+
 
     void flipSprite()
     {
-        if (_destination != null)
+        if (_navMeshAgent.destination != null)
         {
 
 
-            Vector3 distance = _destination.transform.position - Camera.main.transform.position;
+            Vector3 distance = _navMeshAgent.destination - Camera.main.transform.position;
             Vector3 fromCamera = Camera.main.transform.forward;
             float check = Vector3.SignedAngle(distance, fromCamera, Vector3.up);
 
@@ -377,6 +389,19 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         
         _healthBarFill.fillAmount = newHealth / _maxHealth;
 
+    }
+
+
+    private void UpdatePathDestination() {
+        // only try if path is not complete
+        if (_unitPathIndex < _unitPath.Length) {
+            if ((_navMeshAgent.destination - transform.position).magnitude <= _navMeshAgent.stoppingDistance) {
+                ++_unitPathIndex;
+                if (_unitPathIndex < _unitPath.Length) {
+                    _navMeshAgent.destination = _unitPath[_unitPathIndex];
+                }
+            }
+        }
     }
 
 }

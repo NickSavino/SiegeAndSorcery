@@ -365,6 +365,7 @@ MonoBehaviour:
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
   ATTACK_FLASH_TIME: 0.5
+  PATH_DEST_DIST: 1
   <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
 --- !u!1001 &4165667311346001191

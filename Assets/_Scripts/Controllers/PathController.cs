@@ -117,16 +117,19 @@ public class PathController : MonoBehaviour
         _activePath.enabled = true;
     }
 
-    public Vector3[] PathForUnit() {
-        Vector3[] rawPoints = new Vector3[_tempPath.positionCount];
-        _tempPath.GetPositions(rawPoints);
+    public Vector3[] GetPathForUnit() {
+        if (_activePath.positionCount > 0) {
+            Vector3[] rawPoints = new Vector3[_activePath.positionCount];
+            _activePath.GetPositions(rawPoints);
 
 
-        Vector3[] pathFor = new Vector3[_tempPath.positionCount - 1];       // exclude first point, it is same as second (needed for nice line drawing)
-        for (int i = 1; i < rawPoints.Length; ++i) {        // skip first
-            pathFor[i] = rawPoints[i + 1];
+            Vector3[] pathFor = new Vector3[_activePath.positionCount - 1];       // exclude first point, it is same as second (needed for nice line drawing)
+            for (int i = 1; i < rawPoints.Length; ++i) {        // skip first
+                pathFor[i-1] = rawPoints[i];
+            }
+            return pathFor;
         }
-        return pathFor;
+        return null;
     }
 
 

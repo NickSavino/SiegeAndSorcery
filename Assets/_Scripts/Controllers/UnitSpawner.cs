@@ -53,13 +53,17 @@ public class UnitSpawner : MonoBehaviour
 
     private void AutoSpawn()
     {
-        _currentTime += Time.deltaTime;
-        if (_currentTime > SPAWN_INTERVAL_SECONDS)
-        {
-            GameObject unit = Instantiate(selectedUnit);
-            unit.transform.position = _spawnPoint;
-            unit.GetComponent<UnitController>().SetDestination(_destination);
-            _currentTime = 0f;  // reset timer
+        Vector3[] unitPath = _pathController.GetPathForUnit();  // attempt to get active path for unit
+        if (unitPath != null) {
+            _currentTime += Time.deltaTime;
+            if (_currentTime > SPAWN_INTERVAL_SECONDS) {
+                GameObject unit = Instantiate(selectedUnit);
+                unit.transform.position = _spawnPoint;
+                unit.TryGetComponent<UnitController>(out UnitController unitController);
+                //   unitController.SetDestination(_destination);
+                unitController.SetPath(unitPath);
+                _currentTime = 0f;  // reset timer
+            }
         }
     }
     
