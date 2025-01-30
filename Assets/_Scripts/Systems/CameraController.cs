@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class CameraController : MonoBehaviour
 {
@@ -32,24 +35,40 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private new Camera camera;
 
+    private float DEFAULT_BOX_SCALE = 0f;
+
     private bool _shiftAcceleration;
 
     private float _baseMoveSpeed;
+
+    private GameObject _dragBox;
+    private Vector2 _dragBoxAnchor;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _baseMoveSpeed = CAM_MOVE_SPEED;
+        _dragBox = transform.Find("Canvas").Find("Image").gameObject;       // very bad!
+        
+
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         TranslateCamera();
         ZoomCameraProjection();
         ZoomCameraOrtho();
         RotateCamera();
         ShiftAccelerateCamera();
+        DrawDragBox();
+        UpdateDragBoxSize();
+
+    }
+
+
+    private void OnGUI() {
+    //    GUI.Label(new Rect(10, 10, 200, 200),"HELOOOOOOOOOOOOOOOOO");
     }
 
 
@@ -180,6 +199,34 @@ public class CameraController : MonoBehaviour
         else
         {
             CAM_MOVE_SPEED = _baseMoveSpeed;
+        }
+    }
+
+    void DrawDragBox() {
+        if (Input.GetMouseButton(0) && !_dragBox.activeSelf) {
+            _dragBoxAnchor = Input.mousePosition;
+            _dragBox.SetActive(true);
+            _dragBox.transform.position = new Vector3(_dragBoxAnchor.x - (DEFAULT_BOX_SCALE / 2), _dragBoxAnchor.y + (DEFAULT_BOX_SCALE / 2), -10); // bottom right corner
+
+
+        }
+        else if (!Input.GetMouseButton(0) && _dragBox.activeSelf) {
+            _dragBox.SetActive(false);
+        }
+    }
+    
+
+    void UpdateDragBoxSize() {
+        if (_dragBox.activeSelf) {
+            if (Input.GetMouseButton(0)) {
+                Debug.Log("Here");
+                Vector2 mousePos = Input.mousePosition;
+                float xScale = Mathf.Abs(mousePos.x - _dragBoxAnchor.x);
+                float yScale = Mathf.Abs( mousePos.y - _dragBoxAnchor.y);
+                _dragBox.transform.Translate(new Vector3(xScale, yScale, 0));
+                _dragBox.transform.localScale = new Vector3(xScale, yScale, _dragBox.transform.localScale.z);
+
+            }
         }
     }
 

@@ -116,7 +116,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         if (!IsDead())
         {
-            UpdatePathDestination();
+           // UpdatePathDestination();
         //    GetNearestEnemyUnit();
             if (_destination != null)
             {
@@ -392,6 +392,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     }
 
 
+    /*
     private void UpdatePathDestination() {
         // only try if path is not complete
         if (_unitPathIndex < _unitPath.Length) {
@@ -403,5 +404,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             }
         }
     }
+    */
 
 }
