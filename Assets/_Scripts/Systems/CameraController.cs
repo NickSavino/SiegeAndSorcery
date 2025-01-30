@@ -221,9 +221,9 @@ public class CameraController : MonoBehaviour
             if (Input.GetMouseButton(0)) {
                 Debug.Log("Here");
                 Vector2 mousePos = Input.mousePosition;
-                float xScale = Mathf.Abs(mousePos.x - _dragBoxAnchor.x);
-                float yScale = Mathf.Abs( mousePos.y - _dragBoxAnchor.y);
-                _dragBox.transform.Translate(new Vector3(xScale, yScale, 0));
+                float xScale = mousePos.x - _dragBoxAnchor.x;
+                float yScale =  mousePos.y - _dragBoxAnchor.y;
+
                 _dragBox.transform.localScale = new Vector3(xScale, yScale, _dragBox.transform.localScale.z);
 
             }
