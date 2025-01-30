@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour
 {
@@ -44,18 +45,23 @@ public class CameraController : MonoBehaviour
     private GameObject _dragBox;
     private Vector2 _dragBoxAnchor;
 
+    private List<UnitController> _units;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _baseMoveSpeed = CAM_MOVE_SPEED;
         _dragBox = transform.Find("Canvas").Find("Image").gameObject;       // very bad!
-        
+        _units = new List<UnitController>();
 
     }
 
     // Update is called once per frame
     void Update() {
+        ClearUnitsOnClick();
+        SelectUnitClick();
+        SetUnitsDestination();
         TranslateCamera();
         ZoomCameraProjection();
         ZoomCameraOrtho();
@@ -219,7 +225,6 @@ public class CameraController : MonoBehaviour
     void UpdateDragBoxSize() {
         if (_dragBox.activeSelf) {
             if (Input.GetMouseButton(0)) {
-                Debug.Log("Here");
                 Vector2 mousePos = Input.mousePosition;
                 float xScale = mousePos.x - _dragBoxAnchor.x;
                 float yScale =  mousePos.y - _dragBoxAnchor.y;
@@ -230,5 +235,41 @@ public class CameraController : MonoBehaviour
         }
     }
 
+
+    void SelectUnitClick() {
+        if (Input.GetMouseButtonDown(0)) {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit)) {   // _currentPosts[0] is initial post
+                hit.collider.gameObject.TryGetComponent<UnitController>(out UnitController unitHit);
+                if (unitHit != null) {
+                    unitHit._isSelected = true;
+                    _units.Add(unitHit);
+                }
+            }
+        }
+    }
+
+    void ClearUnitsOnClick() {
+        if (Input.GetMouseButtonDown(0) && _units.Count > 0) {
+            foreach (UnitController cont in _units) {
+                cont._isSelected = false;
+            }
+        }    
+    }
+
+    void SetUnitsDestination() {
+        if (Input.GetMouseButtonDown(1) && _units.Count > 0) {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit)) {   // _currentPosts[0] is initial post
+                Vector3 destination = hit.point;
+                destination.y = _units[0].gameObject.transform.position.y;  // keep y axis unaffected
+                foreach (UnitController cont in _units) {
+                    cont.SetNavDestination(destination);
+                }
+            }
+        }
+    }
 }
 

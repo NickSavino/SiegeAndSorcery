@@ -90,7 +90,7 @@ Transform:
   m_GameObject: {fileID: 4062524113902667193}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.03, y: 0.213, z: 0.03}
+  m_LocalPosition: {x: 0.03, y: 0.138, z: 0.03}
   m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -365,7 +365,6 @@ MonoBehaviour:
   MIN_UNIT_ATTACK_DISTANCE: 2
   ATTACKS_PER_SECOND: 1
   ATTACK_FLASH_TIME: 0.5
-  PATH_DEST_DIST: 1
   <_unitCollider>k__BackingField: {fileID: 0}
   _destination: {fileID: 0}
 --- !u!1001 &4165667311346001191

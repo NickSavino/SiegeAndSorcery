@@ -45,6 +45,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     private Vector3[] _unitPath;    // get's from UnitSpawner
     private int _unitPathIndex;
+
+    public bool _isSelected { get; set; }           // Selected by dragbox or individual clicking
     
   
     private float _maxHealth;
@@ -70,7 +72,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     void Start()
     {
         TryGetComponent<NavMeshAgent>(out _navMeshAgent);
-        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // good enough stopping distance
+        _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 8;    // good enough stopping distance // used to be 2, 8 for debugging rts movement
         _navMeshAgent.destination = _unitPath[0];       // start at first destination
         _unitPathIndex = 0;     // start at first point on path
 
@@ -116,7 +118,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         if (!IsDead())
         {
-           // UpdatePathDestination();
+            UpdateSelected();
+           //UpdatePathDestination();
         //    GetNearestEnemyUnit();
             if (_destination != null)
             {
@@ -392,7 +395,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     }
 
 
-    /*
+    
     private void UpdatePathDestination() {
         // only try if path is not complete
         if (_unitPathIndex < _unitPath.Length) {
@@ -404,6 +407,20 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
             }
         }
     }
-    */
+
+
+    void UpdateSelected() {
+        if (_isSelected && _spriteRenderer.color != Color.green) {
+            _spriteRenderer.color = Color.green;
+        }
+
+        else if (!_isSelected && _spriteRenderer.color == Color.green) {
+            _spriteRenderer.color = Color.white;
+        }
+    }
+
+    public void SetNavDestination(Vector3 point) {
+        _navMeshAgent.destination = new Vector3(point.x, point.y, point.z);     // deep copy works well here maybe? 
+    }
 
 }
