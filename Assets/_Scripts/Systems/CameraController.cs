@@ -47,6 +47,8 @@ public class CameraController : MonoBehaviour
 
     private List<UnitController> _units;
 
+    private float DRAGBOX_DEPTH = 1000f;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -247,6 +249,15 @@ public class CameraController : MonoBehaviour
                     _units.Add(unitHit);
                 }
             }
+        }
+    }
+
+    void SelectUnitDrag() {
+        if (Input.GetMouseButtonDown(1) && _dragBox.activeSelf) {
+            _dragBox.TryGetComponent<RectTransform>(out RectTransform boxTransform);
+            Vector3[] corners = new Vector3[4];
+            boxTransform.GetWorldCorners(corners);
+
         }
     }
 
