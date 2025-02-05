@@ -3,6 +3,8 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using System.Text;
+using UnityEngine.ProBuilder.Shapes;
 
 public class CameraController : MonoBehaviour
 {
@@ -63,14 +65,17 @@ public class CameraController : MonoBehaviour
     void Update() {
         ClearUnitsOnClick();
         SelectUnitClick();
+        DrawDragBox();
+        UpdateDragBoxSize();
+        SelectUnitDrag();
+        ClearDragBox();
         SetUnitsDestination();
         TranslateCamera();
         ZoomCameraProjection();
         ZoomCameraOrtho();
         RotateCamera();
         ShiftAccelerateCamera();
-        DrawDragBox();
-        UpdateDragBoxSize();
+       
 
     }
 
@@ -218,8 +223,12 @@ public class CameraController : MonoBehaviour
 
 
         }
-        else if (!Input.GetMouseButton(0) && _dragBox.activeSelf) {
-            _dragBox.SetActive(false);
+
+    }
+
+    void ClearDragBox() {
+        if (!Input.GetMouseButton(0) && _dragBox.activeSelf) {
+          //  _dragBox.SetActive(false);
         }
     }
     
@@ -231,7 +240,7 @@ public class CameraController : MonoBehaviour
                 float xScale = mousePos.x - _dragBoxAnchor.x;
                 float yScale =  mousePos.y - _dragBoxAnchor.y;
 
-                _dragBox.transform.localScale = new Vector3(xScale, yScale, _dragBox.transform.localScale.z);
+                _dragBox.transform.localScale = new Vector3(xScale, -yScale, _dragBox.transform.localScale.z);
 
             }
         }
@@ -253,11 +262,35 @@ public class CameraController : MonoBehaviour
     }
 
     void SelectUnitDrag() {
-        if (Input.GetMouseButtonDown(1) && _dragBox.activeSelf) {
-            _dragBox.TryGetComponent<RectTransform>(out RectTransform boxTransform);
+        if (Input.GetMouseButtonUp(0) && _dragBox.activeSelf) {
             Vector3[] corners = new Vector3[4];
-            boxTransform.GetWorldCorners(corners);
+            _dragBox.TryGetComponent<RectTransform>(out RectTransform rect);
+            rect.GetWorldCorners(corners);
+            for (int i = 0; i < 4; ++i) {
+                Debug.Log(corners[i]);
+            }
 
+            Vector3 boxScale = new Vector3(rect.lossyScale.x * rect.rect.size.x, rect.lossyScale.y * rect.rect.size.y, rect.lossyScale.z);
+
+
+            Collider[] hitColliders = Physics.OverlapBox(_dragBox.transform.position, _dragBox.transform.localScale);
+            GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            box.transform.position = camObject.transform.position;
+            box.transform.localScale = boxScale;
+            box.transform.rotation = camObject.transform.rotation;
+           // box.TryGetComponent<MeshRenderer>(out MeshRenderer renderer);
+          //  renderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+
+
+            foreach (Collider collider in hitColliders) {
+                if (TryGetComponent<UnitController>(out UnitController unitController)) {
+                    unitController._isSelected = true;
+                    _units.Add(unitController);
+                }
+
+                    
+            }
+            
         }
     }
 
@@ -266,7 +299,8 @@ public class CameraController : MonoBehaviour
             foreach (UnitController cont in _units) {
                 cont._isSelected = false;
             }
-        }    
+            _units.Clear();
+        }
     }
 
     void SetUnitsDestination() {

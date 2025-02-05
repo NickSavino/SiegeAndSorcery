@@ -3,10 +3,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.ProBuilder.AutoUnwrapSettings;
+using System.Collections.Generic;
+
 
 public class UnitSpawner : MonoBehaviour
 {
 
+
+    public static List<UnitController> SCENE_UNITS = new List<UnitController>();
 
     public GameObject selectedUnit;
     private float _currentTime;
@@ -60,6 +64,7 @@ public class UnitSpawner : MonoBehaviour
                 GameObject unit = Instantiate(selectedUnit);
                 unit.transform.position = _spawnPoint;
                 unit.TryGetComponent<UnitController>(out UnitController unitController);
+                SCENE_UNITS.Add(unitController);
                 //   unitController.SetDestination(_destination);
                 unitController.SetPath(unitPath);
                 _currentTime = 0f;  // reset timer

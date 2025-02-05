@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Diagnostics;
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
@@ -301,6 +302,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         if (_health <= 0f)
         {
             SetDead();
+            UnitSpawner.SCENE_UNITS.Remove(this);   // remove this unit from global tracking TODO: OPTIMIZE THIS IN FUTURE
         }
     }
 
@@ -422,5 +424,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void SetNavDestination(Vector3 point) {
         _navMeshAgent.destination = new Vector3(point.x, point.y, point.z);     // deep copy works well here maybe? 
     }
+
+
+
 
 }
