@@ -54,6 +54,11 @@ public class WallBuildingController : MonoBehaviour
         {
             SetBuildModeActive(false);
         }
+           
+        // FOR DEBUGGING WITHOUT UI
+        if (Input.GetKeyDown(KeyCode.F1)) {
+            SetBuildModeActive(true);
+        }
         if (_modeActive)
         {
             if (_placingPost)

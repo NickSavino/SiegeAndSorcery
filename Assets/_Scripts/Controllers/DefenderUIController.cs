@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.AI;
 
 public class DefenderUIController : MonoBehaviour
 {
@@ -11,11 +13,109 @@ public class DefenderUIController : MonoBehaviour
 
     private bool _controlsEnabled = false;
 
+    private List<UnitController> _selectedUnits;
+
     public void Start()
     {
-        TryGetComponent(out _structurePlacementController);
-        TryGetComponent(out _wallBuilder);
+        _selectedUnits = new List<UnitController>();
+       // TryGetComponent(out _structurePlacementController);
+       // TryGetComponent(out _wallBuilder);
     }
+
+    private void Update() {
+        SelectUnitClick();
+        ChangeUnitsDestination();
+    }
+
+    /// <summary>
+    ///     Changes a unit's destination based on right-clicking
+    ///     terrain or structure
+    /// </summary>
+    void ChangeUnitsDestination() {
+
+        if (Input.GetMouseButtonDown(1)) {
+
+
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit)) {
+                StructureController structure = null;
+                bool found = hit.collider.gameObject.TryGetComponent<StructureController>(out structure);
+
+                if (found) {
+                    foreach (UnitController controller in _selectedUnits) {
+                        controller.SetDestination(hit.collider.gameObject);
+
+                        NavMeshAgent nav;
+                        controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
+                        nav.destination = structure.transform.position;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Deactivates selected units in linear time
+    ///     and clears list
+    /// </summary>
+    private void ClearSelectedUnits() {
+        foreach (UnitController controller in _selectedUnits) {
+            controller.SetUnitNotSelected();
+        }
+        _selectedUnits.Clear();
+    }
+
+
+    /// <summary>
+    ///     Method to select a single unit based on a mouse-click
+    ///     
+    ///     Casts a ray from camera to mouse click, gets all units on path,
+    ///     selects closest unit.
+    /// </summary>
+    void SelectUnitClick() {
+
+        // arbitrary, need to determine this better
+        float maxDistance = 100f;
+
+       
+        if (Input.GetMouseButtonDown(0)) {
+            ClearSelectedUnits();
+            // get all colliders on vector path
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance);
+
+            UnitController closest = null;
+            float closestDist = 0f;
+
+            // linear search for closest unit
+            foreach (RaycastHit hit in hits)
+            {
+                UnitController unit;
+                hit.collider.gameObject.TryGetComponent<UnitController>(out unit);
+
+                if (unit != null) {
+                    if (closest == null) {
+                        closest = unit;
+                        closestDist = hit.distance;
+                    }
+                    else {
+                        if (hit.distance < closestDist) {
+                            closest = unit;
+                        }
+                    }
+                }
+            }
+
+            // if found unit do something
+            if (closest != null) {
+                _selectedUnits.Add(closest);
+                closest.SetUnitSelected();
+            }
+        }
+    }
+    
 
     public void OnWallButtonClick()
     {

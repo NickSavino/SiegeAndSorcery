@@ -60,6 +60,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
 
+    private GameObject _dropShadow;    
     private StructureManager _structureManager;
 
 
@@ -91,6 +92,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         _maxHealth = _health;
         _healthBarFill.fillAmount = 1f;
+
+        // TODO: NEED TO FIX THIS AND FIX NAME
+        _dropShadow = transform.Find("Sphere").gameObject;
     }
 
     // Update is called once per frame
@@ -130,6 +134,18 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
 
 
+
+    public void SetUnitSelected() {
+        SpriteRenderer rend = null;
+        transform.TryGetComponent<SpriteRenderer>(out rend);
+        rend.material.color = Constants.UNIT_ACTIVATED;
+    }
+
+    public void SetUnitNotSelected() {
+        SpriteRenderer rend = null;
+        transform.TryGetComponent<SpriteRenderer>(out rend);
+        rend.material.color = Constants.UNIT_DEACTIVATED;
+    }
 
     void animateIfRunning()
     {
@@ -179,6 +195,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         
     }
+
+
 
     void animateDeath()
     {
