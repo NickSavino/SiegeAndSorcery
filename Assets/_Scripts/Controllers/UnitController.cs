@@ -164,26 +164,29 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         if (_destination != null)
         {
-            Vector3 diff = transform.position - _destination.transform.position;
+            Attackable temp;
 
-            float distanceMetric;
-            if (ObjectIsUnit(_destination))
-            {
-                distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
-            }
-            else
-            {
-                distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
-            }
+            // if we are actually trying to get to an attackable object
+            if (_destination.TryGetComponent<Attackable>(out temp)) {
 
-            diff.y = 0f;
-            if (diff.magnitude <= distanceMetric)
-            {
-                _animator.SetBool("isAttacking", true);
-            }
-            else
-            {
-                _animator.SetBool("isAttacking", false);
+
+                Vector3 diff = transform.position - _destination.transform.position;
+
+                float distanceMetric;
+                if (ObjectIsUnit(_destination)) {
+                    distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
+                }
+                else {
+                    distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
+                }
+
+                diff.y = 0f;
+                if (diff.magnitude <= distanceMetric) {
+                    _animator.SetBool("isAttacking", true);
+                }
+                else {
+                    _animator.SetBool("isAttacking", false);
+                }
             }
         }
         else
@@ -319,31 +322,30 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
 
         Attackable scriptToAttack;
-        _destination.TryGetComponent<Attackable>(out scriptToAttack);
+        bool hasAttackable = _destination.TryGetComponent<Attackable>(out scriptToAttack);
 
-        float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
-        if (distanceVector <= attackDistance)
-        {
-            _currentTime += Time.deltaTime;
-            if (_currentTime >= ATTACKS_PER_SECOND)
-            {
-                _currentTime = 0;
-                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+        if (hasAttackable) {
 
-                if (_soundCycler != null)
-                {
-                    _audioSource.clip = _soundCycler.SelectRandomSound();
-                    SoundSystem.instance.PlaySound(_audioSource);
+            float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+            if (distanceVector <= attackDistance) {
+                _currentTime += Time.deltaTime;
+                if (_currentTime >= ATTACKS_PER_SECOND) {
+                    _currentTime = 0;
+                    scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+
+                    if (_soundCycler != null) {
+                        _audioSource.clip = _soundCycler.SelectRandomSound();
+                        SoundSystem.instance.PlaySound(_audioSource);
+                    }
+
+                    if (scriptToAttack.IsDead()) {
+                        _destination = null;
+
+                    }
                 }
-                
-                if (scriptToAttack.IsDead())
-                {
-                    _destination = null;
 
-                }
+
             }
-
-     
         }
     }
 

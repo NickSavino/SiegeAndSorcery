@@ -34,9 +34,60 @@ public class DefenderUIController : MonoBehaviour
     void ChangeUnitsDestination() {
 
         if (Input.GetMouseButtonDown(1)) {
-
-
             RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit)) {
+                Debug.Log(hit.point);
+                StructureController structure = null;
+                bool found = hit.collider.gameObject.TryGetComponent<StructureController>(out structure);
+                if (found) {
+                    foreach (UnitController controller in _selectedUnits) {
+                        controller.SetDestination(hit.collider.gameObject);
+
+                        NavMeshAgent nav;
+                        controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
+                        nav.destination = structure.transform.position;
+                    }
+                    return;
+                }
+
+                UnitController unit = null;
+                found = hit.collider.gameObject.TryGetComponent<UnitController>(out unit);
+                if (found) {
+                    foreach (UnitController controller in _selectedUnits) {
+                        controller.SetDestination(hit.collider.gameObject);
+
+                        NavMeshAgent nav;
+                        controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
+                        nav.destination = unit.transform.position;
+                    }
+                    return;
+                }
+
+         
+                foreach (UnitController controller in _selectedUnits) {
+                    // TODO: Wastes resources, how do we avoild allocation here?
+                    GameObject empty = new GameObject();
+                    empty.transform.position = hit.point;
+                    controller.SetDestination(empty);    // nothing to attack
+
+                    NavMeshAgent nav;
+                    controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
+                    nav.destination = hit.point;
+                }
+    
+            }
+        }
+    }
+
+    /// <summary>
+    /// Subroutine for above function, handles
+    /// when a player right-clicks / wants to attack
+    /// structure
+    /// </summary>
+    private void ChangeDestinationStructure() {
+        RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit)) {
@@ -53,7 +104,6 @@ public class DefenderUIController : MonoBehaviour
                     }
                 }
             }
-        }
     }
 
     /// <summary>
