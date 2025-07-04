@@ -6,6 +6,11 @@ using System.Collections.Generic;
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
+    // Max number of teams so we can instantiatye below dict
+    private const int NUM_TEAMS = 8;
+
+    public static Dictionary<int, List<UnitController>> GLOBAL_UNITS { get; } = new Dictionary<int, List<UnitController>>();
+
     /*
      * Serialized Fields
      */
@@ -40,6 +45,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [SerializeField]
     private float ATTACK_FLASH_TIME;
+
+ 
     
   
     private float _maxHealth;
@@ -60,8 +67,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
 
-    private GameObject _dropShadow;    
+    private GameObject _dropShadow;
     private StructureManager _structureManager;
+
 
 
 
@@ -95,6 +103,14 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         // TODO: NEED TO FIX THIS AND FIX NAME
         _dropShadow = transform.Find("Sphere").gameObject;
+    }
+
+    public Vector3 GetScreenPoint() {
+        Vector2 result;
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(DefenderUIController._selectBoxTrans, screenPoint, null, out result);
+        Debug.Log(result);
+        return result;
     }
 
     // Update is called once per frame
@@ -145,6 +161,15 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         SpriteRenderer rend = null;
         transform.TryGetComponent<SpriteRenderer>(out rend);
         rend.material.color = Constants.UNIT_DEACTIVATED;
+    }
+
+    /// <summary>
+    /// Add's this unit to global
+    /// unit list
+    /// </summary>
+    public void Spawn() {
+        GLOBAL_UNITS.TryAdd(_team, new List<UnitController>());
+        GLOBAL_UNITS[_team].Add(this);
     }
 
     void animateIfRunning()

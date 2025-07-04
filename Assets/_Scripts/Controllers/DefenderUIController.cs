@@ -27,13 +27,19 @@ public class DefenderUIController : MonoBehaviour
 
     private Vector3 _selectBoxAnchor;
 
-    private RectTransform _selectBoxTrans;
+    // THIS SHOULD NOT BE MUTABLE
+    public static RectTransform _selectBoxTrans;
     private RectTransform _selectBoxParentTrans;
+
+    // TEST FOR DEBUGGING ASSUME PLAYER IS TEAM 0 (KNIGHTS)
+    private int _team = 0;
 
     void Start()
     {
         _selectBoxAnchor = Vector3.zero;
         _selectedUnits = new List<UnitController>();
+
+        // fix this, skip Find
         _selectBox = GameObject.Find(Constants.UI_SELECT_BOX);
         _selectBox.TryGetComponent<RectTransform>(out _selectBoxTrans);
         _selectBoxParent.TryGetComponent<RectTransform>(out _selectBoxParentTrans);
@@ -43,13 +49,15 @@ public class DefenderUIController : MonoBehaviour
 
     void Update() {
         SelectUnitClick();
+        DrawSelectBox();
         ChangeUnitsDestination();
 
     }
 
-    private void LateUpdate() {
-        DrawSelectBox();
-    }
+
+
+
+
 
     /// <summary>
     ///     Changes a unit's destination based on right-clicking
@@ -174,6 +182,14 @@ public class DefenderUIController : MonoBehaviour
         // if we have released a select box, make it invisible
         //  (scale = 0)
         if (Input.GetMouseButtonUp(0)) {
+
+            foreach (UnitController cont in UnitController.GLOBAL_UNITS[_team]) {
+                if (_selectBoxTrans.rect.Contains(cont.GetScreenPoint())) {
+                    _selectedUnits.Add(cont);
+                    cont.SetUnitSelected();
+                }
+                Debug.Log(_selectedUnits.Count);
+            }
             _selectBoxTrans.sizeDelta = Vector2.zero;
         }
 
@@ -182,6 +198,10 @@ public class DefenderUIController : MonoBehaviour
             // get the camera position of the cursor
             Vector3 mousePos = Input.mousePosition;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(_selectBoxParentTrans, mousePos, null, out _selectBoxAnchor);
+           // GameObject gameObject = new GameObject();
+
+            // TODO: NEED TO GET FOUR WORLD POINTS OF BOX
+          //  gameObject.transform.position = Camera.main.ScreenToWorldPoint(_selectBoxAnchor);
         }
 
         // we are scaling box (holding down)
