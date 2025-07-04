@@ -28,6 +28,7 @@ public class DefenderUIController : MonoBehaviour
     private Vector3 _selectBoxAnchor;
 
     private RectTransform _selectBoxTrans;
+    private RectTransform _selectBoxParentTrans;
 
     void Start()
     {
@@ -35,7 +36,7 @@ public class DefenderUIController : MonoBehaviour
         _selectedUnits = new List<UnitController>();
         _selectBox = GameObject.Find(Constants.UI_SELECT_BOX);
         _selectBox.TryGetComponent<RectTransform>(out _selectBoxTrans);
-
+        _selectBoxParent.TryGetComponent<RectTransform>(out _selectBoxParentTrans);
         // TryGetComponent(out _structurePlacementController);
         // TryGetComponent(out _wallBuilder);
     }
@@ -165,31 +166,53 @@ public class DefenderUIController : MonoBehaviour
     }
     
 
-    private void SelectBoxAdjustHeight() {
-
-    }
-
+    /// <summary>
+    /// Method to handle drawing unit select box
+    /// </summary>
     public void DrawSelectBox() {
+
+        // if we have released a select box, make it invisible
+        //  (scale = 0)
         if (Input.GetMouseButtonUp(0)) {
-         //   _selectBoxTrans.sizeDelta = Vector2.zero;
-        //    _selectBoxTrans.anchoredPosition = Vector2.zero;
+            _selectBoxTrans.sizeDelta = Vector2.zero;
         }
+
+        // if we have started a select box (clicked down)
         if (Input.GetMouseButtonDown(0)) {
-
+            // get the camera position of the cursor
             Vector3 mousePos = Input.mousePosition;
-            RectTransform parentTrans;
-            _selectBoxParent.TryGetComponent<RectTransform>(out parentTrans);
-
-            RectTransformUtility.ScreenPointToWorldPointInRectangle(parentTrans, mousePos, null, out _selectBoxAnchor);
-
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(_selectBoxParentTrans, mousePos, null, out _selectBoxAnchor);
         }
+
+        // we are scaling box (holding down)
         if (Input.GetMouseButton(0)) {
 
-            _selectBoxTrans.sizeDelta = new Vector3(100, 100, 0);
-            _selectBoxTrans.anchoredPosition = _selectBoxAnchor - new Vector3(0, 100, 0);
+            // get camera position of cursor now
+            Vector3 mousePos = Input.mousePosition;
+            Vector3 localMousePos;
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(_selectBoxParentTrans, mousePos, null, out localMousePos);
+
+            // diffs of anchor and cursor
+            float w = localMousePos.x - _selectBoxAnchor.x;
+            float h = localMousePos.y - _selectBoxAnchor.y;
+            float abs_w = Mathf.Abs(w);
+            float abs_h = Mathf.Abs(h);
+
+            // scale box by diff
+            _selectBoxTrans.sizeDelta = new Vector3(abs_w, abs_h, 0);
+
+            Vector3 posVec = _selectBoxAnchor - new Vector3(0, abs_h, 0);
+            
+            // offset w and h if needed (can't render negative w / h)
+            if (w < 0) {
+                posVec.x -= abs_w;
+            }
+            if (h > 0) {
+                posVec.y += abs_h;
+            }
+            _selectBoxTrans.anchoredPosition = posVec;
             
         }
-        Debug.Log(_selectBoxTrans.sizeDelta);
     }
 
     public void OnWallButtonClick()
