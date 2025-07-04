@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Sirenix.Utilities;
+using static System.Net.Mime.MediaTypeNames;
 
 public class DefenderUIController : MonoBehaviour
 {
@@ -15,16 +19,35 @@ public class DefenderUIController : MonoBehaviour
 
     private List<UnitController> _selectedUnits;
 
-    public void Start()
+    [SerializeField]
+    private GameObject _selectBox;
+
+    [SerializeField]
+    private GameObject _selectBoxParent;
+
+    private Vector3 _selectBoxAnchor;
+
+    private RectTransform _selectBoxTrans;
+
+    void Start()
     {
+        _selectBoxAnchor = Vector3.zero;
         _selectedUnits = new List<UnitController>();
-       // TryGetComponent(out _structurePlacementController);
-       // TryGetComponent(out _wallBuilder);
+        _selectBox = GameObject.Find(Constants.UI_SELECT_BOX);
+        _selectBox.TryGetComponent<RectTransform>(out _selectBoxTrans);
+
+        // TryGetComponent(out _structurePlacementController);
+        // TryGetComponent(out _wallBuilder);
     }
 
-    private void Update() {
+    void Update() {
         SelectUnitClick();
         ChangeUnitsDestination();
+
+    }
+
+    private void LateUpdate() {
+        DrawSelectBox();
     }
 
     /// <summary>
@@ -38,7 +61,6 @@ public class DefenderUIController : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit)) {
-                Debug.Log(hit.point);
                 StructureController structure = null;
                 bool found = hit.collider.gameObject.TryGetComponent<StructureController>(out structure);
                 if (found) {
@@ -81,30 +103,6 @@ public class DefenderUIController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Subroutine for above function, handles
-    /// when a player right-clicks / wants to attack
-    /// structure
-    /// </summary>
-    private void ChangeDestinationStructure() {
-        RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit)) {
-                StructureController structure = null;
-                bool found = hit.collider.gameObject.TryGetComponent<StructureController>(out structure);
-
-                if (found) {
-                    foreach (UnitController controller in _selectedUnits) {
-                        controller.SetDestination(hit.collider.gameObject);
-
-                        NavMeshAgent nav;
-                        controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
-                        nav.destination = structure.transform.position;
-                    }
-                }
-            }
-    }
 
     /// <summary>
     ///     Deactivates selected units in linear time
@@ -166,6 +164,33 @@ public class DefenderUIController : MonoBehaviour
         }
     }
     
+
+    private void SelectBoxAdjustHeight() {
+
+    }
+
+    public void DrawSelectBox() {
+        if (Input.GetMouseButtonUp(0)) {
+         //   _selectBoxTrans.sizeDelta = Vector2.zero;
+        //    _selectBoxTrans.anchoredPosition = Vector2.zero;
+        }
+        if (Input.GetMouseButtonDown(0)) {
+
+            Vector3 mousePos = Input.mousePosition;
+            RectTransform parentTrans;
+            _selectBoxParent.TryGetComponent<RectTransform>(out parentTrans);
+
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(parentTrans, mousePos, null, out _selectBoxAnchor);
+
+        }
+        if (Input.GetMouseButton(0)) {
+
+            _selectBoxTrans.sizeDelta = new Vector3(100, 100, 0);
+            _selectBoxTrans.anchoredPosition = _selectBoxAnchor - new Vector3(0, 100, 0);
+            
+        }
+        Debug.Log(_selectBoxTrans.sizeDelta);
+    }
 
     public void OnWallButtonClick()
     {
