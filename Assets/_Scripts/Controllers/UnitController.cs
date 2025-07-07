@@ -9,7 +9,10 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     // Max number of teams so we can instantiatye below dict
     private const int NUM_TEAMS = 8;
 
+    // Structure to organize all units.
+    // Dictionary index is player's team number, corresponds to list of team's units
     public static Dictionary<int, List<UnitController>> GLOBAL_UNITS { get; } = new Dictionary<int, List<UnitController>>();
+
 
     /*
      * Serialized Fields
@@ -103,13 +106,23 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         // TODO: NEED TO FIX THIS AND FIX NAME
         _dropShadow = transform.Find("Sphere").gameObject;
+
+        // fill GLOBAL_UNITS buckets with empty lists
+       // for (int i = 0; i < NUM_TEAMS; ++i) {
+        //    GLOBAL_UNITS.Add(i, new List<UnitController>());
+       // }
     }
 
-    public Vector3 GetScreenPoint() {
+    /// <summary>
+    /// Returns a unit's screen position relative to a selection box
+    /// drawn by user. Can be used to determine if the returned point
+    /// falls inside the selection box for unit detection.
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 GetSelectionBoxPoint() {
         Vector2 result;
         Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
         RectTransformUtility.ScreenPointToLocalPointInRectangle(DefenderUIController._selectBoxTrans, screenPoint, null, out result);
-        Debug.Log(result);
         return result;
     }
 
@@ -150,13 +163,18 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
 
 
-
+    /// <summary>
+    /// Sets unit's color to green (if it has been selected)
+    /// </summary>
     public void SetUnitSelected() {
         SpriteRenderer rend = null;
         transform.TryGetComponent<SpriteRenderer>(out rend);
         rend.material.color = Constants.UNIT_ACTIVATED;
     }
 
+    /// <summary>
+    /// Sets unit's color to white (if it is no longer selected)
+    /// </summary>
     public void SetUnitNotSelected() {
         SpriteRenderer rend = null;
         transform.TryGetComponent<SpriteRenderer>(out rend);
@@ -164,8 +182,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     }
 
     /// <summary>
-    /// Add's this unit to global
-    /// unit list
+    /// Add's this unit to global unit list
     /// </summary>
     public void Spawn() {
         GLOBAL_UNITS.TryAdd(_team, new List<UnitController>());
@@ -437,6 +454,14 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         
         _healthBarFill.fillAmount = newHealth / _maxHealth;
 
+    }
+
+    /// <summary>
+    /// Set a unit's destination (target) to the empty
+    ///  GameObject
+    /// </summary>
+    public void NoDestination() {
+        this._destination = DefenderUIController.emptyObject;
     }
 
 }

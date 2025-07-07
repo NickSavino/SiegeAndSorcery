@@ -1,22 +1,20 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using Sirenix.Utilities;
-using static System.Net.Mime.MediaTypeNames;
 
 public class DefenderUIController : MonoBehaviour
 {
 
+
+    // For right now, a unit's destination is set to this when a unit
+    // is moved to a non-unit or non-structure destination.
+    // This makes sure that animation code is untouched for now 
+    public static GameObject emptyObject { get; private set; }
+
     private WallBuildingController _wallBuilder;
-
     private StructurePlacementController _structurePlacementController;
-
     public StructureName selectedStructure = StructureName.None;
-
     private bool _controlsEnabled = false;
-
     private List<UnitController> _selectedUnits;
 
     [SerializeField]
@@ -26,25 +24,24 @@ public class DefenderUIController : MonoBehaviour
     private GameObject _selectBoxParent;
 
     private Vector3 _selectBoxAnchor;
-
-    // THIS SHOULD NOT BE MUTABLE
-    public static RectTransform _selectBoxTrans;
+    public static RectTransform _selectBoxTrans { get; private set; }
     private RectTransform _selectBoxParentTrans;
 
-    // TEST FOR DEBUGGING ASSUME PLAYER IS TEAM 0 (KNIGHTS)
+    // Indicates id of a player. Hardcoded as 0 (knights)
+    // for testing
     private int _team = 0;
 
     void Start()
     {
+        TryGetComponent(out _structurePlacementController);
+        TryGetComponent(out _wallBuilder);
+        emptyObject = new GameObject();
         _selectBoxAnchor = Vector3.zero;
         _selectedUnits = new List<UnitController>();
-
-        // fix this, skip Find
-        _selectBox = GameObject.Find(Constants.UI_SELECT_BOX);
-        _selectBox.TryGetComponent<RectTransform>(out _selectBoxTrans);
+        RectTransform temp;
+        _selectBox.TryGetComponent<RectTransform>(out temp);
+        _selectBoxTrans = temp;
         _selectBoxParent.TryGetComponent<RectTransform>(out _selectBoxParentTrans);
-        // TryGetComponent(out _structurePlacementController);
-        // TryGetComponent(out _wallBuilder);
     }
 
     void Update() {
@@ -55,21 +52,25 @@ public class DefenderUIController : MonoBehaviour
     }
 
 
-
-
-
-
     /// <summary>
     ///     Changes a unit's destination based on right-clicking
     ///     terrain or structure
+    ///     
+    ///     Could be refactored
     /// </summary>
     void ChangeUnitsDestination() {
 
+        // click right mouse button
         if (Input.GetMouseButtonDown(1)) {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+            // collided with something
             if (Physics.Raycast(ray, out hit)) {
+                // move empty marker to hit point so units face it when running
+                emptyObject.transform.position = hit.point;
+
+                // if hit a structure
                 StructureController structure = null;
                 bool found = hit.collider.gameObject.TryGetComponent<StructureController>(out structure);
                 if (found) {
@@ -83,6 +84,7 @@ public class DefenderUIController : MonoBehaviour
                     return;
                 }
 
+                // if hit a unit
                 UnitController unit = null;
                 found = hit.collider.gameObject.TryGetComponent<UnitController>(out unit);
                 if (found) {
@@ -96,16 +98,12 @@ public class DefenderUIController : MonoBehaviour
                     return;
                 }
 
-         
+                // if just moving unit location
                 foreach (UnitController controller in _selectedUnits) {
-                    // TODO: Wastes resources, how do we avoild allocation here?
-                    GameObject empty = new GameObject();
-                    empty.transform.position = hit.point;
-                    controller.SetDestination(empty);    // nothing to attack
-
+                    controller.NoDestination();    // nothing to attack
                     NavMeshAgent nav;
                     controller.gameObject.TryGetComponent<NavMeshAgent>(out nav);
-                    nav.destination = hit.point;
+                    nav.destination = hit.point;    // unit moves to clicked location
                 }
     
             }
@@ -136,6 +134,10 @@ public class DefenderUIController : MonoBehaviour
         // arbitrary, need to determine this better
         float maxDistance = 100f;
 
+        // if pressed escape, clear units
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            ClearSelectedUnits();
+        }
        
         if (Input.GetMouseButtonDown(0)) {
             ClearSelectedUnits();
@@ -182,13 +184,15 @@ public class DefenderUIController : MonoBehaviour
         // if we have released a select box, make it invisible
         //  (scale = 0)
         if (Input.GetMouseButtonUp(0)) {
-
-            foreach (UnitController cont in UnitController.GLOBAL_UNITS[_team]) {
-                if (_selectBoxTrans.rect.Contains(cont.GetScreenPoint())) {
-                    _selectedUnits.Add(cont);
-                    cont.SetUnitSelected();
+            List<UnitController> myUnits;
+            bool unitsExist = UnitController.GLOBAL_UNITS.TryGetValue(_team, out myUnits);
+            if (unitsExist) {
+                foreach (UnitController cont in UnitController.GLOBAL_UNITS[_team]) {
+                    if (_selectBoxTrans.rect.Contains(cont.GetSelectionBoxPoint())) {
+                        _selectedUnits.Add(cont);
+                        cont.SetUnitSelected();
+                    }
                 }
-                Debug.Log(_selectedUnits.Count);
             }
             _selectBoxTrans.sizeDelta = Vector2.zero;
         }
@@ -198,10 +202,6 @@ public class DefenderUIController : MonoBehaviour
             // get the camera position of the cursor
             Vector3 mousePos = Input.mousePosition;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(_selectBoxParentTrans, mousePos, null, out _selectBoxAnchor);
-           // GameObject gameObject = new GameObject();
-
-            // TODO: NEED TO GET FOUR WORLD POINTS OF BOX
-          //  gameObject.transform.position = Camera.main.ScreenToWorldPoint(_selectBoxAnchor);
         }
 
         // we are scaling box (holding down)
@@ -272,4 +272,7 @@ public class DefenderUIController : MonoBehaviour
 
         _controlsEnabled = enable;
     }
+
+
+  
 }

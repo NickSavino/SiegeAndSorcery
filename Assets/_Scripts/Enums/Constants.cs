@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Enum for some program-wide constant values;
+/// </summary>
 public class Constants
 {
     public Color Value { get; private set; }

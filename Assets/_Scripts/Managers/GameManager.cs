@@ -6,8 +6,8 @@ public class GameManager : MonoBehaviour
 
     private DefenderUIController _defenderUIcontroller;
 
-   // public GameObject turnTimerText;
-  //  public GameObject currentTurnText;
+    public GameObject turnTimerText;
+    public GameObject currentTurnText;
     SimpleTimer _timer;
 
     private enum GameState { None, Defender, Attacker, Round, End };
@@ -26,22 +26,22 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-  //      TryGetComponent(out _defenderUIcontroller);
-     //   Time.timeScale = 1;
-     //   _timer = GetComponent<SimpleTimer>();
-     //   _timer.SetTimerMode(TimerMode.CountDown);
-     //   _defenderUIcontroller.EnableControls(true);
-     //   AdvanceTurn();
+        TryGetComponent(out _defenderUIcontroller);
+        Time.timeScale = 1;
+        _timer = GetComponent<SimpleTimer>();
+        _timer.SetTimerMode(TimerMode.CountDown);
+        _defenderUIcontroller.EnableControls(true);
+        AdvanceTurn();
     }
 
     // Update is called once per frame
     void Update()
     {
-    //    turnTimerText.GetComponent<TMP_Text>().SetText(string.Format("{0:0.##}", _timer.TimeLeft()));
-   //     if (_timer.TimeLeft() == 0)
-   //     {
-    //        AdvanceTurn();
-    //    }
+        turnTimerText.GetComponent<TMP_Text>().SetText(string.Format("{0:0.##}", _timer.TimeLeft()));
+        if (_timer.TimeLeft() == 0)
+        {
+            AdvanceTurn();
+        }
     }
 
     private void BeginDefenderTurn()
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-       // currentTurnText.GetComponent<TMP_Text>().SetText(_currentTurn.ToString());
+        currentTurnText.GetComponent<TMP_Text>().SetText(_currentTurn.ToString());
     }
 
 
