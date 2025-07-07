@@ -53,7 +53,11 @@ public class UnitSpawner : MonoBehaviour
         {
             GameObject unit = Instantiate(selectedUnit);
             unit.transform.position = _spawnPoint;
-            unit.GetComponent<UnitController>().SetDestination(_destination);
+
+            UnitController controller;
+            unit.TryGetComponent<UnitController>(out controller);
+            controller.SetDestination(_destination);
+            controller.Spawn();
             _currentTime = 0f;  // reset timer
         }
     }

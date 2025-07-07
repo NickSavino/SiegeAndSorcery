@@ -8,6 +8,14 @@ using Unity.VisualScripting;
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
+    // Max number of teams so we can instantiatye below dict
+    private const int NUM_TEAMS = 8;
+
+    // Structure to organize all units.
+    // Dictionary index is player's team number, corresponds to list of team's units
+    public static Dictionary<int, List<UnitController>> GLOBAL_UNITS { get; } = new Dictionary<int, List<UnitController>>();
+
+
     /*
      * Serialized Fields
      */
@@ -42,6 +50,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     [SerializeField]
     private float ATTACK_FLASH_TIME;
+
+ 
     
   
     private float _maxHealth;
@@ -62,7 +72,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     [SerializeField]
     private GameObject _destination;    // destination / structure or unit to attack
 
+    private GameObject _dropShadow;
     private StructureManager _structureManager;
+
 
 
 
@@ -93,6 +105,27 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         _maxHealth = _health;
         _healthBarFill.fillAmount = 1f;
+
+        // TODO: NEED TO FIX THIS AND FIX NAME
+        _dropShadow = transform.Find("Sphere").gameObject;
+
+        // fill GLOBAL_UNITS buckets with empty lists
+       // for (int i = 0; i < NUM_TEAMS; ++i) {
+        //    GLOBAL_UNITS.Add(i, new List<UnitController>());
+       // }
+    }
+
+    /// <summary>
+    /// Returns a unit's screen position relative to a selection box
+    /// drawn by user. Can be used to determine if the returned point
+    /// falls inside the selection box for unit detection.
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 GetSelectionBoxPoint() {
+        Vector2 result;
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(DefenderUIController._selectBoxTrans, screenPoint, null, out result);
+        return result;
     }
 
     // Update is called once per frame
@@ -132,6 +165,31 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
 
 
+    /// <summary>
+    /// Sets unit's color to green (if it has been selected)
+    /// </summary>
+    public void SetUnitSelected() {
+        SpriteRenderer rend = null;
+        transform.TryGetComponent<SpriteRenderer>(out rend);
+        rend.material.color = Constants.UNIT_ACTIVATED;
+    }
+
+    /// <summary>
+    /// Sets unit's color to white (if it is no longer selected)
+    /// </summary>
+    public void SetUnitNotSelected() {
+        SpriteRenderer rend = null;
+        transform.TryGetComponent<SpriteRenderer>(out rend);
+        rend.material.color = Constants.UNIT_DEACTIVATED;
+    }
+
+    /// <summary>
+    /// Add's this unit to global unit list
+    /// </summary>
+    public void Spawn() {
+        GLOBAL_UNITS.TryAdd(_team, new List<UnitController>());
+        GLOBAL_UNITS[_team].Add(this);
+    }
 
     void animateIfRunning()
     {
@@ -150,26 +208,29 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         if (_destination != null)
         {
-            Vector3 diff = transform.position - _destination.transform.position;
+            Attackable temp;
 
-            float distanceMetric;
-            if (ObjectIsUnit(_destination))
-            {
-                distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
-            }
-            else
-            {
-                distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
-            }
+            // if we are actually trying to get to an attackable object
+            if (_destination.TryGetComponent<Attackable>(out temp)) {
 
-            diff.y = 0f;
-            if (diff.magnitude <= distanceMetric)
-            {
-                _animator.SetBool("isAttacking", true);
-            }
-            else
-            {
-                _animator.SetBool("isAttacking", false);
+
+                Vector3 diff = transform.position - _destination.transform.position;
+
+                float distanceMetric;
+                if (ObjectIsUnit(_destination)) {
+                    distanceMetric = MIN_UNIT_ATTACK_DISTANCE;
+                }
+                else {
+                    distanceMetric = MIN_STRUCT_ATTACK_DISTANCE;
+                }
+
+                diff.y = 0f;
+                if (diff.magnitude <= distanceMetric) {
+                    _animator.SetBool("isAttacking", true);
+                }
+                else {
+                    _animator.SetBool("isAttacking", false);
+                }
             }
         }
         else
@@ -181,6 +242,8 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
         
     }
+
+
 
     void animateDeath()
     {
@@ -308,31 +371,30 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
 
         Attackable scriptToAttack;
-        _destination.TryGetComponent<Attackable>(out scriptToAttack);
+        bool hasAttackable = _destination.TryGetComponent<Attackable>(out scriptToAttack);
 
-        float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
-        if (distanceVector <= attackDistance)
-        {
-            _currentTime += Time.deltaTime;
-            if (_currentTime >= ATTACKS_PER_SECOND)
-            {
-                _currentTime = 0;
-                scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+        if (hasAttackable) {
 
-                if (_soundCycler != null)
-                {
-                    _audioSource.clip = _soundCycler.SelectRandomSound();
-                    SoundSystem.instance.PlaySound(_audioSource);
+            float attackDistance = scriptToAttack is UnitController ? MIN_UNIT_ATTACK_DISTANCE : MIN_STRUCT_ATTACK_DISTANCE;
+            if (distanceVector <= attackDistance) {
+                _currentTime += Time.deltaTime;
+                if (_currentTime >= ATTACKS_PER_SECOND) {
+                    _currentTime = 0;
+                    scriptToAttack.TakeDamage(ATTACK_DAMAGE);
+
+                    if (_soundCycler != null) {
+                        _audioSource.clip = _soundCycler.SelectRandomSound();
+                        SoundSystem.instance.PlaySound(_audioSource);
+                    }
+
+                    if (scriptToAttack.IsDead()) {
+                        _destination = null;
+
+                    }
                 }
-                
-                if (scriptToAttack.IsDead())
-                {
-                    _destination = null;
 
-                }
+
             }
-
-     
         }
     }
 
@@ -399,6 +461,14 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         
         _healthBarFill.fillAmount = newHealth / _maxHealth;
 
+    }
+
+    /// <summary>
+    /// Set a unit's destination (target) to the empty
+    ///  GameObject
+    /// </summary>
+    public void NoDestination() {
+        this._destination = DefenderUIController.emptyObject;
     }
 
 }

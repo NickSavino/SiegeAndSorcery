@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         _timer = GetComponent<SimpleTimer>();
         _timer.SetTimerMode(TimerMode.CountDown);
+        _defenderUIcontroller.EnableControls(true);
         AdvanceTurn();
     }
 
