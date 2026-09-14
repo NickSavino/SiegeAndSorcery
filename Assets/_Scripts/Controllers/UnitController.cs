@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
@@ -68,7 +70,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         TryGetComponent<NavMeshAgent>(out _navMeshAgent);
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 2;    // first destination will always be structure as per UnitSpawner
-        _navMeshAgent.destination = _destination.transform.position;
+        _navMeshAgent.destination = _destination.IsUnityNull() ? Vector3.zero :  _destination.transform.position;
 
 
         TryGetComponent<Animator>(out _animator);
@@ -125,7 +127,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         {
             GetNewStructureDestination();
         }
-        _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
+        _damageEffect?.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
 
 
@@ -196,7 +198,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public void SetDestination(GameObject destination)
     {
-        this._destination = destination;
+        this._destination = destination ?? null;
     }
 
 
@@ -298,6 +300,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public void AttackTarget()
     {
+        if (_destination == null)
+        {
+            return;
+        }
+            
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
 
         Attackable scriptToAttack;
