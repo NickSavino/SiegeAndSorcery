@@ -15,13 +15,10 @@ public class StructureController : MonoBehaviour, Attackable
 
     [SerializeField]
     private Image _healthBarFill;
-
     private float _maxHealth;           // need to set this in scriptable object
-
     StructureDamageEffect _damageEffect;     // using unit damage effect for right now
-
-
     private StructureManager _structureManager;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -120,4 +117,7 @@ public class StructureController : MonoBehaviour, Attackable
     {
         throw new NotImplementedException();
     }
+
+
+
 }
