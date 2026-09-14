@@ -46,23 +46,48 @@ public class CameraController : MonoBehaviour
     private Vector2 _dragBoxAnchor;
 
     private List<UnitController> _units;
+    private List<List<UnitController>> _controlGroups;
+    private const int CONTROL_GROUP_COUNT = 10;   // 1,2,3,4,5,6,7,8,9,0
+    private static readonly Dictionary<KeyCode, int> CONTROL_GROUP_MAP = new Dictionary<KeyCode, int>
+    {
+        {KeyCode.Alpha1, 0 },
+        {KeyCode.Alpha2, 1 },
+        {KeyCode.Alpha3, 2 },
+        {KeyCode.Alpha4, 3 },
+        {KeyCode.Alpha5, 4 },
+        {KeyCode.Alpha6, 5 },
+        {KeyCode.Alpha7, 6 },
+        {KeyCode.Alpha8, 7 },
+        {KeyCode.Alpha9, 8 },
+        {KeyCode.Alpha0, 9 },
+    };
+    private const int CONTROL_GROUP_LIM = 1024;
 
     private float DRAGBOX_DEPTH = 1000f;
+
+    private int _controlGroupSelected = -1;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _baseMoveSpeed = CAM_MOVE_SPEED;
-        _dragBox = transform.Find("Canvas").Find("Image").gameObject;       // very bad!
+        _dragBox = transform.Find("Canvas").Find("Image").gameObject;       // very bad! Can easily be nullptr
         _units = new List<UnitController>();
-
+        _controlGroups = InitControlGroups();
     }
 
     // Update is called once per frame
     void Update() {
         ClearUnitsOnClick();
+        ClearUnitsOnEscape();
         SelectUnitClick();
+        SetControlGroup();
+        AddToControlGroup();
+        SelectControlGroup();
+
+
         SetUnitsDestination();
         TranslateCamera();
         ZoomCameraProjection();
@@ -238,6 +263,7 @@ public class CameraController : MonoBehaviour
     }
 
 
+
     void SelectUnitClick() {
         if (Input.GetMouseButtonDown(0)) {
             RaycastHit hit;
@@ -266,7 +292,33 @@ public class CameraController : MonoBehaviour
             foreach (UnitController cont in _units) {
                 cont._isSelected = false;
             }
+            _units.Clear();
+            _controlGroupSelected = -1;
         }    
+    }
+
+
+
+    /*
+     *  TODO: Do not need separate methods for each of these
+     * 
+     */
+    void ClearUnitsOnEscape() {
+        if (Input.GetKeyDown(KeyCode.Escape) && _units.Count > 0) {
+            foreach (UnitController cont in _units) {
+                cont._isSelected = false;
+            }
+            _units.Clear();
+            _controlGroupSelected = -1;
+        }
+    }
+
+    void ClearUnits() {
+        foreach (UnitController cont in _units) {
+            cont._isSelected = false;
+        }
+        _units.Clear();
+        _controlGroupSelected = -1;
     }
 
     void SetUnitsDestination() {
@@ -282,5 +334,72 @@ public class CameraController : MonoBehaviour
             }
         }
     }
+
+
+    List<List<UnitController>> InitControlGroups() {
+        List<List<UnitController>> tempControlGoups = new List<List<UnitController>>();
+        for (int i = 0; i < CONTROL_GROUP_COUNT; ++i) {
+            List<UnitController> group = new List<UnitController>();
+            tempControlGoups.Add(group);
+        }
+        return tempControlGoups;
+    }
+
+
+    int IsControlGroupKeyDown() {
+        foreach (KeyCode keycode in CONTROL_GROUP_MAP.Keys) {
+            if (Input.GetKeyDown(keycode)) {
+                return CONTROL_GROUP_MAP[keycode];
+            }
+        }
+        return -1;
+    }
+
+
+    void SetControlGroup() {
+        if (_units.Count > 0) {
+            int groupIndex = IsControlGroupKeyDown();
+            if (groupIndex != -1 && Input.GetKey(KeyCode.LeftControl)) {
+                List<UnitController> controlGroup = _controlGroups[groupIndex];
+                controlGroup.Clear();
+                controlGroup.AddRange(_units);
+            }
+            _controlGroupSelected = groupIndex;
+        }
+    }
+
+
+    void AddToControlGroup() {
+        if (_units.Count > 0) {
+            int groupIndex = IsControlGroupKeyDown();
+            if (groupIndex != -1 && Input.GetKey(KeyCode.LeftShift)) {
+                List<UnitController> controlGroup = _controlGroups[groupIndex];
+                // Currently not allowing ANY units to be added if the sum of all selected units is greater than space available in group
+                if (controlGroup.Count < CONTROL_GROUP_LIM - _units.Count) {
+                    controlGroup.AddRange(_units);
+                }
+            }
+            _controlGroupSelected = groupIndex;
+        }
+    }
+
+
+    void SelectControlGroup() {
+        int groupIndex = IsControlGroupKeyDown();
+        if (groupIndex != -1) {
+            if (_controlGroups[groupIndex].Count > 0) {
+
+
+                ClearUnits();
+                List<UnitController> controlGroup = _controlGroups[groupIndex];
+                _units.AddRange(controlGroup);
+                foreach (UnitController unit in controlGroup) {
+                    unit._isSelected = true;
+                }
+                _controlGroupSelected = groupIndex;
+            }
+        }
+    }
+
 }
 
