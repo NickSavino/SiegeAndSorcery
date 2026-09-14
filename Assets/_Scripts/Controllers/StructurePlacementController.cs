@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
+using System.Linq;
+using UnityEngine.EventSystems;
 
 public class StructurePlacementController : MonoBehaviour
 {
@@ -39,7 +41,6 @@ public class StructurePlacementController : MonoBehaviour
     private float ROTATION_SENSITIVITY;
 
     private StructureManager _structureManager;
-
     /*
      *   struct, GameObject with required mayerials
      */
