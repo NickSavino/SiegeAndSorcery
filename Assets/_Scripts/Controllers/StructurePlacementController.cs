@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
+using System.Linq;
+using UnityEngine.EventSystems;
 
 public class StructurePlacementController : MonoBehaviour
 {
