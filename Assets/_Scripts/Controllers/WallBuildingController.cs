@@ -254,14 +254,4 @@ public class WallBuildingController : MonoBehaviour
     {
         return _modeActive;
         }
-        else
-        {
-            _placingPost = true;
-        }
-    }
-
-    public bool IsBuildModeActive()
-    {
-        return _modeActive;
-    }
 }

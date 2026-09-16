@@ -10,11 +10,12 @@ public class StructurePlacementController : MonoBehaviour
     /*
      * Constants
      */
-    private int NUMERIC_OFFSET = 49;    // ALPHA1 is 49, for keyboard number click selection
-    private const int IGNORE_RAYCAST_LAYER = 2;         // Physics.IgnoreRaycastLayer is 4, but in GameObject this layer is 2...
-    private const int IGNORE_DEFAULT_LAYER = 0;         // Default = 0
+    int NUMERIC_OFFSET = 49; // ALPHA1 is 49, for keyboard number click selection
+    const int IGNORE_RAYCAST_LAYER = 2; // Physics.IgnoreRaycastLayer is 4, but in GameObject this layer is 2...
+    const int IGNORE_DEFAULT_LAYER = 0; // Default = 0
 
-    private KeyCode[] numericKeys = {
+    KeyCode[] numericKeys =
+    {
         KeyCode.Alpha1,
         KeyCode.Alpha2,
         KeyCode.Alpha3,
@@ -23,19 +24,19 @@ public class StructurePlacementController : MonoBehaviour
         KeyCode.Alpha6,
         KeyCode.Alpha7,
         KeyCode.Alpha8,
-        KeyCode.Alpha9,
+        KeyCode.Alpha9
     };
 
     /*
-         * Serialized Fields
-   */
+     * Serialized Fields
+     */
     [SerializeField]
-    private List<ModelMaterial> _structures;
+    List<ModelMaterial> _structures;
 
-    private Dictionary<StructureName, ModelMaterial> _structuresDictionary;
+    Dictionary<StructureName, ModelMaterial> _structuresDictionary;
 
     [SerializeField]
-    private ModelMaterial _selectedStructure;
+    ModelMaterial _selectedStructure;
 
     [SerializeField]
     private float ROTATION_SENSITIVITY;
@@ -45,7 +46,7 @@ public class StructurePlacementController : MonoBehaviour
      *   struct, GameObject with required mayerials
      */
     [System.Serializable]
-    private class ModelMaterial
+    class ModelMaterial
     {
         public StructureName structureName;
         public GameObject model;
@@ -63,21 +64,21 @@ public class StructurePlacementController : MonoBehaviour
 
         public ModelMaterial(ModelMaterial sample)
         {
-            this.transMaterial = sample.transMaterial;
-            this.opaqueMaterial = sample.opaqueMaterial;
-            this.model = sample.model;
-            this.invalidMaterial = sample.invalidMaterial;
+            transMaterial = sample.transMaterial;
+            opaqueMaterial = sample.opaqueMaterial;
+            model = sample.model;
+            invalidMaterial = sample.invalidMaterial;
         }
     };
 
     /*
      * General fields
      */
-    private int _selectedIndex;     // selected struct key number
-    private GameObject instedObj;   // currently instantiated game object / structed
+    int _selectedIndex; // selected struct key number
+    GameObject instedObj; // currently instantiated game object / structed
 
-    private bool _showedOnce;       // when placing a rotated item with right mouse button clicked,
-                                    // we need to make sure the next one is placed at cursor
+    bool _showedOnce; // when placing a rotated item with right mouse button clicked,
+    // we need to make sure the next one is placed at cursor
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -103,7 +104,7 @@ public class StructurePlacementController : MonoBehaviour
     void SelectTypeKeyClick()
     {
         bool wasKeyClicked = false;
-        foreach (KeyCode numer in numericKeys)
+        foreach (var numer in numericKeys)
         {
             if (Input.GetKeyDown(numer))
             {
@@ -111,7 +112,7 @@ public class StructurePlacementController : MonoBehaviour
                 wasKeyClicked = true;
             }
         }
-        if (wasKeyClicked)      // only do this if a numerical key was clicked
+        if (wasKeyClicked) // only do this if a numerical key was clicked
         {
             if (_selectedIndex >= _structures.Count)
             {
@@ -154,21 +155,21 @@ public class StructurePlacementController : MonoBehaviour
 
     void ShowPlacement()
     {
-        if (_selectedStructure?.model != null)     // only show placements if we have selected a type of structure to build
+        if (_selectedStructure?.model != null) // only show placements if we have selected a type of structure to build
         {
             if (instedObj == null)
             {
                 instedObj = Instantiate(_selectedStructure.model);
                 SetDisabledMode(instedObj);
             }
-            if (!IsRotating() || !_showedOnce)       // if not holding down right click
+            if (!IsRotating() || !_showedOnce) // if not holding down right click
             {
                 _showedOnce = true;
 
                 RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit))
-                {   // _currentPosts[0] is initial post
+                { // _currentPosts[0] is initial post
                     instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
 
                     if (CheckInvalidPlacement())
@@ -195,7 +196,7 @@ public class StructurePlacementController : MonoBehaviour
         if (!CheckInvalidPlacement())
         {
             RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {
                 if (Input.GetMouseButtonDown(0))
@@ -205,13 +206,13 @@ public class StructurePlacementController : MonoBehaviour
                         instedObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
                     SetEnabledMode(instedObj);
-                    if (instedObj.TryGetComponent<TowerController>(out TowerController tower))
+                    if (instedObj.TryGetComponent<TowerController>(out var tower))
                     {
                         tower.isPlaced = true;
                     }
-                    instedObj = null;       // do not target this gameobject anymore!
+                    instedObj = null; // do not target this gameobject anymore!
                     _showedOnce = false;
-           
+
                 }
             }
         }
@@ -219,7 +220,7 @@ public class StructurePlacementController : MonoBehaviour
 
     public void DeselectAll(bool? deselect = false)
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || (deselect.HasValue && deselect.Value == true))
+        if (Input.GetKeyDown(KeyCode.Escape) || deselect.HasValue && deselect.Value == true)
         {
             Destroy(instedObj);
             _selectedStructure = null;
@@ -229,7 +230,7 @@ public class StructurePlacementController : MonoBehaviour
 
     void SetDisabledMode(GameObject obj)
     {
-        foreach (MeshRenderer renderer in obj.GetComponentsInChildren<MeshRenderer>())
+        foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
         {
             renderer.material = _selectedStructure.transMaterial;
         }
@@ -237,7 +238,7 @@ public class StructurePlacementController : MonoBehaviour
         obj.layer = IGNORE_RAYCAST_LAYER;
         obj.tag = TAGS_STRUCTS.UNTAGGED;
 
-        foreach (Collider childCollider in obj.GetComponentsInChildren<Collider>())
+        foreach (var childCollider in obj.GetComponentsInChildren<Collider>())
         {
             childCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
         }
@@ -246,7 +247,7 @@ public class StructurePlacementController : MonoBehaviour
 
     void SetEnabledMode(GameObject obj)
     {
-        foreach (MeshRenderer renderer in obj.GetComponentsInChildren<MeshRenderer>())
+        foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
         {
             renderer.material = _selectedStructure.opaqueMaterial;
         }
@@ -254,26 +255,26 @@ public class StructurePlacementController : MonoBehaviour
         obj.layer = IGNORE_DEFAULT_LAYER;
         obj.tag = TAGS_STRUCTS.INVALID_PLACEMENT;
 
-        foreach (Collider childCollider in obj.GetComponentsInChildren<Collider>())
+        foreach (var childCollider in obj.GetComponentsInChildren<Collider>())
         {
             childCollider.gameObject.layer = obj.layer = IGNORE_DEFAULT_LAYER;
         }
 
         // need to get Tower's unitfinder onto raycast ignore layer
-        if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out Collider unitCollider))
+        if (instedObj.transform.Find(STRUCTS_NAMES.UNIT_COLLIDER).gameObject.TryGetComponent<Collider>(out var unitCollider))
         {
             unitCollider.gameObject.layer = IGNORE_RAYCAST_LAYER;
         }
 
-        if (instedObj.TryGetComponent<StructureController>(out StructureController structureController))
+        if (instedObj.TryGetComponent<StructureController>(out var structureController))
         {
-            _structureManager.AddStructure(structureController);    // let structure manager know a new structure exists!
+            _structureManager.AddStructure(structureController); // let structure manager know a new structure exists!
         }
     }
 
     void SetInvalidMode(GameObject obj)
     {
-        foreach (MeshRenderer renderer in obj.GetComponentsInChildren<MeshRenderer>())
+        foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
         {
             renderer.material = _selectedStructure.invalidMaterial;
         }
@@ -286,10 +287,10 @@ public class StructurePlacementController : MonoBehaviour
             return false;
         }
 
-        foreach (Collider thisCollider in instedObj.GetComponentsInChildren<Collider>())
+        foreach (var thisCollider in instedObj.GetComponentsInChildren<Collider>())
         {
-            Collider[] hitColliders = Physics.OverlapBox(instedObj.transform.position, instedObj.transform.localScale);
-            foreach (Collider thatCollider in hitColliders)
+            var hitColliders = Physics.OverlapBox(instedObj.transform.position, instedObj.transform.localScale);
+            foreach (var thatCollider in hitColliders)
             {
 
                 if (thatCollider.gameObject.tag.Equals(TAGS_STRUCTS.INVALID_PLACEMENT))
@@ -304,7 +305,7 @@ public class StructurePlacementController : MonoBehaviour
 
     void RotateStructure()
     {
-        if (Input.GetMouseButton(1) && instedObj != null)    // right click
+        if (Input.GetMouseButton(1) && instedObj != null) // right click
         {
             float delta = Input.GetAxis("Mouse X") * ROTATION_SENSITIVITY;
             instedObj.transform.Rotate(new Vector3(0, delta, 0));
