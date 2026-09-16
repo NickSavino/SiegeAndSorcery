@@ -109,11 +109,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _structures:
-  - structureName: 1
-    model: {fileID: 5348690435166546185, guid: 31d8090d7a967644dab4907a37dedb69, type: 3}
-    opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
-    transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
-    invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
+  - structureName: 0
+    model: {fileID: 0}
+    opaqueMaterial: {fileID: 0}
+    transMaterial: {fileID: 0}
+    invalidMaterial: {fileID: 0}
   _selectedStructure:
     structureName: 0
     model: {fileID: 0}

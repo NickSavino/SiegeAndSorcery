@@ -1,3 +1,5 @@
+using _Scripts.Controllers;
+using _Scripts.Enums;
 using UnityEngine;
 
 public class DefenderUIController : MonoBehaviour
@@ -21,7 +23,7 @@ public class DefenderUIController : MonoBehaviour
     {
         if (selectedStructure != StructureName.None)
         {
-            selectedStructure = _structurePlacementController.SetType(StructureName.None);
+           // selectedStructure = _structurePlacementController.SetType(StructureName.None);
         }
 
         if (_controlsEnabled)
@@ -40,7 +42,7 @@ public class DefenderUIController : MonoBehaviour
 
         if (_controlsEnabled)
         {
-            selectedStructure = _structurePlacementController.SetType(selectedStructure == StructureName.BaseTower ? StructureName.None : StructureName.BaseTower);
+           // selectedStructure = _structurePlacementController.SetType(selectedStructure == StructureName.BaseTower ? StructureName.None : StructureName.BaseTower);
         }
     }
 
@@ -48,7 +50,7 @@ public class DefenderUIController : MonoBehaviour
     {
         if (enable == false)
         {
-            _structurePlacementController.DeselectAll(true);
+            //_structurePlacementController.DeselectAll(true);
             _wallBuilder.SetBuildModeActive(false);
         }
 

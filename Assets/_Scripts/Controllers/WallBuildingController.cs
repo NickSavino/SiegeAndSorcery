@@ -6,8 +6,6 @@ using UnityEngine.EventSystems;
 public class WallBuildingController : MonoBehaviour
 {
 
-
-
     [SerializeField]
     private float MAX_WALL_LENGTH;
 
