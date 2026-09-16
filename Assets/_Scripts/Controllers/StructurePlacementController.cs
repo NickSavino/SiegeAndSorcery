@@ -39,9 +39,9 @@ public class StructurePlacementController : MonoBehaviour
     ModelMaterial _selectedStructure;
 
     [SerializeField]
-    float ROTATION_SENSITIVITY;
+    private float ROTATION_SENSITIVITY;
 
-    StructureManager _structureManager;
+    private StructureManager _structureManager;
     /*
      *   struct, GameObject with required mayerials
      */
