@@ -80,9 +80,10 @@ public class CameraController : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        ClearUnitsOnClick();
+      //  ClearUnitsOnClick();
         ClearUnitsOnEscape();
         SelectUnitClick();
+        SelectUnitControlClick();
         SetControlGroup();
         AddToControlGroup();
         SelectControlGroup();
@@ -265,7 +266,23 @@ public class CameraController : MonoBehaviour
 
 
     void SelectUnitClick() {
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl)) {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit)) {   // _currentPosts[0] is initial post
+                hit.collider.gameObject.TryGetComponent<UnitController>(out UnitController unitHit);
+                ClearUnits();
+                // otherwise clear if not hitting unit
+                if (unitHit != null) {
+                    unitHit._isSelected = true;
+                    _units.Add(unitHit);
+                }
+            }
+        }
+    }
+
+    void SelectUnitControlClick() {
+        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl)) {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit)) {   // _currentPosts[0] is initial post
@@ -278,6 +295,9 @@ public class CameraController : MonoBehaviour
         }
     }
 
+
+
+
     void SelectUnitDrag() {
         if (Input.GetMouseButtonDown(1) && _dragBox.activeSelf) {
             _dragBox.TryGetComponent<RectTransform>(out RectTransform boxTransform);
@@ -287,6 +307,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    /*
     void ClearUnitsOnClick() {
         if (Input.GetMouseButtonDown(0) && _units.Count > 0) {
             foreach (UnitController cont in _units) {
@@ -295,7 +316,7 @@ public class CameraController : MonoBehaviour
             _units.Clear();
             _controlGroupSelected = -1;
         }    
-    }
+    }*/
 
 
 
