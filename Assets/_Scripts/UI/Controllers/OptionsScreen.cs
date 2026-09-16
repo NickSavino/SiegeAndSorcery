@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace _Scripts.UI.Controllers
 {
-    public class OptionsScreenController : MonoBehaviour
+    public class OptionsScreen : MonoBehaviour
     {
 
         [SerializeField]

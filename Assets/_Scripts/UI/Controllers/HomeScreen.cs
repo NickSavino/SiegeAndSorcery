@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HomeScreenController : MonoBehaviour
+public class HomeScreen : MonoBehaviour
 {
 
     [SerializeField]

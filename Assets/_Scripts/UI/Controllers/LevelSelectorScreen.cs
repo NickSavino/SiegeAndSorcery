@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace _Scripts.UI.Controllers
 {
-    public class LevelSelectorScreenController : MonoBehaviour
+    public class LevelSelectorScreen : MonoBehaviour
     {
 
         [Serializable]

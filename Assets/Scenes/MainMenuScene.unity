@@ -4248,6 +4248,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: MenuUI
       objectReference: {fileID: 0}
+    - target: {fileID: 6972071288454518147, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8184263464725117682, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8184263464725117682, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8184263464725117682, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8184263464725117682, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SoundSystem, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 8660756466646953175, guid: 43359eeb25a593843aa6e110c11dc51c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

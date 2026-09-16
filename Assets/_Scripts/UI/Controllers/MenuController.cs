@@ -9,11 +9,11 @@ namespace _Scripts.UI.Controllers
         readonly Stack<GameObject> _history = new Stack<GameObject>();
 
         [SerializeField]
-        HomeScreenController homeScreen;
+        HomeScreen homeScreen;
         [SerializeField]
-        OptionsScreenController optionsScreen;
+        OptionsScreen optionsScreen;
         [SerializeField]
-        LevelSelectorScreenController levelSelectorScreen;
+        LevelSelectorScreen levelSelectorScreen;
 
         GameObject _currentScreen;
 
