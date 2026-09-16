@@ -22,6 +22,8 @@ public class BulletController : MonoBehaviour, Attacker, Projectile
     private float MAX_TRAVEL_DISTANCE = 40; // SHOULD BE GLOBAL CONSTANT / ENUM
     private float _distanceTravelled;
 
+
+
     void Start()
     {
         _directionVector = _directionVector.normalized;
