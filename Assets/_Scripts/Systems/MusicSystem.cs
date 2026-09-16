@@ -6,6 +6,8 @@ public class MusicSystem : AudioSystemBase
 
     public static MusicSystem instance;
 
+    public bool playOnStartup;
+
     public override void ChangeVolume(float volume)
     {
         mixer.SetFloat("MusicVolume", volume);
@@ -28,6 +30,11 @@ public class MusicSystem : AudioSystemBase
     void Start()
     {
         _currentSource = musicSource;
+
+        if (playOnStartup)
+        {
+            _currentSource.Play();
+        }
     }
 
     // Update is called once per frame

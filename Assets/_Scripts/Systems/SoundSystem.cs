@@ -59,6 +59,14 @@ public class SoundSystem : AudioSystemBase
         PlayCurrentSource();
     }
 
+    public void PlaySound(AudioSource sound)
+    {
+        if (sound != null)
+        {
+            PlaySource(sound);
+        }
+    }
+
     public void OnBackButtonClick()
     {
         AudioSource sound;

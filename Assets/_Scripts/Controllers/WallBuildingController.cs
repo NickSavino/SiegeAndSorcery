@@ -207,7 +207,7 @@ public class WallBuildingController : MonoBehaviour
         obj.GetComponent<MeshRenderer>().material = _opaqueMaterial;
         obj.GetComponent<Collider>().enabled = true;
     }
-
+    
     public void ToggleActive()
     {
         _modeActive = !_modeActive;
@@ -244,8 +244,7 @@ public class WallBuildingController : MonoBehaviour
                 Destroy(_currentPosts.LastOrDefault());
                 _instedPost = false;
             }
-        }
-        else
+        } else
         {
             _placingPost = true;
         }
@@ -254,5 +253,5 @@ public class WallBuildingController : MonoBehaviour
     public bool IsBuildModeActive()
     {
         return _modeActive;
-    }
+        }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Scripts.Controllers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +22,7 @@ public class GameMenu : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F10))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             pauseMenu.enabled = !pauseMenu.enabled;
             _currentScreen = pauseMenu.enabled ? pauseMenu : null;
@@ -32,7 +33,7 @@ public class GameMenu : MonoBehaviour
     public void OnMainMenuButtonClick()
     {
         Time.timeScale = 1;
-        SceneLoadingController.instance.LoadScene("MainMenuScene");
+        SceneLoadingController.Instance.LoadScene("MainMenuScene");
     }
 
     public void OnOptionsButtonClick()

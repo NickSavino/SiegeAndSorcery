@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
 
@@ -51,7 +53,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
   
     private float _maxHealth;
 
-
+    private SoundCycler _soundCycler; //Used to select random audio clip for sword clashes
+    public AudioClip _deathSound;
+    private AudioSource _audioSource; //Audio source component on unit prefab
     /*
      *  private fields
      */
@@ -80,6 +84,9 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         TryGetComponent<Animator>(out _animator);
         TryGetComponent<SpriteRenderer>(out _spriteRenderer);
         _damageEffect = new UnitDamageEffect(_spriteRenderer);
+
+        TryGetComponent(out _soundCycler);
+        TryGetComponent(out _audioSource);
 
         // use transform to find child, get game object of transform, then its collider
 
@@ -130,7 +137,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         {
        //     GetNewStructureDestination();
         }
-        _damageEffect.UpdateTakeDamageTime();   // take damage effect, called each frame
+        _damageEffect?.UpdateTakeDamageTime();   // take damage effect, called each frame
     }
 
 
@@ -202,7 +209,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     // TODO: Maybe deprecated?
     public void SetDestination(GameObject destination)
     {
-        this._destination = destination;
+        this._destination = destination ?? null;
     }
 
     public void SetPath(Vector3[] path) {
@@ -308,6 +315,11 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     public void AttackTarget()
     {
+        if (_destination == null)
+        {
+            return;
+        }
+            
         float distanceVector = (_destination.transform.position - transform.position).magnitude;
 
         Attackable scriptToAttack;
@@ -322,9 +334,16 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
                 _currentTime = 0;
                 scriptToAttack.TakeDamage(ATTACK_DAMAGE);
 
+                if (_soundCycler != null)
+                {
+                    _audioSource.clip = _soundCycler.SelectRandomSound();
+                    SoundSystem.instance.PlaySound(_audioSource);
+                }
+                
                 if (scriptToAttack.IsDead())
                 {
                     _destination = null;
+
                 }
             }
 
@@ -366,7 +385,10 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void SetDead()
     {
         _healthBar.SetActive(false);
-        
+
+        _audioSource.clip = _deathSound;
+        SoundSystem.instance.PlaySound(_audioSource);
+
         if (TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
         {
             agent.enabled = false;

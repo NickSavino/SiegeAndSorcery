@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1896696977277946230}
   - component: {fileID: 6425213606491738355}
   - component: {fileID: 1583002127229035005}
-  - component: {fileID: 4469023743439438737}
   - component: {fileID: 1874436457166614514}
   m_Layer: 0
   m_Name: UnitSpawnPoint
@@ -29,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6703382466328731107}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0.0000006407499}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: -22.90755, y: -1.2277431, z: 40.510094}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -111,27 +110,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 9, y: 10.177113, z: 14}
   m_Center: {x: 0.09244943, y: 3.8487768, z: -0.48990488}
---- !u!65 &4469023743439438737
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6703382466328731107}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 8.404898, y: 10.177113, z: 13.362827}
-  m_Center: {x: 0.09244943, y: 3.8487768, z: -0.48990488}
 --- !u!114 &1874436457166614514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,9 +122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee06ce1d18df6b45b8ca1e2f66682af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <_health>k__BackingField: 0
-  <_team>k__BackingField: 0
-  <DESTROY_TIME_LIMIT>k__BackingField: 0
+  <_health>k__BackingField: 1000
+  <_team>k__BackingField: 1
+  <DESTROY_TIME_LIMIT>k__BackingField: 1
   <_healthBar>k__BackingField: {fileID: 169693158003280343}
   _healthBarFill: {fileID: 1209911889717056414}
 --- !u!1001 &2898867007799382986

@@ -77,7 +77,7 @@ public class TowerController : MonoBehaviour, Attacker
 
     void TryShooting()
     {
-        if (_target != null)
+        if (_target != null && ShotIsClear())
         {
             _currentTime += Time.deltaTime;
             if (_currentTime >= BULLET_COOLDOWN)
@@ -154,6 +154,34 @@ public class TowerController : MonoBehaviour, Attacker
     public void AttackTarget()
     {
         throw new NotImplementedException();
+    }
+
+    /*
+     * Doesn't fire if friendly structure is in the way
+     */
+    private bool ShotIsClear()
+    {
+
+        Vector3 origin = _bulletSpawnPoint.transform.position;
+        Vector3 distanceVector = _target.transform.position - _bulletSpawnPoint.transform.position;
+
+        RaycastHit[] hits = Physics.RaycastAll(origin, distanceVector.normalized);
+
+
+        foreach (RaycastHit hit in hits)        // iterate over hit colliders
+        {
+
+            if (hit.collider.gameObject.TryGetComponent<StructureController>(out StructureController structure))    // see if we are hitting a structure
+            {
+                StructureController tower;
+                TryGetComponent<StructureController>(out tower);
+                if (structure._team == tower._team && hit.distance < distanceVector.magnitude)  // if it is a friendly structure and is in front of target
+                {
+                    return false; // no clear shot!
+                }
+            }
+        }   // clear shot
+        return true;
     }
 
   
