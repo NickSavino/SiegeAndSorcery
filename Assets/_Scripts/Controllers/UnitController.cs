@@ -45,8 +45,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
 
 
-    private Vector3[] _unitPath;    // get's from UnitSpawner
-    private int _unitPathIndex;
 
     public bool _isSelected { get; set; }           // Selected by dragbox or individual clicking
     
@@ -77,8 +75,7 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     {
         TryGetComponent<NavMeshAgent>(out _navMeshAgent);
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 8;    // good enough stopping distance // used to be 2, 8 for debugging rts movement
-        _navMeshAgent.destination = _unitPath[0];       // start at first destination
-        _unitPathIndex = 0;     // start at first point on path
+        _navMeshAgent.Warp(new Vector3(transform.position.x, 10, transform.position.z));
 
 
         TryGetComponent<Animator>(out _animator);
@@ -210,10 +207,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
     public void SetDestination(GameObject destination)
     {
         this._destination = destination ?? null;
-    }
-
-    public void SetPath(Vector3[] path) {
-        this._unitPath = path;
     }
 
 
@@ -414,20 +407,6 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
         
         _healthBarFill.fillAmount = newHealth / _maxHealth;
 
-    }
-
-
-    
-    private void UpdatePathDestination() {
-        // only try if path is not complete
-        if (_unitPathIndex < _unitPath.Length) {
-            if ((_navMeshAgent.destination - transform.position).magnitude <= _navMeshAgent.stoppingDistance) {
-                ++_unitPathIndex;
-                if (_unitPathIndex < _unitPath.Length) {
-                    _navMeshAgent.destination = _unitPath[_unitPathIndex];
-                }
-            }
-        }
     }
 
 

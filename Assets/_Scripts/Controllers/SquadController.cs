@@ -13,10 +13,10 @@ public class SquadController : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    private List<UnitController> _units;
+    private List<GameObject> _units;
 
     [field: SerializeField]
-    public UnitController _unitType;
+    public GameObject _unitType;
 
     [field: SerializeField]
     public int _squadSize = 48;
@@ -24,7 +24,7 @@ public class SquadController : MonoBehaviour
     Vector3 anchor = Vector3.zero;
 
     [field: SerializeField]
-    public GameObject _unitTypeTest;
+    public GameObject _unitDestinationPrefab;
 
     [field: SerializeField]
     public int SIZE_ROWS = 8;
@@ -40,13 +40,13 @@ public class SquadController : MonoBehaviour
     public int UNIT_GAP_SIZE = 2;       // TODO: Make a function of unit's transform size
 
 
-    
 
-    private List<GameObject> spheres;
+
+    private List<GameObject> _unitDestinations;
 
     void Start()
     {
-        spheres = InitUnits();
+        InitUnits();
 
  
         
@@ -56,6 +56,7 @@ public class SquadController : MonoBehaviour
     void Update()
     {
         SetUnitsDestinations();
+        UpdateUnitPositions();
     }
 
 
@@ -71,16 +72,27 @@ public class SquadController : MonoBehaviour
     };
 
 
-    List<GameObject> InitUnits() {
-        List<GameObject> units = new List<GameObject>();
+    void InitUnits() {
+        _units = new List<GameObject>();
+        _unitDestinations = new List<GameObject>();
         for (int i = 0; i < _squadSize; ++i) {
-            units.Add(Instantiate(_unitTypeTest, this.transform, true));
+
+            _units.Add(Instantiate(_unitType));
+            _unitDestinations.Add(Instantiate(_unitDestinationPrefab, this.transform, true));
         }
-        return units;
     }
 
     int IndexConvert(int i, int j, ROW_COL rowsCols) {
         return (i * rowsCols.cols) + j;
+    }
+
+
+    void UpdateUnitPositions() {
+        for (int i = 0; i < _squadSize; ++i) {
+            UnitController cont;
+            _units[i].TryGetComponent<UnitController>(out cont);
+            cont.SetNavDestination(_unitDestinations[i].transform.position);
+        }
     }
 
 
@@ -140,6 +152,8 @@ public class SquadController : MonoBehaviour
     }
 
 
+
+
     void CastRaysClicked(Vector3 origin, ROW_COL rowsCols, float pixelsPerUnit) {
         Vector3 iter = new Vector3(origin.x, origin.y, origin.z);
 
@@ -152,7 +166,7 @@ public class SquadController : MonoBehaviour
 
                     Vector3 destination = hit.point;
 
-                    cont = spheres[IndexConvert(i, j, rowsCols)];
+                    cont = _unitDestinations[IndexConvert(i, j, rowsCols)];
 
                     cont.transform.position = destination;
                 }
@@ -177,7 +191,7 @@ public class SquadController : MonoBehaviour
 
                     Vector3 destination = hit.point;
 
-                    cont = spheres[IndexConvert(i, j, rowsCols)];
+                    cont = _unitDestinations[IndexConvert(i, j, rowsCols)];
 
                     cont.transform.position = destination;
                 }
@@ -191,7 +205,7 @@ public class SquadController : MonoBehaviour
         float pixelsPerUnit = Screen.height / (Camera.main.orthographicSize * 2f);
         float xDistance = Math.Abs(anchor.x - pivot.x) * 4;
 
-        float pixelsPerSphere = pixelsPerUnit * _unitTypeTest.transform.lossyScale.x;
+        float pixelsPerSphere = pixelsPerUnit * _unitType.transform.lossyScale.x;
 
 
 

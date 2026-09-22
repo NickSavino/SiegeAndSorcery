@@ -643,9 +643,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36949519ad05744f9048db96716c3b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitType: {fileID: 0}
+  _unitType: {fileID: 5740364740621546305, guid: 72a2ffc4c9389a742b82cc5fd6a037cb, type: 3}
   _squadSize: 48
-  _unitTypeTest: {fileID: 4452003443166142111, guid: 0b5b75887abd2854db04ab3b66fac343, type: 3}
+  _unitDestinationPrefab: {fileID: 4452003443166142111, guid: 0b5b75887abd2854db04ab3b66fac343, type: 3}
   SIZE_ROWS: 8
   SIZE_COLS: 6
   COL_MIN_LEN: 3

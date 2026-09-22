@@ -61,7 +61,7 @@ public class UnitSpawner : MonoBehaviour
                 unit.transform.position = _spawnPoint;
                 unit.TryGetComponent<UnitController>(out UnitController unitController);
                 //   unitController.SetDestination(_destination);
-                unitController.SetPath(unitPath);
+             //   unitController.SetPath(unitPath);
                 _currentTime = 0f;  // reset timer
             }
         }
