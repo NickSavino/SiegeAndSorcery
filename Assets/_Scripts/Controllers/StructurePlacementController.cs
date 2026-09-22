@@ -1,18 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace _Scripts.Controllers
 {
     public class StructurePlacementController : MonoBehaviour
     {
-        /*
-        * Constants
-        */
-        const int IGNORE_RAYCAST_LAYER = 2; // Physics.IgnoreRaycastLayer is 4, but in GameObject this layer is 2...
-        const int IGNORE_DEFAULT_LAYER = 0; // Default = 0
-       
         KeyCode[] numericKeys =
         {
             KeyCode.Alpha1,
@@ -26,14 +21,22 @@ namespace _Scripts.Controllers
             KeyCode.Alpha9
         };
 
+        [SerializeField]
+        List<BuildableStructure> _selectedStructures = new List<BuildableStructure>();
+        
         List<BuildableStructure> _placedStructures  = new List<BuildableStructure>();
         
         BuildableStructure _selectedStructure;
         BuildableStructure _structurePreview;
 
-        BuildingSocket _previewSocket;
-        BuildingSocket _targetSocket;
+        ConnectionCandidate _previewCandidate;
+        ConnectionCandidate _targetCandidate;
+
+        BuildingConnector _connectorPreview;
+        TowerConnectionSurface _connectorPreviewSurface;
         
+        bool _hasSnapCandidate;
+
         /*
         * Serialized Fields
         */
@@ -55,11 +58,19 @@ namespace _Scripts.Controllers
         void Start()
         {
             _selectedStructure = null;
+
+            _selectedStructures.Clear();
+
+            for (int i = 0; i < numericKeys.Length && i < structures.Count; i++)
+            {
+                _selectedStructures.Add(structures[i]);
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
+            
             GetStructureSelection();
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -80,7 +91,7 @@ namespace _Scripts.Controllers
 
         void GetStructureSelection()
         {
-            for (int i = 0; i < numericKeys.Length; i++)
+            for (int i = 0; i < numericKeys.Length && i < structures.Count; i++)
             {
                 if (!Input.GetKeyDown(numericKeys[i]))
                 {
@@ -93,13 +104,16 @@ namespace _Scripts.Controllers
                 {
                     _selectedStructure = structures[i];
                 }
+
+                return;
             }
         }
 
         void UpdatePlacement()
         {
-            _previewSocket = null;
-            _targetSocket = null;
+            _hasSnapCandidate = false;
+            _previewCandidate = default;
+            _targetCandidate = default;
             
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -108,6 +122,7 @@ namespace _Scripts.Controllers
                 if (_structurePreview != null)
                 {
                     _structurePreview.gameObject.SetActive(false);
+                    ClearConnectorPreview();
                 }
                 
                 return;
@@ -125,103 +140,251 @@ namespace _Scripts.Controllers
                 Quaternion.Euler(0f, _placementYaw, 0f)
                 );
             
-            FindSnapCandidate();
+            _hasSnapCandidate = FindSnapCandidate(out _previewCandidate, out _targetCandidate);
 
-            if (_targetSocket != null)
+            if (_hasSnapCandidate)
             {
-                AlignPreview();
+                _previewCandidate = AlignPreview(
+                    _previewCandidate,
+                    _targetCandidate
+                );
             }
-            
+            UpdateConnectorPreview();
         }
 
-        void FindSnapCandidate()
+        bool FindSnapCandidate(
+    out ConnectionCandidate previewCandidate,
+    out ConnectionCandidate targetCandidate)
+{
+    ConnectionCandidate bestPreview = default;
+    ConnectionCandidate bestTarget = default;
+
+    bool found = false;
+    float closestDistanceSquared = snapDistance * snapDistance;
+
+    foreach (var building in _placedStructures)
+    {
+        if (building == null ||
+            building == _structurePreview ||
+            !building.isActiveAndEnabled ||
+            !building.IsPlaced())
         {
-            float closestDistanceSquared = snapDistance * snapDistance;
-
-            foreach (var building in _placedStructures)
-            {
-                if (building == null ||
-                    !building.isActiveAndEnabled ||
-                    !building.IsPlaced())
-                {
-                    continue;
-                }
-
-                foreach (var target in building.Sockets)
-                {
-                    if (target == null || !target.isActiveAndEnabled)
-                    {
-                        continue;
-                    }
-
-                    foreach (var source in _structurePreview.Sockets)
-                    {
-                        if (source == null ||
-                            !source.isActiveAndEnabled ||
-                            !source.CanConnectTo(target))
-                        {
-                            continue;
-                        }
-
-                        float distanceSquared = (source.transform.position - target.transform.position).sqrMagnitude;
-
-                        if (distanceSquared < closestDistanceSquared)
-                        {
-                            closestDistanceSquared = distanceSquared;
-                            _previewSocket = source;
-                            _targetSocket = target;
-                        }
-                    }
-                }
-            }
+            continue;
         }
 
-        void AlignPreview()
+        // Cases where the preview has fixed sockets.
+        foreach (var source in _structurePreview.Sockets)
+        {
+            if (!IsAvailable(source))
+            {
+                continue;
+            }
+
+            var sourceCandidate = new ConnectionCandidate(source);
+
+            // Wall → wall.
+            foreach (var target in building.Sockets)
+            {
+                if (IsAvailable(target) && source.CanConnectTo(target))
+                {
+                    Consider(
+                        sourceCandidate,
+                        new ConnectionCandidate(target)
+                    );
+                }
+            } // End target socket loop.
+
+            // Wall → tower.
+            var targetSurface = building.ConnectionSurface;
+
+            if (targetSurface != null &&
+                targetSurface.isActiveAndEnabled &&
+                targetSurface.TryGetCandidate(
+                    source.transform.position,
+                    out var towerCandidate))
+            {
+                Consider(sourceCandidate, towerCandidate);
+            }
+        } // End preview socket loop.
+
+        // Tower → wall.
+        var previewSurface = _structurePreview.ConnectionSurface;
+
+        if (previewSurface == null ||
+            !previewSurface.isActiveAndEnabled)
+        {
+            continue;
+        }
+
+        foreach (var target in building.Sockets)
+        {
+            if (!IsAvailable(target))
+            {
+                continue;
+            }
+
+            if (previewSurface.TryGetCandidate(
+                target.transform.position,
+                out var towerCandidate))
+            {
+                Consider(
+                    towerCandidate,
+                    new ConnectionCandidate(target)
+                );
+            }
+        }
+    }
+
+    previewCandidate = bestPreview;
+    targetCandidate = bestTarget;
+    return found;
+
+    void Consider(
+        ConnectionCandidate source,
+        ConnectionCandidate target)
+    {
+        if (source.Owner == null ||
+            target.Owner == null ||
+            source.Owner == target.Owner)
+        {
+            return;
+        }
+
+        float distanceSquared =
+            (source.Position - target.Position).sqrMagnitude;
+
+        if (distanceSquared >= closestDistanceSquared)
+        {
+            return;
+        }
+
+        closestDistanceSquared = distanceSquared;
+        bestPreview = source;
+        bestTarget = target;
+        found = true;
+    }
+}
+
+        
+
+        ConnectionCandidate AlignPreview(ConnectionCandidate source, ConnectionCandidate target)
         {
             var root = _structurePreview.transform;
 
+            Vector3 localSourcePosition = root.InverseTransformPoint(source.Position);
+            Quaternion localSourceRotation = Quaternion.Inverse(root.rotation) * source.Rotation;
+
+            
             float angle = Vector3.SignedAngle(
-                _previewSocket.transform.forward,
-                -_targetSocket.transform.forward,
-                Vector3.up);
+                source.Forward,
+                -target.Forward,
+                Vector3.up
+            );
 
             root.rotation = Quaternion.AngleAxis(angle, Vector3.up) * root.rotation;
-            
-            root.position += _targetSocket.transform.position - _previewSocket.transform.position;
+
+            root.position += target.Position - root.TransformPoint(localSourcePosition);
+
+            if (source.IsDynamic)
+            {
+                return new ConnectionCandidate(source.ConnectionSurface, root.TransformPoint(localSourcePosition), root.rotation * localSourceRotation);
+            }
+
+            return new ConnectionCandidate(source.ExistingSocket);
         }
 
         void ConfirmPlacement()
         {
-            if (!Input.GetMouseButtonDown(0) || _structurePreview == null || !_structurePreview.gameObject.activeSelf)
+            if (!Input.GetMouseButtonDown(0) ||
+                _structurePreview == null ||
+                !_structurePreview.gameObject.activeSelf)
             {
                 return;
             }
 
-            if (_targetSocket != null && !_previewSocket.TryConnect(_targetSocket))
+            if (_hasSnapCandidate)
             {
-                return;
+                BuildingSocket source = _previewCandidate.ExistingSocket;
+                BuildingSocket target = _targetCandidate.ExistingSocket;
+
+                // Recheck existing sockets before creating anything.
+                if ((!_previewCandidate.IsDynamic && !IsAvailable(source)) ||
+                    (!_targetCandidate.IsDynamic && !IsAvailable(target)))
+                {
+                    return;
+                }
+
+                BuildingConnector createdConnector = null;
+
+                if (_previewCandidate.IsDynamic)
+                {
+                    createdConnector =
+                        _previewCandidate.ConnectionSurface.CreatePermanent(
+                            _previewCandidate
+                        );
+
+                    source = createdConnector.Socket;
+                }
+                else if (_targetCandidate.IsDynamic)
+                {
+                    createdConnector =
+                        _targetCandidate.ConnectionSurface.CreatePermanent(
+                            _targetCandidate
+                        );
+
+                    target = createdConnector.Socket;
+                }
+
+                if (source == null || target == null ||
+                    !source.TryConnect(target))
+                {
+                    // Roll back a connector if connecting failed.
+                    if (createdConnector != null)
+                    {
+                        createdConnector.Socket.Owner.UnregisterSocket(
+                            createdConnector.Socket
+                        );
+
+                        createdConnector.gameObject.SetActive(false);
+                        Destroy(createdConnector.gameObject);
+                    }
+
+                    return;
+                }
             }
-            
+
             _structurePreview.Place();
             _placedStructures.Add(_structurePreview);
 
             _structurePreview = null;
-            _previewSocket = null;
-            _targetSocket = null;
+            ClearConnectorPreview();
+
+            _hasSnapCandidate = false;
+            _previewCandidate = default;
+            _targetCandidate = default;
         }
         
         public void RemoveStructureSelection()
         {
+            ClearConnectorPreview();
+
             if (_structurePreview != null)
             {
+                _structurePreview.gameObject.SetActive(false);
                 Destroy(_structurePreview.gameObject);
             }
-            
+
             _structurePreview = null;
             _selectedStructure = null;
-            _previewSocket = null;
-            _targetSocket = null;
+            _hasSnapCandidate = false;
+            _previewCandidate = default;
+            _targetCandidate = default;
             _placementYaw = 0f;
+        }
+
+        void OnDisable()
+        {
+            RemoveStructureSelection();
         }
 
         void RotateStructure()
@@ -240,6 +403,66 @@ namespace _Scripts.Controllers
 
             _placementYaw += direction * rotationSpeed * Time.deltaTime;
         }
+
+        static bool IsAvailable(BuildingSocket socket)
+        {
+            return socket != null
+                && socket.isActiveAndEnabled
+                && socket.Owner != null
+                && !socket.IsOccupied;
+        }
         
+        void UpdateConnectorPreview()
+        {
+            if (!_hasSnapCandidate)
+            {
+                ClearConnectorPreview();
+                return;
+            }
+
+            ConnectionCandidate candidate;
+
+            if (_previewCandidate.IsDynamic)
+            {
+                candidate = _previewCandidate;
+            }
+            else if (_targetCandidate.IsDynamic)
+            {
+                candidate = _targetCandidate;
+            }
+            else
+            {
+                // Wall-to-wall connections don't need a connector.
+                ClearConnectorPreview();
+                return;
+            }
+
+            if (_connectorPreview == null ||
+                _connectorPreviewSurface != candidate.ConnectionSurface)
+            {
+                ClearConnectorPreview();
+
+                _connectorPreviewSurface = candidate.ConnectionSurface;
+                _connectorPreview =
+                    _connectorPreviewSurface.CreatePreview(candidate);
+            }
+
+            _connectorPreview.AlignSocket(
+                candidate.Position,
+                candidate.Rotation
+            );
+        }
+
+        void ClearConnectorPreview()
+        {
+            if (_connectorPreview != null)
+            {
+                _connectorPreview.gameObject.SetActive(false);
+                Destroy(_connectorPreview.gameObject);
+            }
+
+            _connectorPreview = null;
+            _connectorPreviewSurface = null;
+        }
     }
 }

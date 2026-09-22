@@ -858,14 +858,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 932523584}
     - target: {fileID: 3055362903251017188, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
-      propertyPath: rotationSensitivity
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055362903251017188, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
-      propertyPath: structures.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055362903251017188, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
       propertyPath: 'structures.Array.data[0]'
       value: 
       objectReference: {fileID: 870075461}
@@ -873,21 +865,9 @@ PrefabInstance:
       propertyPath: 'structures.Array.data[1]'
       value: 
       objectReference: {fileID: 1862999979}
-    - target: {fileID: 3055362903251017188, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
-      propertyPath: _structures.Array.data[0].model
-      value: 
-      objectReference: {fileID: 5071847750417175328, guid: 7db42e6ef2ada9143a7338cb8432a99c, type: 3}
     - target: {fileID: 7811690642807307859, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
       propertyPath: m_Name
       value: GameManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 8766397857630621223, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
-      propertyPath: turnTimerText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8766397857630621223, guid: b73f61a0c7267fa45880f7ba20266fc4, type: 3}
-      propertyPath: currentTurnText
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1128,7 +1108,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2833974750620492560, guid: a2468a4789de4ee4ebf2cec6be344485, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.17
+      value: 17.72
       objectReference: {fileID: 0}
     - target: {fileID: 2833974750620492560, guid: a2468a4789de4ee4ebf2cec6be344485, type: 3}
       propertyPath: m_LocalPosition.y

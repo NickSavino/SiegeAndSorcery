@@ -108,16 +108,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ab4d074686ac8b40a074a875243c69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _structures:
-  - structureName: 0
-    model: {fileID: 0}
-    opaqueMaterial: {fileID: 0}
-    transMaterial: {fileID: 0}
-    invalidMaterial: {fileID: 0}
-  _selectedStructure:
-    structureName: 0
-    model: {fileID: 0}
-    opaqueMaterial: {fileID: 0}
-    transMaterial: {fileID: 0}
-    invalidMaterial: {fileID: 0}
-  ROTATION_SENSITIVITY: 100
+  structures:
+  - {fileID: 0}
+  - {fileID: 0}
+  placementSurface: {fileID: 0}
+  rotationSpeed: 90
+  snapDistance: 1.5
