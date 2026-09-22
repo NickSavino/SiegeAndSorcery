@@ -7,6 +7,7 @@ using System;
 using UnityEngine.InputSystem;
 using Cinemachine.Utility;
 using static UnityEngine.UI.Image;
+using Unity.VisualScripting;
 
 public class SquadController : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class SquadController : MonoBehaviour
     public UnitController _unitType;
 
     [field: SerializeField]
-    public int _squadSize = 12;
+    public int _squadSize = 48;
 
     Vector3 anchor = Vector3.zero;
 
@@ -26,13 +27,20 @@ public class SquadController : MonoBehaviour
     public GameObject _unitTypeTest;
 
     [field: SerializeField]
-    public int SIZE_ROWS = 3;
+    public int SIZE_ROWS = 8;
 
     [field: SerializeField]
-    public int SIZE_COLS = 4;
+    public int SIZE_COLS = 6;
+
+
+    [field: SerializeField]
+    public int COL_MIN_LEN = 3;
 
     [field: SerializeField]
     public int UNIT_GAP_SIZE = 2;       // TODO: Make a function of unit's transform size
+
+
+    
 
     private List<GameObject> spheres;
 
@@ -97,6 +105,8 @@ public class SquadController : MonoBehaviour
 
             Vector3 diff = (anchor - pivot);
 
+            Vector3 perp = new Vector3(-diff.y, diff.x);
+
             ROW_COL rowsCols;
             Vector3 origin;
 
@@ -118,17 +128,19 @@ public class SquadController : MonoBehaviour
             // offset, center on cursor
             if (diff == Vector3.zero) {
                 origin -= new Vector3(width / 2f, height / 2f, 0);
+                CastRaysClicked(origin, rowsCols, pixelsPerUnit);
             }
+            else {
+                Vector3 iter = new Vector3(origin.x, origin.y, origin.z);
 
-            Vector3 iter = new Vector3(origin.x, origin.y, origin.z);
-
-            // Cast the actual rays to get the coords we need to set each destination
-            CastRaysDraggableSelection(origin, rowsCols, pixelsPerUnit);
+                // Cast the actual rays to get the coords we need to set each destination
+                CastRaysDraggableSelection(origin, rowsCols, pixelsPerUnit, diff, perp);
+            }
         }
     }
-   
 
-    void CastRaysDraggableSelection(Vector3 origin, ROW_COL rowsCols, float pixelsPerUnit) {
+
+    void CastRaysClicked(Vector3 origin, ROW_COL rowsCols, float pixelsPerUnit) {
         Vector3 iter = new Vector3(origin.x, origin.y, origin.z);
 
         GameObject cont = null;
@@ -152,17 +164,40 @@ public class SquadController : MonoBehaviour
     }
 
 
+    void CastRaysDraggableSelection(Vector3 origin, ROW_COL rowsCols, float pixelsPerUnit, Vector3 diff, Vector3 perp) {
+        Vector3 iter = new Vector3(origin.x, origin.y, origin.z);
+
+        GameObject cont = null;
+        for (int i = 0; i < rowsCols.rows; ++i) {
+            iter = origin + (perp.normalized * pixelsPerUnit * i);
+            for (int j = 0; j < rowsCols.cols; ++j) {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(iter);
+                if (Physics.Raycast(ray, out hit)) {   // _currentPosts[0] is initial post
+
+                    Vector3 destination = hit.point;
+
+                    cont = spheres[IndexConvert(i, j, rowsCols)];
+
+                    cont.transform.position = destination;
+                }
+                iter += new Vector3(pixelsPerUnit * -diff.normalized.x, pixelsPerUnit * -diff.normalized.y, 0);
+            }
+        }
+    }
+
+
     ROW_COL GetOptimalShape(Vector3 anchor, Vector3 pivot) {
         float pixelsPerUnit = Screen.height / (Camera.main.orthographicSize * 2f);
-        float xDistance = Math.Abs(anchor.x - pivot.x);
+        float xDistance = Math.Abs(anchor.x - pivot.x) * 4;
 
         float pixelsPerSphere = pixelsPerUnit * _unitTypeTest.transform.lossyScale.x;
 
 
 
-        int numRows = Math.Max(1,  _squadSize - ((int) (xDistance / pixelsPerSphere)));
+        int numRows = Math.Max(COL_MIN_LEN,  _squadSize - ((int) (xDistance / pixelsPerSphere)));
         int numCols = 0;
-        for (int i = numRows; i >= 1; --i) {
+        for (int i = numRows; i >= COL_MIN_LEN; --i) {
             if (_squadSize % i == 0) {
                 numCols = _squadSize / i;
                 numRows = i;

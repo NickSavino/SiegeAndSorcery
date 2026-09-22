@@ -644,10 +644,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unitType: {fileID: 0}
-  _squadSize: 12
+  _squadSize: 48
   _unitTypeTest: {fileID: 4452003443166142111, guid: 0b5b75887abd2854db04ab3b66fac343, type: 3}
-  SIZE_ROWS: 3
-  SIZE_COLS: 4
+  SIZE_ROWS: 8
+  SIZE_COLS: 6
+  COL_MIN_LEN: 3
   UNIT_GAP_SIZE: 2
 --- !u!1001 &188467496
 PrefabInstance:
