@@ -6,13 +6,13 @@ public readonly struct ConnectionCandidate
     public Vector3 Position { get; }
     public Quaternion Rotation { get; }
     
-    public BuildingSocket ExistingSocket { get; }
-    public TowerConnectionSurface ConnectionSurface { get; }
+    public BuildableStructureSocket ExistingSocket { get; }
+    public CircularConnectionSurface ConnectionSurface { get; }
     
     public Vector3 Forward => Rotation * Vector3.forward;
     public bool IsDynamic => ConnectionSurface != null;
 
-    public ConnectionCandidate(BuildingSocket socket)
+    public ConnectionCandidate(BuildableStructureSocket socket)
     {
         Owner = socket.Owner;
         Position = socket.transform.position;
@@ -23,7 +23,7 @@ public readonly struct ConnectionCandidate
     }
 
     public ConnectionCandidate(
-        TowerConnectionSurface surface,
+        CircularConnectionSurface surface,
         Vector3 position,
         Quaternion rotation)
     {

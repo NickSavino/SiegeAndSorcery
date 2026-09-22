@@ -7,7 +7,7 @@ public class DefenderUIController : MonoBehaviour
 
     private WallBuildingController _wallBuilder;
 
-    private StructurePlacementController _structurePlacementController;
+    private BuildableStructurePlacementController _buildableStructurePlacementController;
 
     public StructureName selectedStructure = StructureName.None;
 
@@ -15,7 +15,7 @@ public class DefenderUIController : MonoBehaviour
 
     public void Start()
     {
-        TryGetComponent(out _structurePlacementController);
+        TryGetComponent(out _buildableStructurePlacementController);
         TryGetComponent(out _wallBuilder);
     }
 

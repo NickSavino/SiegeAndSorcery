@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-public class BuildingSocket : MonoBehaviour
+public class BuildableStructureSocket : MonoBehaviour
 {
 
     public BuildableStructure Owner { get; private set; }
-    public BuildingSocket ConnectedSocket { get; private set; }
+    public BuildableStructureSocket ConnectedSocket { get; private set; }
     
     public bool IsOccupied => ConnectedSocket != null;
 
@@ -14,7 +14,7 @@ public class BuildingSocket : MonoBehaviour
         Owner = owner;
     }
 
-    public bool CanConnectTo(BuildingSocket otherSocket)
+    public bool CanConnectTo(BuildableStructureSocket otherSocket)
     {
         return
             otherSocket != null
@@ -26,7 +26,7 @@ public class BuildingSocket : MonoBehaviour
             && !otherSocket.IsOccupied;
     }
 
-    public bool TryConnect(BuildingSocket otherSocket)
+    public bool TryConnect(BuildableStructureSocket otherSocket)
     {
         if (!CanConnectTo(otherSocket))
         {

@@ -1,14 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
-using UnityEngine.EventSystems;
 namespace _Scripts.Controllers
 {
-    public class StructurePlacementController : MonoBehaviour
+    public class BuildableStructurePlacementController : MonoBehaviour
     {
-        KeyCode[] numericKeys =
+        readonly KeyCode[] _numericKeys =
         {
             KeyCode.Alpha1,
             KeyCode.Alpha2,
@@ -21,10 +17,7 @@ namespace _Scripts.Controllers
             KeyCode.Alpha9
         };
 
-        [SerializeField]
-        List<BuildableStructure> _selectedStructures = new List<BuildableStructure>();
-        
-        List<BuildableStructure> _placedStructures  = new List<BuildableStructure>();
+        readonly List<BuildableStructure> _placedStructures  = new List<BuildableStructure>();
         
         BuildableStructure _selectedStructure;
         BuildableStructure _structurePreview;
@@ -32,11 +25,13 @@ namespace _Scripts.Controllers
         ConnectionCandidate _previewCandidate;
         ConnectionCandidate _targetCandidate;
 
-        BuildingConnector _connectorPreview;
-        TowerConnectionSurface _connectorPreviewSurface;
+        BuildableStructureConnector _connectorPreview;
+        CircularConnectionSurface _connectorPreviewSurface;
         
         bool _hasSnapCandidate;
 
+        private float _placementYaw;
+        
         /*
         * Serialized Fields
         */
@@ -49,8 +44,6 @@ namespace _Scripts.Controllers
         [SerializeField]
         float rotationSpeed = 90;
         
-        private float _placementYaw;
-
         [SerializeField]
         float snapDistance = 1.5f;
         
@@ -58,13 +51,6 @@ namespace _Scripts.Controllers
         void Start()
         {
             _selectedStructure = null;
-
-            _selectedStructures.Clear();
-
-            for (int i = 0; i < numericKeys.Length && i < structures.Count; i++)
-            {
-                _selectedStructures.Add(structures[i]);
-            }
         }
 
         // Update is called once per frame
@@ -91,9 +77,9 @@ namespace _Scripts.Controllers
 
         void GetStructureSelection()
         {
-            for (int i = 0; i < numericKeys.Length && i < structures.Count; i++)
+            for (int i = 0; i < _numericKeys.Length && i < structures.Count; i++)
             {
-                if (!Input.GetKeyDown(numericKeys[i]))
+                if (!Input.GetKeyDown(_numericKeys[i]))
                 {
                     continue;
                 }
@@ -304,8 +290,8 @@ namespace _Scripts.Controllers
 
             if (_hasSnapCandidate)
             {
-                BuildingSocket source = _previewCandidate.ExistingSocket;
-                BuildingSocket target = _targetCandidate.ExistingSocket;
+                BuildableStructureSocket source = _previewCandidate.ExistingSocket;
+                BuildableStructureSocket target = _targetCandidate.ExistingSocket;
 
                 // Recheck existing sockets before creating anything.
                 if ((!_previewCandidate.IsDynamic && !IsAvailable(source)) ||
@@ -314,7 +300,7 @@ namespace _Scripts.Controllers
                     return;
                 }
 
-                BuildingConnector createdConnector = null;
+                BuildableStructureConnector createdConnector = null;
 
                 if (_previewCandidate.IsDynamic)
                 {
@@ -404,7 +390,7 @@ namespace _Scripts.Controllers
             _placementYaw += direction * rotationSpeed * Time.deltaTime;
         }
 
-        static bool IsAvailable(BuildingSocket socket)
+        static bool IsAvailable(BuildableStructureSocket socket)
         {
             return socket != null
                 && socket.isActiveAndEnabled

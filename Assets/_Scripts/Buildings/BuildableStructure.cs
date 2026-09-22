@@ -12,12 +12,12 @@ public class BuildableStructure : MonoBehaviour
     //public Material transMaterial;
     //public Material invalidMaterial;
 
-    public List<BuildingSocket> Sockets = new List<BuildingSocket>();
+    public List<BuildableStructureSocket> Sockets = new List<BuildableStructureSocket>();
 
     [SerializeField]
-    TowerConnectionSurface _connectionSurface;
+    CircularConnectionSurface _connectionSurface;
 
-    public TowerConnectionSurface ConnectionSurface => _connectionSurface;
+    public CircularConnectionSurface ConnectionSurface => _connectionSurface;
     
     bool _isPlaced;
 
@@ -37,7 +37,7 @@ public class BuildableStructure : MonoBehaviour
         }
     }
 
-    public void RegisterSocket(BuildingSocket socket)
+    public void RegisterSocket(BuildableStructureSocket socket)
     {
         if (socket == null || Sockets.Contains(socket))
         {
@@ -48,7 +48,7 @@ public class BuildableStructure : MonoBehaviour
         Sockets.Add(socket);
     }
 
-    public void UnregisterSocket(BuildingSocket socket)
+    public void UnregisterSocket(BuildableStructureSocket socket)
     {
         if (socket == null)
         {

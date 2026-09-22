@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TowerConnectionSurface : MonoBehaviour
+public class CircularConnectionSurface : MonoBehaviour
 {
     [SerializeField, Min(0.01f)]
     float radius = 7.5f;
@@ -9,7 +9,7 @@ public class TowerConnectionSurface : MonoBehaviour
     float minimumConnectionAngle = 40f;
 
     [SerializeField]
-    BuildingConnector connectorPrefab;
+    BuildableStructureConnector connectorPrefab;
 
     [SerializeField]
     Transform connectorContainer;
@@ -88,7 +88,7 @@ public class TowerConnectionSurface : MonoBehaviour
         return true;
     }
 
-    public BuildingConnector CreatePreview(ConnectionCandidate candidate)
+    public BuildableStructureConnector CreatePreview(ConnectionCandidate candidate)
     {
         var connector = Instantiate(connectorPrefab);
 
@@ -104,7 +104,7 @@ public class TowerConnectionSurface : MonoBehaviour
         return connector;
     }
 
-    public BuildingConnector CreatePermanent(ConnectionCandidate candidate)
+    public BuildableStructureConnector CreatePermanent(ConnectionCandidate candidate)
     {
         var connector = Instantiate(connectorPrefab, connectorContainer);
         

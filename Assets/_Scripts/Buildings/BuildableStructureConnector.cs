@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class BuildingConnector : MonoBehaviour
+public class BuildableStructureConnector : MonoBehaviour
 {
     [SerializeField]
-    BuildingSocket socket;
+    BuildableStructureSocket socket;
     
-    public BuildingSocket Socket => socket;
+    public BuildableStructureSocket Socket => socket;
     
     public Vector3 SocketOffset => transform.InverseTransformPoint(socket.transform.position);
 
