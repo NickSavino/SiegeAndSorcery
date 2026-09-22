@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace _Scripts.Buildings
+namespace _Scripts.BuildableStructures
 {
     public class CircularConnectionSurface : BuildableStructureConnectionSurface
     {

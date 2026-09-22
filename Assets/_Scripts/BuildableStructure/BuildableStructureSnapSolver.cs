@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace _Scripts.Buildings
+namespace _Scripts.BuildableStructures
 {
     public sealed class BuildableStructureSnapSolver
     {

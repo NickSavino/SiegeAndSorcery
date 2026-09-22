@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using _Scripts.Buildings;
+using _Scripts.BuildableStructures;
 using UnityEngine;
 namespace _Scripts.Controllers
 {
@@ -59,7 +59,6 @@ namespace _Scripts.Controllers
         // Update is called once per frame
         void Update()
         {
-            
             GetStructureSelection();
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -74,8 +73,16 @@ namespace _Scripts.Controllers
             }
             
             RotateStructure();
-            UpdatePlacement();
-            ConfirmPlacement();
+
+            if (!TryUpdatePlacement())
+            {
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ConfirmPlacement();
+            }
         }
 
         void GetStructureSelection()
@@ -98,11 +105,9 @@ namespace _Scripts.Controllers
             }
         }
 
-        void UpdatePlacement()
+        bool TryUpdatePlacement()
         {
-            _hasSnapCandidate = false;
-            _previewCandidate = default;
-            _targetCandidate = default;
+            ClearSnapCandidate();
             
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -111,10 +116,11 @@ namespace _Scripts.Controllers
                 if (_structurePreview != null)
                 {
                     _structurePreview.gameObject.SetActive(false);
-                    ClearConnectorPreview();
                 }
                 
-                return;
+                ClearConnectorPreview();
+                
+                return false;
             }
 
             if (_structurePreview == null)
@@ -129,7 +135,12 @@ namespace _Scripts.Controllers
                 Quaternion.Euler(0f, _placementYaw, 0f)
                 );
             
-            _hasSnapCandidate = _snapSolver.TryFindSnapCandidate(_structurePreview, _placedStructures, snapDistance, out _previewCandidate, out _targetCandidate);
+            _hasSnapCandidate = _snapSolver.TryFindSnapCandidate(
+                _structurePreview, 
+                _placedStructures, 
+                snapDistance, 
+                out _previewCandidate, 
+                out _targetCandidate);
 
             if (_hasSnapCandidate)
             {
@@ -139,10 +150,16 @@ namespace _Scripts.Controllers
                 );
             }
             UpdateConnectorPreview();
+            return true;
         }
 
-        
 
+        void ClearSnapCandidate()
+        {
+            _hasSnapCandidate = false;
+            _previewCandidate = default;
+            _targetCandidate = default;
+        }
         
 
         ConnectionCandidate AlignPreview(ConnectionCandidate source, ConnectionCandidate target)
@@ -173,76 +190,75 @@ namespace _Scripts.Controllers
 
         void ConfirmPlacement()
         {
-            if (!Input.GetMouseButtonDown(0) ||
-                _structurePreview == null ||
-                !_structurePreview.gameObject.activeSelf)
+            if (_structurePreview == null || !_structurePreview.gameObject.activeSelf)
             {
                 return;
             }
 
-            if (_hasSnapCandidate)
+            if (!TryCommitConnection())
             {
-                BuildableStructureSocket source = _previewCandidate.ExistingSocket;
-                BuildableStructureSocket target = _targetCandidate.ExistingSocket;
-
-                // Recheck existing sockets before creating anything.
-                if ((!_previewCandidate.IsDynamic && !IsAvailable(source)) ||
-                    (!_targetCandidate.IsDynamic && !IsAvailable(target)))
-                {
-                    return;
-                }
-
-                BuildableStructureConnector createdConnector = null;
-
-                if (_previewCandidate.IsDynamic)
-                {
-                    createdConnector =
-                        _previewCandidate.ConnectionSurface.CreatePermanent(
-                            _previewCandidate
-                        );
-
-                    source = createdConnector.Socket;
-                }
-                else if (_targetCandidate.IsDynamic)
-                {
-                    createdConnector =
-                        _targetCandidate.ConnectionSurface.CreatePermanent(
-                            _targetCandidate
-                        );
-
-                    target = createdConnector.Socket;
-                }
-
-                if (source == null || target == null ||
-                    !source.TryConnect(target))
-                {
-                    // Roll back a connector if connecting failed.
-                    if (createdConnector != null)
-                    {
-                        createdConnector.Socket.Owner.UnregisterSocket(
-                            createdConnector.Socket
-                        );
-
-                        createdConnector.gameObject.SetActive(false);
-                        Destroy(createdConnector.gameObject);
-                    }
-
-                    return;
-                }
+                return;
             }
-
+            
             _structurePreview.Place();
             _placedStructures.Add(_structurePreview);
 
             _structurePreview = null;
+            
             ClearConnectorPreview();
+            ClearSnapCandidate();
+        }
 
-            _hasSnapCandidate = false;
-            _previewCandidate = default;
-            _targetCandidate = default;
+        bool TryCommitConnection()
+        {
+            if (!_hasSnapCandidate)
+            {
+                return true;
+            }
+
+            var source = _previewCandidate.ExistingSocket;
+            var target = _targetCandidate.ExistingSocket;
+
+            if ((!_previewCandidate.IsDynamic && !IsAvailable(source)) || (!_targetCandidate.IsDynamic && !IsAvailable(target)))
+            {
+                return false;
+            }
+
+            BuildableStructureConnector createdConnector = null;
+
+            if (_previewCandidate.IsDynamic)
+            {
+                createdConnector = _previewCandidate.ConnectionSurface.CreatePermanent(_previewCandidate);
+                
+                source = createdConnector.Socket;
+            }
+            else if (_targetCandidate.IsDynamic)
+            {
+                createdConnector = _targetCandidate.ConnectionSurface.CreatePermanent(_targetCandidate);
+
+                target = createdConnector.Socket;
+            }
+
+            if (source != null &&
+                target != null &&
+                source.TryConnect(target))
+            {
+                return true;
+            }
+
+            if (createdConnector != null)
+            {
+                createdConnector.Socket.Owner.UnregisterSocket(createdConnector.Socket);
+                
+                createdConnector.gameObject.SetActive(false);
+                
+                Destroy(createdConnector.gameObject);
+            }
+
+            return false;
         }
         
-        public void RemoveStructureSelection()
+        void RemoveStructureSelection()
         {
             ClearConnectorPreview();
 
@@ -254,10 +270,9 @@ namespace _Scripts.Controllers
 
             _structurePreview = null;
             _selectedStructure = null;
-            _hasSnapCandidate = false;
-            _previewCandidate = default;
-            _targetCandidate = default;
             _placementYaw = 0f;
+            
+            ClearSnapCandidate();
         }
 
         void OnDisable()
@@ -310,7 +325,6 @@ namespace _Scripts.Controllers
             }
             else
             {
-                // Wall-to-wall connections don't need a connector.
                 ClearConnectorPreview();
                 return;
             }
