@@ -1,3 +1,4 @@
+using _Scripts.Buildings;
 using UnityEngine;
 
 public readonly struct ConnectionCandidate
@@ -7,7 +8,7 @@ public readonly struct ConnectionCandidate
     public Quaternion Rotation { get; }
     
     public BuildableStructureSocket ExistingSocket { get; }
-    public CircularConnectionSurface ConnectionSurface { get; }
+    public BuildableStructureConnectionSurface ConnectionSurface { get; }
     
     public Vector3 Forward => Rotation * Vector3.forward;
     public bool IsDynamic => ConnectionSurface != null;
@@ -23,7 +24,7 @@ public readonly struct ConnectionCandidate
     }
 
     public ConnectionCandidate(
-        CircularConnectionSurface surface,
+        BuildableStructureConnectionSurface surface,
         Vector3 position,
         Quaternion rotation)
     {

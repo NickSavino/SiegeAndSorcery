@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Scripts.Buildings;
 using _Scripts.Enums;
 using UnityEngine;
 
@@ -15,9 +16,9 @@ public class BuildableStructure : MonoBehaviour
     public List<BuildableStructureSocket> Sockets = new List<BuildableStructureSocket>();
 
     [SerializeField]
-    CircularConnectionSurface _connectionSurface;
+    BuildableStructureConnectionSurface _connectionSurface;
 
-    public CircularConnectionSurface ConnectionSurface => _connectionSurface;
+    public BuildableStructureConnectionSurface ConnectionSurface => _connectionSurface;
     
     bool _isPlaced;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Scripts.Buildings;
 using UnityEngine;
 namespace _Scripts.Controllers
 {
@@ -19,6 +20,8 @@ namespace _Scripts.Controllers
 
         readonly List<BuildableStructure> _placedStructures  = new List<BuildableStructure>();
         
+        readonly BuildableStructureSnapSolver _snapSolver = new BuildableStructureSnapSolver();
+        
         BuildableStructure _selectedStructure;
         BuildableStructure _structurePreview;
 
@@ -26,7 +29,7 @@ namespace _Scripts.Controllers
         ConnectionCandidate _targetCandidate;
 
         BuildableStructureConnector _connectorPreview;
-        CircularConnectionSurface _connectorPreviewSurface;
+        BuildableStructureConnectionSurface _connectorPreviewSurface;
         
         bool _hasSnapCandidate;
 
@@ -126,7 +129,7 @@ namespace _Scripts.Controllers
                 Quaternion.Euler(0f, _placementYaw, 0f)
                 );
             
-            _hasSnapCandidate = FindSnapCandidate(out _previewCandidate, out _targetCandidate);
+            _hasSnapCandidate = _snapSolver.TryFindSnapCandidate(_structurePreview, _placedStructures, snapDistance, out _previewCandidate, out _targetCandidate);
 
             if (_hasSnapCandidate)
             {
@@ -138,118 +141,7 @@ namespace _Scripts.Controllers
             UpdateConnectorPreview();
         }
 
-        bool FindSnapCandidate(
-    out ConnectionCandidate previewCandidate,
-    out ConnectionCandidate targetCandidate)
-{
-    ConnectionCandidate bestPreview = default;
-    ConnectionCandidate bestTarget = default;
-
-    bool found = false;
-    float closestDistanceSquared = snapDistance * snapDistance;
-
-    foreach (var building in _placedStructures)
-    {
-        if (building == null ||
-            building == _structurePreview ||
-            !building.isActiveAndEnabled ||
-            !building.IsPlaced())
-        {
-            continue;
-        }
-
-        // Cases where the preview has fixed sockets.
-        foreach (var source in _structurePreview.Sockets)
-        {
-            if (!IsAvailable(source))
-            {
-                continue;
-            }
-
-            var sourceCandidate = new ConnectionCandidate(source);
-
-            // Wall → wall.
-            foreach (var target in building.Sockets)
-            {
-                if (IsAvailable(target) && source.CanConnectTo(target))
-                {
-                    Consider(
-                        sourceCandidate,
-                        new ConnectionCandidate(target)
-                    );
-                }
-            } // End target socket loop.
-
-            // Wall → tower.
-            var targetSurface = building.ConnectionSurface;
-
-            if (targetSurface != null &&
-                targetSurface.isActiveAndEnabled &&
-                targetSurface.TryGetCandidate(
-                    source.transform.position,
-                    out var towerCandidate))
-            {
-                Consider(sourceCandidate, towerCandidate);
-            }
-        } // End preview socket loop.
-
-        // Tower → wall.
-        var previewSurface = _structurePreview.ConnectionSurface;
-
-        if (previewSurface == null ||
-            !previewSurface.isActiveAndEnabled)
-        {
-            continue;
-        }
-
-        foreach (var target in building.Sockets)
-        {
-            if (!IsAvailable(target))
-            {
-                continue;
-            }
-
-            if (previewSurface.TryGetCandidate(
-                target.transform.position,
-                out var towerCandidate))
-            {
-                Consider(
-                    towerCandidate,
-                    new ConnectionCandidate(target)
-                );
-            }
-        }
-    }
-
-    previewCandidate = bestPreview;
-    targetCandidate = bestTarget;
-    return found;
-
-    void Consider(
-        ConnectionCandidate source,
-        ConnectionCandidate target)
-    {
-        if (source.Owner == null ||
-            target.Owner == null ||
-            source.Owner == target.Owner)
-        {
-            return;
-        }
-
-        float distanceSquared =
-            (source.Position - target.Position).sqrMagnitude;
-
-        if (distanceSquared >= closestDistanceSquared)
-        {
-            return;
-        }
-
-        closestDistanceSquared = distanceSquared;
-        bestPreview = source;
-        bestTarget = target;
-        found = true;
-    }
-}
+        
 
         
 
