@@ -8,10 +8,6 @@ namespace _Scripts.BuildableStructures
         [SerializeField]
         public StructureName structureName;
     
-        //public Material opaqueMaterial;
-        //public Material transMaterial;
-        //public Material invalidMaterial;
-
         public List<BuildableStructureSocket> Sockets = new List<BuildableStructureSocket>();
 
         [SerializeField]

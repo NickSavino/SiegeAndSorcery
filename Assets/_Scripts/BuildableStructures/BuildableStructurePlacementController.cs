@@ -49,12 +49,6 @@ namespace _Scripts.Controllers
         
         [SerializeField]
         float snapDistance = 1.5f;
-        
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
-        {
-            _selectedStructure = null;
-        }
 
         // Update is called once per frame
         void Update()
@@ -95,11 +89,8 @@ namespace _Scripts.Controllers
                 }
                 
                 RemoveStructureSelection();
-
-                if (i < structures.Count)
-                {
-                    _selectedStructure = structures[i];
-                }
+                
+                _selectedStructure = structures[i];
 
                 return;
             }
