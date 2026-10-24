@@ -239,7 +239,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 55
-  selectedStructure: 0
 --- !u!114 &7833656445012949188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,19 +251,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ab4d074686ac8b40a074a875243c69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _structures:
-  - structureName: 1
-    model: {fileID: 5348690435166546185, guid: 31d8090d7a967644dab4907a37dedb69, type: 3}
-    opaqueMaterial: {fileID: 2100000, guid: d63ebc4db6347564c8d0e1e9c4e67781, type: 2}
-    transMaterial: {fileID: 2100000, guid: b0824999326429b41abfb42efeeb756f, type: 2}
-    invalidMaterial: {fileID: 2100000, guid: cf07042ca8882f84f8cad2aae1dce195, type: 2}
-  _selectedStructure:
-    structureName: 0
-    model: {fileID: 0}
-    opaqueMaterial: {fileID: 0}
-    transMaterial: {fileID: 0}
-    invalidMaterial: {fileID: 0}
-  ROTATION_SENSITIVITY: 0
+  _selectedStructures: []
+  structures: []
+  placementSurface: {fileID: 0}
+  rotationSpeed: 90
+  snapDistance: 1.5
 --- !u!114 &5272631427031241430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -767,16 +758,4 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1568487188546792487}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2252969125364419002}
-        m_TargetAssemblyTypeName: DefenderUIController, Assembly-CSharp
-        m_MethodName: OnTowerButtonClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
