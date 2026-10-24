@@ -8,6 +8,9 @@ using UnityEngine.InputSystem;
 using Cinemachine.Utility;
 using static UnityEngine.UI.Image;
 using Unity.VisualScripting;
+using UnityEngine.AI;
+using UnityEngine.ProBuilder.Shapes;
+using static UnityEngine.UI.CanvasScaler;
 
 public class SquadController : MonoBehaviour
 {
@@ -40,21 +43,19 @@ public class SquadController : MonoBehaviour
     public int UNIT_GAP_SIZE = 2;       // TODO: Make a function of unit's transform size
 
 
-
-
     private List<GameObject> _unitDestinations;
 
     void Start()
     {
-        InitUnits();
 
- 
-        
+        InitUnits();     
     }
 
     // Update is called once per framew
     void Update()
     {
+        var tri = NavMesh.CalculateTriangulation();
+        Debug.Log($"NavMesh verts={tri.vertices.Length} tris={tri.indices.Length / 3}");
         SetUnitsDestinations();
         UpdateUnitPositions();
     }
@@ -78,8 +79,9 @@ public class SquadController : MonoBehaviour
         for (int i = 0; i < _squadSize; ++i) {
 
             _units.Add(Instantiate(_unitType));
-            _unitDestinations.Add(Instantiate(_unitDestinationPrefab, this.transform, true));
+            _unitDestinations.Add(Instantiate(_unitDestinationPrefab));
         }
+
     }
 
     int IndexConvert(int i, int j, ROW_COL rowsCols) {

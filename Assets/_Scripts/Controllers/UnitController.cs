@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine.ProBuilder.Shapes;
 
 public class UnitController : MonoBehaviour, Attackable, Attacker
 {
@@ -69,14 +70,25 @@ public class UnitController : MonoBehaviour, Attackable, Attacker
 
     private StructureManager _structureManager;
 
+    private const float MAX_NAVMESH_SEARCH_SIZE = 100;
+
+    private const int WALKABLE_MASK = 1;
+
+    private List<GameObject> _unitDestinations;
 
 
     void Start()
     {
         TryGetComponent<NavMeshAgent>(out _navMeshAgent);
         _navMeshAgent.stoppingDistance = MIN_STRUCT_ATTACK_DISTANCE / 8;    // good enough stopping distance // used to be 2, 8 for debugging rts movement
-        _navMeshAgent.Warp(new Vector3(transform.position.x, 10, transform.position.z));
+                                                                            //     _navMeshAgent.Warp(new Vector3(transform.position.x, 10, transform.position.z));
 
+ 
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, MAX_NAVMESH_SEARCH_SIZE, WALKABLE_MASK)) {
+            transform.position = hit.position;
+        }
+
+        // TOOD: What if false?
 
         TryGetComponent<Animator>(out _animator);
         TryGetComponent<SpriteRenderer>(out _spriteRenderer);
