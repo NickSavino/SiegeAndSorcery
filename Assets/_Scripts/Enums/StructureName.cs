@@ -1,7 +1,11 @@
-public enum StructureName
+namespace _Scripts.Enums
 {
-    None,
-    BaseTower,
-    CannonTower,
-    ArcherTower
+    public enum StructureName
+    {
+        None,
+        BaseTower,
+        CannonTower,
+        ArcherTower,
+        WallSegment,
+    }
 }
