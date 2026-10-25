@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using _Scripts.BuildableStructures;
 using UnityEngine;
+using UnityEngine.EventSystems;
 namespace _Scripts.Controllers
 {
     public class BuildableStructurePlacementController : MonoBehaviour
@@ -34,6 +36,12 @@ namespace _Scripts.Controllers
         bool _hasSnapCandidate;
 
         private float _placementYaw;
+
+        public IReadOnlyList<BuildableStructure> AvailableStrucutres => structures;
+
+        public BuildableStructure SelectedStructure => _selectedStructure;
+
+        public event Action<BuildableStructure> SelectionChanged;
         
         /*
         * Serialized Fields
@@ -58,6 +66,7 @@ namespace _Scripts.Controllers
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 RemoveStructureSelection();
+                CancelPlacement();
                 return;
             }
             
@@ -73,7 +82,7 @@ namespace _Scripts.Controllers
                 return;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
             {
                 ConfirmPlacement();
             }
@@ -90,7 +99,7 @@ namespace _Scripts.Controllers
                 
                 RemoveStructureSelection();
                 
-                _selectedStructure = structures[i];
+               SelectStructure(structures[i]);
 
                 return;
             }
@@ -269,6 +278,7 @@ namespace _Scripts.Controllers
         void OnDisable()
         {
             RemoveStructureSelection();
+            CancelPlacement();
         }
 
         void RotateStructure()
@@ -346,6 +356,63 @@ namespace _Scripts.Controllers
 
             _connectorPreview = null;
             _connectorPreviewSurface = null;
+        }
+
+        public void SelectStructure(BuildableStructure structure)
+        {
+            if (!isActiveAndEnabled ||
+                structure == null ||
+                !structures.Contains(structure) ||
+                structure == _selectedStructure)
+            {
+                return;
+            }
+            
+            RemoveStructureSelection();
+
+            _selectedStructure = structure;
+            
+            SelectionChanged?.Invoke(_selectedStructure);
+        }
+
+        public void CancelPlacement()
+        {
+            bool hadSelection = _selectedStructure != null;
+            
+            RemoveStructureSelection();
+
+            if (hadSelection)
+            {
+                SelectionChanged?.Invoke(null);
+            }
+        }
+
+        bool IsPointerOverUI()
+        {
+            var eventSystem = EventSystem.current;
+
+            if (eventSystem == null)
+            {
+                return false;
+            }
+
+            var pointer = new PointerEventData(eventSystem)
+            {
+                position = Input.mousePosition
+            };
+
+            var hits = new List<RaycastResult>();
+            eventSystem.RaycastAll(pointer, hits);
+
+            foreach (var hit in hits)
+            {
+                if (hit.module is UnityEngine.UI.GraphicRaycaster)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

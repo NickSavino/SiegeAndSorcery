@@ -109,8 +109,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   structures:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 4815811015442552979, guid: 2c73d471db735ba41972718ad6c13f3f, type: 3}
+  - {fileID: 2922324839696748868, guid: a2468a4789de4ee4ebf2cec6be344485, type: 3}
   placementSurface: {fileID: 0}
   rotationSpeed: 90
   snapDistance: 1.5
