@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a956a78b70f1f145a55db99b46acca2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startupDestination: 0
   loadingScreen: {fileID: 2367725957096895211}
   loadingBarFill: {fileID: 6147369264299065916}
   fade: {fileID: 6739537450036323154}
