@@ -1,9 +1,10 @@
 using System;
+using _Scripts.UI.Core;
 using UnityEngine;
 using UnityEngine.UI;
 namespace _Scripts.UI.Controllers
 {
-    public class OptionsScreen : MonoBehaviour
+    public class OptionsScreen : UIScreen
     {
 
         [SerializeField]

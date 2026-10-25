@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using _Scripts.Controllers;
 using _Scripts.UI.Components;
+using _Scripts.UI.Core;
 using UnityEngine;
 using UnityEngine.UI;
 namespace _Scripts.UI.Controllers
 {
-    public class LevelSelectorScreen : MonoBehaviour
+    public class LevelSelectorScreen : UIScreen
     {
 
         [Serializable]
