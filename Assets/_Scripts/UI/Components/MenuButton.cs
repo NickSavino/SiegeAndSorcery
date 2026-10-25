@@ -34,8 +34,12 @@ namespace _Scripts.UI.Components
 
         public void AddClickListener(UnityAction clickAction)
         {
-            _clickAction += clickAction;
             button.onClick.AddListener(_clickAction);
+        }
+        
+        public void RemoveClickListener(UnityAction clickAction)
+        {
+            button.onClick.RemoveListener(_clickAction);
         }
 
         public void SetText(string text)

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
+using _Scripts.UI.Core;
 using UnityEngine;
 
 namespace _Scripts.UI.Controllers
 {
     public class MenuController : MonoBehaviour
     {
-        readonly Stack<GameObject> _history = new Stack<GameObject>();
-
         [SerializeField]
         HomeScreen homeScreen;
         [SerializeField]
@@ -15,7 +14,8 @@ namespace _Scripts.UI.Controllers
         [SerializeField]
         LevelSelectorScreen levelSelectorScreen;
 
-        GameObject _currentScreen;
+        [SerializeField]
+        ScreenNavigator screenNavigator;
 
         void OnEnable()
         {
@@ -41,48 +41,22 @@ namespace _Scripts.UI.Controllers
 
         void Start()
         {
-            optionsScreen.gameObject.SetActive(false);
-            levelSelectorScreen.gameObject.SetActive(false);
-
-            _currentScreen = homeScreen.gameObject;
-            _currentScreen.SetActive(true);
+            screenNavigator.Initialize(homeScreen);
         }
 
         void GoBack()
         {
-            if (_history.Count == 0)
-            {
-                return;
-            }
-
-            _currentScreen.SetActive(false);
-            _currentScreen = _history.Pop();
-            _currentScreen.SetActive(true);
+            screenNavigator.Back();
         }
 
         void OpenLevelSelector()
         {
-            OpenScreen(levelSelectorScreen.gameObject);
+            screenNavigator.Open(levelSelectorScreen);
         }
 
         void OpenOptionsScreen()
         {
-            OpenScreen(optionsScreen.gameObject);
-        }
-
-        void OpenScreen(GameObject nextScreen)
-        {
-            if (nextScreen == null)
-            {
-                return;
-            }
-
-            _history.Push(_currentScreen);
-            _currentScreen.SetActive(false);
-
-            _currentScreen = nextScreen;
-            _currentScreen.SetActive(true);
-
+            screenNavigator.Open(optionsScreen);
         }
 
         static void Quit()
